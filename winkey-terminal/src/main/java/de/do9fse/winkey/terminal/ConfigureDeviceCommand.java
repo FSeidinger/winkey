@@ -84,7 +84,7 @@ public class ConfigureDeviceCommand extends TerminalCommand {
                     List.of(
                         new AttributedString("Sets a custom baud rate to be used with the device.\n"),
                         new AttributedString("The baud rate must be an integer greater than zero.\n"),
-                        new AttributedString("Instead of using a custom baud rate, you can use the `-d` option to set a default"),
+                        new AttributedString("Instead of using a custom baud rate, you can use the '-d' option to set a default"),
                         new AttributedString("baud rate which conforms with the WinKey device specification.")
                     )
                 )
@@ -93,13 +93,22 @@ public class ConfigureDeviceCommand extends TerminalCommand {
                 new ArgumentDescription("-d",
                     List.of(
                         new AttributedString("Sets a default baud rate that conforms to the WinKey device specification.\n"),
-                        new AttributedString("The value `defaultBaudRate` selects the default baud rate for nearly all WinKey"),
+                        new AttributedString("The value 'defaultBaudRate' selects the default baud rate for nearly all WinKey"),
                         new AttributedString("and translates to 1200 baud.\n"),
-                        new AttributedString("The value `alternativeBaudRat` selects the default baud for special devices"),
+                        new AttributedString("The value 'alternativeBaudRate' selects the default baud for special devices"),
                         new AttributedString("using a baud rate of 9600 baud.\n"),
-                        new AttributedString("Both the `-b` and `-d` options are optional. In they are not given on the"),
+                        new AttributedString("Both the '-b' and '-d' options are optional. If they are not given on the"),
                         new AttributedString("command line the default baud rate of 1200 baud is taken. This is the equivalent"),
-                        new AttributedString("of using `-d defaultBaudRate`")
+                        new AttributedString("of using '-d defaultBaudRate'")
+                    )
+                )
+            )
+            .argument(
+                new ArgumentDescription("<device>",
+                    List.of(
+                        new AttributedString("The device (port) the WinKey device is connected to\n"),
+                        new AttributedString("On Windows this something like 'COM3'."),
+                        new AttributedString("On Linux this something like '/dev/ttyUSB0'.")
                     )
                 )
             )

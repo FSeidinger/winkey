@@ -3,6 +3,7 @@
         "EEPROM",
         "HSCW",
         "MILLI",
+        "AssertJ",
         "classgraph",
         "fazecast",
         "indriya",
@@ -47,8 +48,10 @@
         "org.junit.jupiter.api.Assumptions.*",
         "org.junit.jupiter.api.DynamicContainer.*",
         "org.junit.jupiter.api.DynamicTest.*",
+        "org.assertj.core.api.Assertions.*",
         "org.mockito.Answers.*",
         "org.mockito.ArgumentMatchers.*",
         "org.mockito.Mockito.*"
-    ]
+    ],
+    "java.maven.downloadSources": true
 }

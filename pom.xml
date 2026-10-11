@@ -61,8 +61,14 @@
             <dependency>
                 <groupId>org.jline</groupId>
                 <artifactId>jline</artifactId>
-                <version>4.4.7</version>
+                <version>0.1.0-3589-SNAPSHOT</version>
             </dependency>
+            
+            <dependency>
+                <groupId>org.jline</groupId>
+                <artifactId>jline-builtins</artifactId>
+                <version>4.4.7</version>
+            </dependency>            
 
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -70,6 +76,13 @@
                 <version>5.12.2</version>
                 <scope>test</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>3.27.7</version>
+                <scope>test</scope>
+            </dependency>            
 
             <dependency>
                 <groupId>org.mockito</groupId>

@@ -1,21 +1,50 @@
 package de.do9fse.winkey.terminal;
 
 import java.io.PrintStream;
+import java.util.List;
 
+import org.jline.shell.ArgumentDescription;
+import org.jline.shell.CommandDescription;
 import org.jline.shell.CommandSession;
 import org.jline.shell.impl.AbstractCommand;
+import org.jline.utils.AttributedString;
+import org.jline.utils.AttributedStyle;
 
 import de.do9fse.winkey.lib.core.model.ApplicationContext;
 import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
 
-public class SetVersionCommand extends AbstractCommand {   
+public class SetVersionCommand extends AbstractCommand {
     public SetVersionCommand() {
         super("set-version", "v", "sv");
     }
 
     @Override
     public String description() {
-        return "Sets the WinKey version to be used with the keyer device";
+        return "Set the WinKey version to be used with the keyer device";
+    }
+
+    @Override
+    public CommandDescription describe(final List<String> args) {
+        return CommandDescription
+            .builder()
+            .mainDescription(
+                List.of(
+                    new AttributedString(
+                        "Usage: set-version <version>",
+                        AttributedStyle.DEFAULT.bold()
+                    )
+                )
+            )
+            .argument(
+                new ArgumentDescription(
+                    "<version>",
+                     List.of(
+                        new AttributedString("The WinKey protocol version to use in the form Vx"),
+                        new AttributedString("where x can be 1, 2, or 3")
+                     )
+                )
+            )
+            .build();
     }
 
     @Override

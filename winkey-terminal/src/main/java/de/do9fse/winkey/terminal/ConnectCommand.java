@@ -3,24 +3,23 @@ package de.do9fse.winkey.terminal;
 import java.io.PrintStream;
 import java.text.MessageFormat;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.jline.shell.CommandSession;
-import org.jline.shell.impl.AbstractCommand;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortInvalidPortException;
 
 import de.do9fse.winkey.lib.core.model.ApplicationContext;
 import de.do9fse.winkey.lib.core.model.WinKeyState;
+import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
 import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
-import de.do9fse.winkey.lib.core.model.error.WinKeyRuntimeException;
 import de.do9fse.winkey.lib.core.port.out.WinKeyTransport;
+import de.do9fse.winkey.lib.infrastructure.winkey.transport.serial.SerialConfigurationAdapter;
 import de.do9fse.winkey.lib.infrastructure.winkey.transport.serial.WinKeySerialTransport;
 
-public class ConnectCommand extends AbstractCommand {
+public class ConnectCommand extends TerminalCommand {
     protected ConnectCommand() {
         super("connect", "co" );
     }
@@ -32,71 +31,55 @@ public class ConnectCommand extends AbstractCommand {
 
     @Override
     public Object execute(final CommandSession session, String[] args) throws Exception {
-        final PrintStream stdout = session.out();
-        final PrintStream stderr = session.err();
+        evaluateContext(session);
 
-        if (args.length != 1) {
-            stderr.println("usage: connect <port>");
-            stderr.println("  <port>    The serial port to use (e.g. COM3 or /dev/ttyUSB0)");
-            return null;
+        if (args.length != 0) {
+            throw new IllegalArgumentException("Error: the connect command does not support parameters");
         }
 
         final ApplicationContext applicationContext = Constants.getApplicationContext(session);
         if (applicationContext.getState() != WinKeyState.CLOSED) {
-            final String message = MessageFormat.format("Device {0} is already open", applicationContext.getPortName());
-            stderr.println(message);
-            return null;
+            throw new IllegalStateException(generator.createErrorMessage(Errors.DEVICE_ALREADY_CLOSED, applicationContext));
         } 
 
-        final String portName = args[0];
+        final DeviceConfiguration deviceConfiguration = applicationContext.getDeviceConfiguration();
 
         try {
-            final SerialPort serialPort = createSerialPort(stderr, portName).orElseThrow();
-            applicationContext.setPortName(portName);
-            final WinKeyTransport transport = openAndInitializeTransport(stderr, applicationContext, serialPort).orElseThrow();
-            applicationContext.setTransport(transport);
-        } catch(final NoSuchElementException e) {
-            return null;
+            final SerialPort serialPort = createSerialPort(stderr, applicationContext, deviceConfiguration);
+            final WinKeyTransport transport = openAndInitializeTransport(stderr, applicationContext, serialPort);
+            applicationContext.setTransport(transport);           
+            stdout.println(MessageGenerator.successfullyOpenedDevice(applicationContext));
+        } catch (final SerialPortInvalidPortException e) {
+            throw new IllegalArgumentException(generator.createErrorMessage(Errors.INVALID_PORT, applicationContext));
+        } catch (final NoSuchElementException e) {
+            throw new IllegalStateException(generator.createErrorMessage(Errors.NO_PORT_SET, applicationContext), e);
         }
-        
-        final String message = MessageFormat.format("Successfully opened device {0}", portName);
+
+        final String message = MessageFormat.format("Successfully connected to device {0}", applicationContext.getPortName());
         stdout.println(message);
 
         return null;
     }
 
-    private Optional<SerialPort> createSerialPort(final PrintStream stderr, final String portName) {
-        try {
-            final SerialPort serialPort = SerialPort.getCommPort(portName);
-            serialPort.setBaudRate(1200);
-            serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 500, 0);
-
-            return Optional.of(serialPort);
-        } catch (final SerialPortInvalidPortException e) {
-            final String message = MessageFormat.format("Invalid port {0}", portName);
-            stderr.println(message);
-            return Optional.ofNullable(null);
-        }
+    private SerialPort createSerialPort(final PrintStream stderr, final ApplicationContext context, final DeviceConfiguration deviceConfiguration) throws SerialPortInvalidPortException {
+        final SerialConfigurationAdapter adapter = new SerialConfigurationAdapter(context, deviceConfiguration);
+        return adapter.createSerialPort();
     }
 
-    private Optional<WinKeyTransport> openAndInitializeTransport(final PrintStream stderr, final ApplicationContext context, final SerialPort serialPort) {
-        final WinKeyTransport transport = new WinKeySerialTransport(context, serialPort);
+    private WinKeyTransport openAndInitializeTransport(final PrintStream stderr, final ApplicationContext context, final SerialPort serialPort) throws WinKeyApplicationException, TimeoutException {
+        WinKeyTransport transport = null;
 
         try {
+            transport = new WinKeySerialTransport(context, serialPort);
             transport.open();
             transport.initialize(10, TimeUnit.SECONDS);
-            return Optional.of(transport);
-        } catch(final TimeoutException e) {
-            closeTransport(transport);
-            final String message = MessageFormat.format("Device {0} did not answer - {1}", context.getPortName(), e.getMessage());
-            stderr.println(message);
-            return Optional.ofNullable(null);
-        } catch (final WinKeyApplicationException | WinKeyRuntimeException  e) {
-            closeTransport(transport);
-            final String message = MessageFormat.format("Failed to initialize device {0} - {1}", context.getPortName(), e.getMessage());
-            stderr.println(message);
-            return Optional.ofNullable(null);
+        } finally {
+            if (context.getState() != WinKeyState.CLOSED) {
+                closeTransport(transport);
+            }
         }
+
+        return transport;
     }
 
     private void closeTransport(final WinKeyTransport transport) {

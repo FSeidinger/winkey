@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -43,7 +44,7 @@ import de.do9fse.winkey.lib.core.model.commands.admin.HostOpenCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK1ModeCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK2ModeCommand;
 import de.do9fse.winkey.lib.core.model.commands.host.BackspaceCommand;
-import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
+import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
 import de.do9fse.winkey.lib.core.model.error.WinKeyRuntimeException;
 import de.do9fse.winkey.lib.core.model.responses.SpeedPotValueResponse;
 import de.do9fse.winkey.lib.core.model.responses.WinKeyResponse;
@@ -53,15 +54,21 @@ import de.do9fse.winkey.lib.infrastructure.winkey.DefaultWinKeyJobQueue;
 
 @DisplayName("Given the WinKey serial Transport")
 class WinKeySerialTransportTest {
+    private ApplicationContext context;
+
+    @BeforeEach
+    void setUp() {
+        this.context = new ApplicationContext(WinKeyProtocolVersion.V2);
+        this.context.setDeviceConfiguration(DeviceConfiguration.DEFAULT);
+    }
+
     @Nested
     @DisplayName("lifecycle")
     class Lifecycle {
         @Test
         void openMovesToInitializingWithoutSendingOrStartingReader() throws Exception {
-            final ApplicationContext context = new ApplicationContext(WinKeyProtocolVersion.V2);
             final SerialPort serialPort = mockSerialPort(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream());
-            final WinKeySerialTransport transport =
-                new WinKeySerialTransport(context, new DefaultWinKeyJobQueue(), serialPort);
+            final WinKeySerialTransport transport = new WinKeySerialTransport(context, serialPort);
 
             transport.open();
 
@@ -72,11 +79,10 @@ class WinKeySerialTransportTest {
 
         @Test
         void rejectsCommandSubmissionUntilReady() throws Exception {
-            final ApplicationContext context = new ApplicationContext(WinKeyProtocolVersion.V2);
             final DefaultWinKeyJobQueue queue = new DefaultWinKeyJobQueue();
             final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             final SerialPort serialPort = mockSerialPort(new ByteArrayInputStream(new byte[0]), outputStream);
-            final WinKeySerialTransport transport = new WinKeySerialTransport(context, queue, serialPort);
+            final WinKeySerialTransport transport = new WinKeySerialTransport(context, serialPort);
             transport.open();
 
             assertThrows(
@@ -93,14 +99,12 @@ class WinKeySerialTransportTest {
 
         @Test
         void initializeRepeatsEchoUntilTheExpectedResponseAndStartsReader() throws Exception {
-            final ApplicationContext context = new ApplicationContext(WinKeyProtocolVersion.V2);
             final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             final SerialPort serialPort = mockSerialPort(
                 new ByteArrayInputStream(new byte[] { '?', 'R' }),
                 outputStream
             );
-            final WinKeySerialTransport transport =
-                new WinKeySerialTransport(context, new DefaultWinKeyJobQueue(), serialPort);
+            final WinKeySerialTransport transport = new WinKeySerialTransport(context, serialPort);
             transport.open();
 
             transport.initialize(1, TimeUnit.SECONDS);
@@ -116,7 +120,6 @@ class WinKeySerialTransportTest {
 
         @Test
         void leavesTransportInitializingWhenHandshakeTimesOut() throws Exception {
-            final ApplicationContext context = new ApplicationContext(WinKeyProtocolVersion.V2);
             final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             final SerialPortTimeoutException timeoutException = mock(SerialPortTimeoutException.class);
             final InputStream timeoutInput = new InputStream() {
@@ -133,8 +136,7 @@ class WinKeySerialTransportTest {
                 }
             };
             final SerialPort serialPort = mockSerialPort(timeoutInput, outputStream);
-            final WinKeySerialTransport transport =
-                new WinKeySerialTransport(context, new DefaultWinKeyJobQueue(), serialPort);
+            final WinKeySerialTransport transport = new WinKeySerialTransport(context, serialPort);
             transport.open();
 
             assertThrows(TimeoutException.class, () -> transport.initialize(10, TimeUnit.MILLISECONDS));
@@ -146,10 +148,8 @@ class WinKeySerialTransportTest {
 
         @Test
         void closeFromInitializingReturnsToClosed() throws Exception {
-            final ApplicationContext context = new ApplicationContext(WinKeyProtocolVersion.V2);
             final SerialPort serialPort = mockSerialPort(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream());
-            final WinKeySerialTransport transport =
-                new WinKeySerialTransport(context, new DefaultWinKeyJobQueue(), serialPort);
+            final WinKeySerialTransport transport = new WinKeySerialTransport(context, serialPort);
             transport.open();
 
             transport.close();
@@ -279,8 +279,7 @@ class WinKeySerialTransportTest {
         assertTrue(wk1Status.keyDown());
     }
 
-    private static SerialPort mockSerialPort(final InputStream inputStream, final OutputStream outputStream)
-        throws Exception {
+    private static SerialPort mockSerialPort(final InputStream inputStream, final OutputStream outputStream) throws Exception {
         final SerialPort serialPort = mock(SerialPort.class);
         when(serialPort.openPort()).thenReturn(true);
         when(serialPort.getInputStream()).thenReturn(inputStream);
@@ -303,10 +302,11 @@ class WinKeySerialTransportTest {
         }
 
         final ApplicationContext context = new ApplicationContext(WinKeyProtocolVersion.V2);
+        context.setDeviceConfiguration(DeviceConfiguration.DEFAULT);
         context.transitionToState(WinKeyState.INITIALIZING);
         context.transitionToState(WinKeyState.READY);
 
-        final WinKeySerialTransport transport = new WinKeySerialTransport(context, queue, mock(SerialPort.class));
+        final WinKeySerialTransport transport = new WinKeySerialTransport(context, mock(SerialPort.class));
         setField(transport, "inputStream", new PushbackInputStream(new ByteArrayInputStream(inputBytes)));
         setField(transport, "outputStream", outputStream);
         return transport;

@@ -1,6 +1,7 @@
 package de.do9fse.winkey.lib.core.model;
 
 import java.text.MessageFormat;
+import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +20,12 @@ public class ApplicationStateMachine {
         return state;
     }
 
-    public void transitionToState(final WinKeyState newState) {
+    public void transitionToState(final ApplicationContext context, final WinKeyState newState) {
         switch (state) {
             case CLOSED:
                 switch (newState) {
                     case INITIALIZING:
+                        Objects.requireNonNull(context.getDeviceConfiguration(), "Device configuration must not be null");
                         doTransition(newState);
                         break;
 

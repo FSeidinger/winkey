@@ -18,9 +18,7 @@ import de.do9fse.winkey.lib.core.model.commands.WinKeyCommand;
 import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
 import de.do9fse.winkey.lib.core.model.error.WinKeyRuntimeException;
 import de.do9fse.winkey.lib.core.model.responses.WinKeyResponse;
-import de.do9fse.winkey.lib.core.port.out.WinKeyJobQueue;
 import de.do9fse.winkey.lib.core.port.out.WinKeyTransport;
-import de.do9fse.winkey.lib.infrastructure.winkey.DefaultWinKeyJobQueue;
 import de.do9fse.winkey.lib.infrastructure.winkey.transport.serial.WinKeySerialTransport;
 
 public final class Main {
@@ -90,9 +88,7 @@ public final class Main {
         port.setBaudRate(1200);
         port.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 1000, 0);
 
-        final WinKeyJobQueue jobQueue = new DefaultWinKeyJobQueue();
-        final WinKeyTransport transport = new WinKeySerialTransport(context, jobQueue, port);
-
+        final WinKeyTransport transport = new WinKeySerialTransport(context, port);
         return transport;
     }
 

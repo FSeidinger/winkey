@@ -28,7 +28,7 @@ public class DisconnectCommand extends TerminalCommand {
 
         final ApplicationContext applicationContext = Constants.getApplicationContext(session);
         if (applicationContext.getState() == WinKeyState.CLOSED) {
-            throw new IllegalStateException(generator.createErrorMessage(Errors.DEVICE_ALREADY_OPEN, applicationContext));
+            throw new IllegalStateException(Errors.DEVICE_ALREADY_CLOSED.createErrorMessage(applicationContext));
         }
 
         final WinKeyTransport transport = applicationContext.getTransport();

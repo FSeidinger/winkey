@@ -8,9 +8,6 @@ import org.jline.shell.CommandSession;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
 
-import com.fazecast.jSerialComm.SerialPort;
-import com.fazecast.jSerialComm.SerialPortInvalidPortException;
-
 import de.do9fse.winkey.lib.core.model.configuration.serial.BaudRate;
 import de.do9fse.winkey.lib.core.model.configuration.serial.DataBits;
 import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;

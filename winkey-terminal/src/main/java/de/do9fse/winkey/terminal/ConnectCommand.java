@@ -39,20 +39,18 @@ public class ConnectCommand extends TerminalCommand {
 
         final ApplicationContext applicationContext = Constants.getApplicationContext(session);
         if (applicationContext.getState() != WinKeyState.CLOSED) {
-            throw new IllegalStateException(generator.createErrorMessage(Errors.DEVICE_ALREADY_CLOSED, applicationContext));
+            throw new IllegalStateException(Errors.DEVICE_ALREADY_OPEN.createErrorMessage(applicationContext));
         } 
 
         final DeviceConfiguration deviceConfiguration = applicationContext.getDeviceConfiguration();
 
         try {
             final SerialPort serialPort = createSerialPort(stderr, applicationContext, deviceConfiguration);
-            final WinKeyTransport transport = openAndInitializeTransport(stderr, applicationContext, serialPort);
-            applicationContext.setTransport(transport);           
-            stdout.println(MessageGenerator.successfullyOpenedDevice(applicationContext));
+            openAndInitializeTransport(stderr, applicationContext, serialPort);
         } catch (final SerialPortInvalidPortException e) {
-            throw new IllegalArgumentException(generator.createErrorMessage(Errors.INVALID_PORT, applicationContext));
+            throw new IllegalArgumentException(Errors.INVALID_PORT.createErrorMessage(applicationContext));
         } catch (final NoSuchElementException e) {
-            throw new IllegalStateException(generator.createErrorMessage(Errors.NO_PORT_SET, applicationContext), e);
+            throw new IllegalStateException(Errors.NO_PORT_SET.createErrorMessage(applicationContext), e);
         }
 
         final String message = MessageFormat.format("Successfully connected to device {0}", applicationContext.getPortName());
@@ -66,20 +64,20 @@ public class ConnectCommand extends TerminalCommand {
         return adapter.createSerialPort();
     }
 
-    private WinKeyTransport openAndInitializeTransport(final PrintStream stderr, final ApplicationContext context, final SerialPort serialPort) throws WinKeyApplicationException, TimeoutException {
+    private void openAndInitializeTransport(final PrintStream stderr, final ApplicationContext context, final SerialPort serialPort) throws WinKeyApplicationException, TimeoutException {
         WinKeyTransport transport = null;
 
         try {
             transport = new WinKeySerialTransport(context, serialPort);
+            context.setTransport(transport);
+
             transport.open();
             transport.initialize(10, TimeUnit.SECONDS);
         } finally {
-            if (context.getState() != WinKeyState.CLOSED) {
+            if (context.getState() != WinKeyState.READY) {
                 closeTransport(transport);
             }
         }
-
-        return transport;
     }
 
     private void closeTransport(final WinKeyTransport transport) {

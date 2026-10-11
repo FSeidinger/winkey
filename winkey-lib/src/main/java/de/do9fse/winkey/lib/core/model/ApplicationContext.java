@@ -70,8 +70,8 @@ public class ApplicationContext {
     }
 
     public void setTransport(final WinKeyTransport transport) {
-        if (stateMachine.getState() != WinKeyState.CLOSED) {
-            throw new IllegalStateException("Transport can only be set if device is closed");
+        if (this.stateMachine.getState() != WinKeyState.CLOSED) {
+            throw new IllegalStateException("Transport is already running");
         }
 
         this.transport = transport;

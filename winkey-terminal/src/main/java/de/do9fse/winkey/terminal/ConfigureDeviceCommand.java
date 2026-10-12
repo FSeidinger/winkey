@@ -13,6 +13,7 @@ import de.do9fse.winkey.lib.core.model.configuration.serial.DataBits;
 import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
 import de.do9fse.winkey.lib.core.model.configuration.serial.Parity;
 import de.do9fse.winkey.lib.core.model.configuration.serial.StopBits;
+import de.do9fse.winkey.terminal.ArgumentScanner.CommandOption;
 
 public class ConfigureDeviceCommand extends TerminalCommand {
     protected ConfigureDeviceCommand() {
@@ -32,24 +33,30 @@ public class ConfigureDeviceCommand extends TerminalCommand {
         BaudRate baudRate = BaudRate.DEFAULT;
 
         final ArgumentScanner scanner = new ArgumentScanner(args);
+
         while (scanner.hasNext()) {
-            final String argument = scanner.next();
+            if (scanner.peekOption() != null) {
+                final CommandOption commandOption = scanner.nextOption();                    
 
-            switch (argument) {
-                case "-b":
-                    baudRate = BaudRate.parseCustomBaudRate(scanner.next());
-                    break;
+                switch (commandOption.option()) {
+                    case "-b", "--baudRate":
+                        baudRate = BaudRate.parseCustomBaudRate(commandOption.value());
+                        break;
 
-                case "-d":
-                    baudRate = BaudRate.parseDefaultBaudRate(scanner.next());
-                    break;
+                    case "-d", "--defaultBaudRate":
+                        baudRate = BaudRate.parseDefaultBaudRate(commandOption.value());
+                        break;
 
-                default:
-                    portName = argument;
-                    if (scanner.hasNext()) {
-                        throw new IllegalArgumentException("Unexpected argument " + scanner.next());
-                    }
-                    break;
+                    default: throw new IllegalArgumentException("Unexpected option " + commandOption.option());
+                }
+
+                // Handle next argument
+                continue;
+            }
+
+            portName = scanner.next();
+            if (scanner.hasNext()) {
+                throw new IllegalArgumentException("Unexpected argument " + scanner.next());
             }
         }
 

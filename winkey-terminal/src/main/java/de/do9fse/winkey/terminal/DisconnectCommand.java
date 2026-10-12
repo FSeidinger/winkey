@@ -1,8 +1,12 @@
 package de.do9fse.winkey.terminal;
 
 import java.text.MessageFormat;
+import java.util.List;
 
+import org.jline.shell.CommandDescription;
 import org.jline.shell.CommandSession;
+import org.jline.utils.AttributedString;
+import org.jline.utils.AttributedStyle;
 
 import de.do9fse.winkey.lib.core.model.ApplicationContext;
 import de.do9fse.winkey.lib.core.model.WinKeyState;
@@ -20,9 +24,9 @@ public class DisconnectCommand extends TerminalCommand {
 
     @Override
     public Object execute(final CommandSession session, String[] args) throws Exception {
-        evaluateContext(session);
+        super.execute(session, args);
 
-        if (args.length != 0) {
+        if (scanner.hasNext()) {
              throw new IllegalArgumentException("Error: the disconnect command does not support parameters");
         }
 
@@ -38,5 +42,22 @@ public class DisconnectCommand extends TerminalCommand {
         stdout.println(message);
 
         return null;
+    }
+
+    @Override
+    public CommandDescription describe(final List<String> args) {
+        return CommandDescription
+            .builder()
+            .mainDescription(
+                List.of(
+                    new AttributedString(
+                        "Usage: disconnect",
+                        AttributedStyle.DEFAULT.bold()
+                    ),
+                    new AttributedString("Disconnecting means that the device is closed and the application is reset to its"),
+                    new AttributedString("startup state. The device can then be opened again with the 'connect' command. ")
+                )
+            )
+            .build();
     }
 }

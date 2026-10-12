@@ -33,14 +33,16 @@ public class Main {
 
         final CommandGroup applicationCommands = new SimpleCommandGroup(
             "application",
-            new SetVersionCommand()
+            new SetVersionCommand(),
+            new ConfigureDeviceCommand()
         );
 
         final CommandGroup transportCommands = new SimpleCommandGroup(
-            "device",
-            new ConfigureDeviceCommand(),
+            "WinKey",
             new ConnectCommand(),
-            new DisconnectCommand()
+            new DisconnectCommand(),
+            new EnterHostModeCommand(),
+            new LeaveHostModeCommand()
         );
 
         try (final Shell shell = Shell

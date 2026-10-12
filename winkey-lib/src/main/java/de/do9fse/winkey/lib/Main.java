@@ -2,8 +2,6 @@ package de.do9fse.winkey.lib;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -14,10 +12,8 @@ import com.fazecast.jSerialComm.SerialPort;
 
 import de.do9fse.winkey.lib.core.model.ApplicationContext;
 import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
-import de.do9fse.winkey.lib.core.model.commands.WinKeyCommand;
 import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
 import de.do9fse.winkey.lib.core.model.error.WinKeyRuntimeException;
-import de.do9fse.winkey.lib.core.model.responses.WinKeyResponse;
 import de.do9fse.winkey.lib.core.port.out.WinKeyTransport;
 import de.do9fse.winkey.lib.infrastructure.winkey.transport.serial.WinKeySerialTransport;
 
@@ -105,16 +101,6 @@ public final class Main {
 
         } catch (final ReflectiveOperationException e) {
             LOGGER.error("Failed to set log level", e);
-        }
-    }
-
-    private WinKeyResponse executeCommand(final WinKeyTransport transport, final WinKeyCommand command) {
-        try {
-            final CompletableFuture<WinKeyResponse> response = new CompletableFuture<>();
-            transport.submitJob(command, response);
-            return response.get(5, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException | WinKeyApplicationException e) {
-            throw new WinKeyRuntimeException("Failed to execute command " + command, e);
         }
     }
 }

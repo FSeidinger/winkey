@@ -13,6 +13,7 @@ import de.do9fse.winkey.lib.core.model.configuration.serial.DataBits;
 import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
 import de.do9fse.winkey.lib.core.model.configuration.serial.Parity;
 import de.do9fse.winkey.lib.core.model.configuration.serial.StopBits;
+import de.do9fse.winkey.lib.core.model.configuration.serial.Timeout;
 import de.do9fse.winkey.terminal.ArgumentScanner.CommandOption;
 
 public class ConfigureDeviceCommand extends TerminalCommand {
@@ -27,12 +28,10 @@ public class ConfigureDeviceCommand extends TerminalCommand {
 
     @Override
     public Object execute(CommandSession session, String[] args) throws Exception {
-        evaluateContext(session);
+        super.execute(session, args);
 
         String portName = null;
         BaudRate baudRate = BaudRate.DEFAULT;
-
-        final ArgumentScanner scanner = new ArgumentScanner(args);
 
         while (scanner.hasNext()) {
             if (scanner.peekOption() != null) {
@@ -66,7 +65,14 @@ public class ConfigureDeviceCommand extends TerminalCommand {
        
         context.setPortName(portName);
 
-        final DeviceConfiguration deviceConfiguration = new DeviceConfiguration(baudRate, DataBits.DEFAULT, Parity.DEFAULT, StopBits.DEFAULT);
+        final DeviceConfiguration deviceConfiguration = new DeviceConfiguration(
+            baudRate,
+            DataBits.DEFAULT,
+            Parity.DEFAULT,
+            StopBits.DEFAULT,
+            Timeout.DEFAULT_INITIALIZATION_TIMEOUT,
+            Timeout.DEFAULT_READ_TIMEOUT
+        );
         context.setDeviceConfiguration(deviceConfiguration);
 
         stdout.println("Successfully set device configuration - " + deviceConfiguration);

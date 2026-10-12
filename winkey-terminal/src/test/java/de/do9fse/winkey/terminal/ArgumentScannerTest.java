@@ -15,7 +15,7 @@ import de.do9fse.winkey.terminal.test.tools.ArgumentsBuilder;
 
 public class ArgumentScannerTest {
     @Test
-    void assertParsingEmptyArgumentLine() {
+    void assertThatParsingEmptyArgumentLineSucceeds() {
         final String[] arguments = ArgumentsBuilder.EMPTY;
         final ArgumentScanner scanner = new ArgumentScanner(arguments);
 
@@ -23,7 +23,7 @@ public class ArgumentScannerTest {
     }
 
     @Test
-    void assertCanScanArgument() {
+    void assertThatScanningAnArgumentSucceeds() {
         final String expectedArgument = "Heinz";
 
         final String[] arguments = ArgumentsBuilder
@@ -37,7 +37,7 @@ public class ArgumentScannerTest {
     }
 
     @Test
-    void assertCanScanShortOptionW() {
+    void assertThatScanningAShortOptionSucceeds() {
         final String expectedOption = "-d";
         final String expectedValue = null;
 
@@ -54,7 +54,7 @@ public class ArgumentScannerTest {
     }
 
     @Test
-    void assertCanScanShortOptionWithValue() {
+    void assertThatScanningAShortOptionWithValueSucceeds() {
         final String expectedOption = "-d";
         final String expectedValue = "true";
 
@@ -71,7 +71,7 @@ public class ArgumentScannerTest {
     }
 
     @Test
-    void assertCanScanLongOption() {
+    void assertThatScanningALongOptionSucceeds() {
         final String expectedOption = "--doSomething";
         final String expectedValue = null;
 
@@ -88,7 +88,7 @@ public class ArgumentScannerTest {
     }
 
     @Test
-    void assertCanScanLongOptionWithValue() {
+    void assertThatScanningALongOptionWithValueSucceeds() {
         final String expectedOption = "--doSomething";
         final String expectedValue = "true";
 

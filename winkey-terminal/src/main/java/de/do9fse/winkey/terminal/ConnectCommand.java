@@ -2,11 +2,15 @@ package de.do9fse.winkey.terminal;
 
 import java.io.PrintStream;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.jline.shell.CommandDescription;
 import org.jline.shell.CommandSession;
+import org.jline.utils.AttributedString;
+import org.jline.utils.AttributedStyle;
 
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortInvalidPortException;
@@ -31,9 +35,9 @@ public class ConnectCommand extends TerminalCommand {
 
     @Override
     public Object execute(final CommandSession session, String[] args) throws Exception {
-        evaluateContext(session);
+        super.execute(session, args);
 
-        if (args.length != 0) {
+        if (scanner.hasNext()) {
             throw new IllegalArgumentException("Error: the connect command does not support parameters");
         }
 
@@ -86,5 +90,24 @@ public class ConnectCommand extends TerminalCommand {
         } catch (final WinKeyApplicationException e) {
             // Silently swallow
         }
+    }
+
+    @Override
+    public CommandDescription describe(final List<String> args) {
+        return CommandDescription
+            .builder()
+            .mainDescription(
+                List.of(
+                    new AttributedString(
+                        "Usage: connect",
+                        AttributedStyle.DEFAULT.bold()
+                    ),
+                    new AttributedString("Connecting means the the port to the device is initialized with the communication"),
+                    new AttributedString("parameters set by 'configure-device'. The device is then opened and an echo command"),
+                    new AttributedString("is send to the device. If the device answers the echo command, the connections is"),
+                    new AttributedString("regarded as successful.")
+                )
+            )
+            .build();
     }
 }

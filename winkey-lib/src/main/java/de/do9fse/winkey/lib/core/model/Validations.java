@@ -16,4 +16,12 @@ public class Validations {
 
         return value;
     }
+
+    public static int validateGreaterThanZero(final String fieldName, final int value) {
+        if (value <= 0) {
+            throw new IllegalArgumentException(fieldName + " must be greater than zero");
+        }
+
+        return value;
+    }
 }

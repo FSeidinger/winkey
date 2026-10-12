@@ -36,7 +36,7 @@ public class ArgumentScanner {
         return hasNNext(this.position);
     }
 
-    public String next() {
+    public String next() throws NoSuchElementException {
         if (hasNext()) {
             return arguments[position++];
         }
@@ -44,7 +44,7 @@ public class ArgumentScanner {
         throw new NoSuchElementException("No more arguments");
     }
 
-    public CommandOption nextOption() {
+    public CommandOption nextOption() throws NoSuchElementException {
         final CommandOption nextOption = peekOption(true);
 
         // Consume option
@@ -59,11 +59,11 @@ public class ArgumentScanner {
         return nextOption;
     }
 
-    public String peek() {
+    public String peek() throws NoSuchElementException {
         return peek(this.position);
     }
 
-    public CommandOption peekOption() {
+    public CommandOption peekOption() throws NoSuchElementException, IllegalArgumentException {
         return this.peekOption(false);
     }
 
@@ -71,7 +71,7 @@ public class ArgumentScanner {
         return position < arguments.length;
     }
     
-    private String peek(final int position) {
+    private String peek(final int position) throws NoSuchElementException {
         if (position < arguments.length) {
             return arguments[position];
         }
@@ -80,7 +80,7 @@ public class ArgumentScanner {
     }
 
 
-    private CommandOption peekOption(final boolean raiseError) {
+    private CommandOption peekOption(final boolean raiseError) throws NoSuchElementException, IllegalArgumentException {
         try {
             final String optionWithArgument = peekOptionWithArgument();
             final Matcher optionMatcher = OPTION_PATTERN.matcher(optionWithArgument);

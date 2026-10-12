@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import de.do9fse.winkey.lib.core.model.ApplicationContext;
 import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
 import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
+import de.do9fse.winkey.terminal.test.tools.ArgumentsBuilder;
 
 public class ConfigureDeviceCommandTest {
     private CommandSession commandSession;
@@ -33,7 +34,10 @@ public class ConfigureDeviceCommandTest {
 
     @Test
     void succeedsWithDevice() throws Exception {
-        final String[] arguments = new String[]{ "/dev/ttyUSB0"};
+        final String[] arguments = ArgumentsBuilder
+            .builder()
+            .addArgument("/dev/ttyUSB0")
+            .build();
 
         command.execute(commandSession, arguments);
 
@@ -44,7 +48,11 @@ public class ConfigureDeviceCommandTest {
 
     @Test
     void succeedsWithCustomBaudRate() throws Exception {
-        final String[] arguments = new String[]{ "-b", "1200", "/dev/ttyUSB0"};
+        final String[] arguments = ArgumentsBuilder
+            .builder()
+            .addOption("-b", "1200")
+            .addArgument("/dev/ttyUSB0")
+            .build();
 
         command.execute(commandSession, arguments);
 
@@ -54,8 +62,12 @@ public class ConfigureDeviceCommandTest {
     }
 
     @Test
-    void succeedsWithInvalidCustomBaudRate() throws Exception {
-        final String[] arguments = new String[]{ "-b", "0", "/dev/ttyUSB0"};
+    void failsWithInvalidCustomBaudRate() throws Exception {
+        final String[] arguments = ArgumentsBuilder
+            .builder()
+            .addOption("-b", "0")
+            .addArgument("/dev/ttyUSB0")
+            .build();
 
         assertThatThrownBy(() -> command.execute(commandSession, arguments))
             .isInstanceOf(IllegalArgumentException.class)
@@ -64,7 +76,11 @@ public class ConfigureDeviceCommandTest {
 
     @Test
     void succeedsWithDefaultBaudRate() throws Exception {
-        final String[] arguments = new String[]{ "-d", "default", "/dev/ttyUSB0"};
+        final String[] arguments = ArgumentsBuilder
+            .builder()
+            .addOption("-d", "default")
+            .addArgument("/dev/ttyUSB0")
+            .build();
 
         command.execute(commandSession, arguments);
 
@@ -75,7 +91,11 @@ public class ConfigureDeviceCommandTest {
 
     @Test
     void succeedsWithAlternativeBaudRate() throws Exception {
-        final String[] arguments = new String[]{ "-d", "alternative", "/dev/ttyUSB0"};
+        final String[] arguments = ArgumentsBuilder
+            .builder()
+            .addOption("-d", "alternative")
+            .addArgument("/dev/ttyUSB0")
+            .build();
 
         command.execute(commandSession, arguments);
 
@@ -86,7 +106,11 @@ public class ConfigureDeviceCommandTest {
 
     @Test
     void failsWithInvalidAlternativeBaudRate() throws Exception {
-        final String[] arguments = new String[]{ "-d", "heinz", "/dev/ttyUSB0"};
+        final String[] arguments = ArgumentsBuilder
+            .builder()
+            .addOption("-d", "heinz")
+            .addArgument("/dev/ttyUSB0")
+            .build();
 
         assertThatThrownBy(() -> command.execute(commandSession, arguments))
             .isInstanceOf(IllegalArgumentException.class)
@@ -94,12 +118,42 @@ public class ConfigureDeviceCommandTest {
     }
 
     @Test
-    void failsWithDeviceMissing() throws Exception {
-        final String[] arguments = new String[]{};
+    void failsWithMissingDevice() throws Exception {
+        final String[] arguments = ArgumentsBuilder.EMPTY;
 
         assertThatThrownBy(() -> command.execute(commandSession, arguments))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("The <device> parameter is mandatory");
 
+    }
+
+    @Test
+    void succeedsWithBaudRateLongOption() throws Exception {
+        final String[] arguments = ArgumentsBuilder
+            .builder()
+            .addLongOption("--baudRate", "1200")
+            .addArgument("/dev/ttyUSB0")
+            .build();
+
+        command.execute(commandSession, arguments);
+
+        final DeviceConfiguration expectedDeviceConfiguration = DeviceConfiguration.DEFAULT;
+        final DeviceConfiguration deviceConfiguration = applicationContext.getDeviceConfiguration();
+        assertThat(deviceConfiguration).isEqualTo(expectedDeviceConfiguration);
+    }
+
+    @Test
+    void succeedsWithDefaultBaudRateLongOption() throws Exception {
+        final String[] arguments = ArgumentsBuilder
+            .builder()
+            .addLongOption("--defaultBaudRate", "default")
+            .addArgument("/dev/ttyUSB0")
+            .build();
+
+        command.execute(commandSession, arguments);
+
+        final DeviceConfiguration expectedDeviceConfiguration = DeviceConfiguration.DEFAULT;
+        final DeviceConfiguration deviceConfiguration = applicationContext.getDeviceConfiguration();
+        assertThat(deviceConfiguration).isEqualTo(expectedDeviceConfiguration);
     }
 }

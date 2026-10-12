@@ -3,157 +3,146 @@ package de.do9fse.winkey.terminal;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import org.jline.shell.CommandSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.do9fse.winkey.lib.core.model.ApplicationContext;
-import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
 import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
+import de.do9fse.winkey.terminal.test.tools.AbstractCommandTest;
 import de.do9fse.winkey.terminal.test.tools.ArgumentsBuilder;
 
-public class ConfigureDeviceCommandTest {
-    private CommandSession commandSession;
-
-    private ApplicationContext applicationContext;
-    private MessageGenerator messageGenerator;
-
+public class ConfigureDeviceCommandTest extends AbstractCommandTest {
+    /**
+     * The subject under test
+     */
     private ConfigureDeviceCommand command;
 
     @BeforeEach
     void setUp() {
-        applicationContext = new ApplicationContext(WinKeyProtocolVersion.V1);
-        messageGenerator = new MessageGenerator();
-
-        commandSession = new CommandSession();
-        commandSession.put(Constants.APPLICATION_CONTEXT_KEY, this.applicationContext);
-        commandSession.put(Constants.MESSAGE_GENERATOR_KEY, messageGenerator);
-
         command = new ConfigureDeviceCommand();
     }
 
     @Test
-    void succeedsWithDevice() throws Exception {
+    void assertThatConfigurationSucceedsWithDevice() throws Exception {
         final String[] arguments = ArgumentsBuilder
             .builder()
             .addArgument("/dev/ttyUSB0")
             .build();
 
-        command.execute(commandSession, arguments);
+        command.execute(session, arguments);
 
         final DeviceConfiguration expectedDeviceConfiguration = DeviceConfiguration.DEFAULT;
-        final DeviceConfiguration deviceConfiguration = applicationContext.getDeviceConfiguration();
+        final DeviceConfiguration deviceConfiguration = context.getDeviceConfiguration();
         assertThat(deviceConfiguration).isEqualTo(expectedDeviceConfiguration);
     }
 
     @Test
-    void succeedsWithCustomBaudRate() throws Exception {
+    void assertThatConfigurationSucceedsWithCustomBaudRate() throws Exception {
         final String[] arguments = ArgumentsBuilder
             .builder()
             .addOption("-b", "1200")
             .addArgument("/dev/ttyUSB0")
             .build();
 
-        command.execute(commandSession, arguments);
+        command.execute(session, arguments);
 
         final DeviceConfiguration expectedDeviceConfiguration = DeviceConfiguration.DEFAULT;
-        final DeviceConfiguration deviceConfiguration = applicationContext.getDeviceConfiguration();
+        final DeviceConfiguration deviceConfiguration = context.getDeviceConfiguration();
         assertThat(deviceConfiguration).isEqualTo(expectedDeviceConfiguration);
     }
 
     @Test
-    void failsWithInvalidCustomBaudRate() throws Exception {
+    void assertThatConfigurationFailsWithInvalidCustomBaudRate() throws Exception {
         final String[] arguments = ArgumentsBuilder
             .builder()
             .addOption("-b", "0")
             .addArgument("/dev/ttyUSB0")
             .build();
 
-        assertThatThrownBy(() -> command.execute(commandSession, arguments))
+        assertThatThrownBy(() -> command.execute(session, arguments))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Baud rate must be greater than zero");
     }
 
     @Test
-    void succeedsWithDefaultBaudRate() throws Exception {
+    void assertThatConfigurationSucceedsWithDefaultBaudRate() throws Exception {
         final String[] arguments = ArgumentsBuilder
             .builder()
             .addOption("-d", "default")
             .addArgument("/dev/ttyUSB0")
             .build();
 
-        command.execute(commandSession, arguments);
+        command.execute(session, arguments);
 
         final DeviceConfiguration expectedDeviceConfiguration = DeviceConfiguration.DEFAULT;
-        final DeviceConfiguration deviceConfiguration = applicationContext.getDeviceConfiguration();
+        final DeviceConfiguration deviceConfiguration = context.getDeviceConfiguration();
         assertThat(deviceConfiguration).isEqualTo(expectedDeviceConfiguration);
     }
 
     @Test
-    void succeedsWithAlternativeBaudRate() throws Exception {
+    void assertThatConfigurationSucceedsWithAlternativeBaudRate() throws Exception {
         final String[] arguments = ArgumentsBuilder
             .builder()
             .addOption("-d", "alternative")
             .addArgument("/dev/ttyUSB0")
             .build();
 
-        command.execute(commandSession, arguments);
+        command.execute(session, arguments);
 
         final DeviceConfiguration expectedDeviceConfiguration = DeviceConfiguration.DEFAULT_ALTERNATIVE;
-        final DeviceConfiguration deviceConfiguration = applicationContext.getDeviceConfiguration();
+        final DeviceConfiguration deviceConfiguration = context.getDeviceConfiguration();
         assertThat(deviceConfiguration).isEqualTo(expectedDeviceConfiguration);
     }
 
     @Test
-    void failsWithInvalidAlternativeBaudRate() throws Exception {
+    void assertThatConfigurationFailsWithInvalidAlternativeBaudRate() throws Exception {
         final String[] arguments = ArgumentsBuilder
             .builder()
             .addOption("-d", "heinz")
             .addArgument("/dev/ttyUSB0")
             .build();
 
-        assertThatThrownBy(() -> command.execute(commandSession, arguments))
+        assertThatThrownBy(() -> command.execute(session, arguments))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Baud rate must be 'default' or 'alternative'");
     }
 
     @Test
-    void failsWithMissingDevice() throws Exception {
+    void assertThatConfigurationFailsWithMissingDevice() throws Exception {
         final String[] arguments = ArgumentsBuilder.EMPTY;
 
-        assertThatThrownBy(() -> command.execute(commandSession, arguments))
+        assertThatThrownBy(() -> command.execute(session, arguments))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("The <device> parameter is mandatory");
 
     }
 
     @Test
-    void succeedsWithBaudRateLongOption() throws Exception {
+    void assertThatConfigurationSucceedsWithBaudRateLongOption() throws Exception {
         final String[] arguments = ArgumentsBuilder
             .builder()
             .addLongOption("--baudRate", "1200")
             .addArgument("/dev/ttyUSB0")
             .build();
 
-        command.execute(commandSession, arguments);
+        command.execute(session, arguments);
 
         final DeviceConfiguration expectedDeviceConfiguration = DeviceConfiguration.DEFAULT;
-        final DeviceConfiguration deviceConfiguration = applicationContext.getDeviceConfiguration();
+        final DeviceConfiguration deviceConfiguration = context.getDeviceConfiguration();
         assertThat(deviceConfiguration).isEqualTo(expectedDeviceConfiguration);
     }
 
     @Test
-    void succeedsWithDefaultBaudRateLongOption() throws Exception {
+    void assertThatConfigurationSucceedsWithDefaultBaudRateLongOption() throws Exception {
         final String[] arguments = ArgumentsBuilder
             .builder()
             .addLongOption("--defaultBaudRate", "default")
             .addArgument("/dev/ttyUSB0")
             .build();
 
-        command.execute(commandSession, arguments);
+        command.execute(session, arguments);
 
         final DeviceConfiguration expectedDeviceConfiguration = DeviceConfiguration.DEFAULT;
-        final DeviceConfiguration deviceConfiguration = applicationContext.getDeviceConfiguration();
+        final DeviceConfiguration deviceConfiguration = context.getDeviceConfiguration();
         assertThat(deviceConfiguration).isEqualTo(expectedDeviceConfiguration);
     }
 }

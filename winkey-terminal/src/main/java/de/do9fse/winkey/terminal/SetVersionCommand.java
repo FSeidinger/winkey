@@ -1,19 +1,19 @@
 package de.do9fse.winkey.terminal;
 
-import java.io.PrintStream;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.jline.shell.ArgumentDescription;
 import org.jline.shell.CommandDescription;
 import org.jline.shell.CommandSession;
-import org.jline.shell.impl.AbstractCommand;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
 
-import de.do9fse.winkey.lib.core.model.ApplicationContext;
 import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
 
-public class SetVersionCommand extends AbstractCommand {
+public class SetVersionCommand extends TerminalCommand {
     public SetVersionCommand() {
         super("set-version", "v", "sv");
     }
@@ -21,6 +21,31 @@ public class SetVersionCommand extends AbstractCommand {
     @Override
     public String description() {
         return "Set the WinKey version to be used with the keyer device";
+    }
+
+    @Override
+    public Object execute(CommandSession session, String[] args) throws Exception {
+        super.execute(session, args);
+
+        final String versionString;
+        final WinKeyProtocolVersion version;
+
+        try {
+            versionString = scanner.next().toUpperCase();
+        } catch (final NoSuchElementException e) {
+            throw new NoSuchElementException("The version parameter is mandatory");
+        }
+
+        try {
+            version = WinKeyProtocolVersion.valueOf(versionString);
+            context.setVersion(version);
+        } catch (final IllegalArgumentException e) {
+            final Set<WinKeyProtocolVersion> allowedValues = EnumSet.allOf(WinKeyProtocolVersion.class);
+            throw new IllegalArgumentException("Version must be one of " + allowedValues + " but was " + versionString);
+        }
+
+        stdout.println("Version " + version + " selected");
+        return null;
     }
 
     @Override
@@ -45,30 +70,5 @@ public class SetVersionCommand extends AbstractCommand {
                 )
             )
             .build();
-    }
-
-    @Override
-    public Object execute(CommandSession session, String[] args) throws Exception {
-        final PrintStream stdout = session.out();
-        final PrintStream stderr = session.err();
-
-        if (args.length != 1) {
-            stderr.println("usage: set-version <version>");
-            stderr.println("  <version>     The WinKey protocol version to use (V1, V2 or V3");
-            return null;
-        }
-
-        try {
-            final String versionString = args[0].toUpperCase();
-            final WinKeyProtocolVersion version = WinKeyProtocolVersion.valueOf(versionString);
-            final ApplicationContext context = (ApplicationContext) session.get(Constants.APPLICATION_CONTEXT_KEY);
-            context.setVersion(version);
-
-            stdout.println("Version " + version + " selected");
-        } catch (final NullPointerException | IllegalArgumentException e) {
-            stderr.println(e.getMessage());
-        }
-
-        return null;
     }
 }

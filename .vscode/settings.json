@@ -37,7 +37,7 @@
 
     "java.configuration.updateBuildConfiguration": "interactive",
     "java.codeGeneration.addFinalForNewDeclaration": "all",
-    "java.jdt.ls.vmargs": "-XX:+UseG1GC -XX:+UseStringDeduplication -Xms2G -Xmx8G",
+    "java.jdt.ls.vmargs": "-XX:+UseG1GC -XX:+UseStringDeduplication -Xms4G -Xmx12G",
     "java.project.explorer.showNonJavaResources": true,
     "java.dependency.packagePresentation": "flat",
     "java.completion.favoriteStaticMembers": [

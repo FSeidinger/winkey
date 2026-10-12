@@ -14,15 +14,26 @@ public abstract class TerminalCommand extends AbstractCommand {
     protected MessageGenerator generator;
     protected ApplicationContext context;
 
+    protected ArgumentScanner scanner;
+
     public TerminalCommand(String name, String... aliases) {
         super(name, aliases);
     }
+    
+    @Override
+    public Object execute(final CommandSession session, final String[] args) throws Exception {
+        return evaluateContext(session, args);
+    }
 
-    public void evaluateContext(final CommandSession session) throws Exception {
+    private Object evaluateContext(final CommandSession session, final String[] args) throws Exception {
         this.stdout = session.out();
         this.stderr = session.err();
 
         this.generator = (MessageGenerator) session.get(Constants.MESSAGE_GENERATOR_KEY);
         this.context = (ApplicationContext) session.get(Constants.APPLICATION_CONTEXT_KEY);
+
+        this.scanner = new ArgumentScanner(args);
+
+        return null;
     }
 }

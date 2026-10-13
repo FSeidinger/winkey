@@ -8,6 +8,8 @@ public enum Errors {
     NO_PORT_SET,
     INVALID_PORT,
 
+    APPLICATION_MUST_BE_READY,
+
     DEVICE_ALREADY_OPEN,
     DEVICE_ALREADY_CLOSED,
     DEVICE_DID_NOT_ANSWER,
@@ -17,6 +19,8 @@ public enum Errors {
         switch (this) {
             case NO_PORT_SET: return "You have to set a valid port name first";
             case INVALID_PORT: return "Invalid port " + resolvePortName(context);
+
+            case APPLICATION_MUST_BE_READY: return "Device is closed. Please call 'connect' first.";
             
             case DEVICE_ALREADY_OPEN: return "Device " + resolvePortName(context) + " is already open";
             case DEVICE_ALREADY_CLOSED: return "Device " + resolvePortName(context) + " is already closed";

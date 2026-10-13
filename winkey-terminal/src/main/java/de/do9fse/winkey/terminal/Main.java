@@ -19,6 +19,7 @@ public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
    
     public void run() throws IOException {
+        // TODO setup up logger for terminal
         setRootLogLevel("OFF");
 
         final MessageGenerator generator = new MessageGenerator();
@@ -34,7 +35,8 @@ public class Main {
         final CommandGroup applicationCommands = new SimpleCommandGroup(
             "application",
             new SetVersionCommand(),
-            new ConfigureDeviceCommand()
+            new ConfigureDeviceCommand(),
+            new MorseCommand()
         );
 
         final CommandGroup transportCommands = new SimpleCommandGroup(

@@ -41,23 +41,22 @@ public class ConnectCommand extends TerminalCommand {
             throw new IllegalArgumentException("Error: the connect command does not support parameters");
         }
 
-        final ApplicationContext applicationContext = Constants.getApplicationContext(session);
-        if (applicationContext.getState() != ApplicationState.CLOSED) {
-            throw new IllegalStateException(Errors.DEVICE_ALREADY_OPEN.createErrorMessage(applicationContext));
+        if (context.getState() != ApplicationState.CLOSED) {
+            throw new IllegalStateException(Errors.DEVICE_ALREADY_OPEN.createErrorMessage(context));
         } 
 
-        final SerialConfiguration deviceConfiguration = applicationContext.getDeviceConfiguration();
+        final SerialConfiguration deviceConfiguration = context.getDeviceConfiguration();
 
         try {
-            final SerialPort serialPort = createSerialPort(stderr, applicationContext, deviceConfiguration);
-            openAndInitializeTransport(stderr, applicationContext, serialPort);
+            final SerialPort serialPort = createSerialPort(stderr, context, deviceConfiguration);
+            openAndInitializeTransport(stderr, context, serialPort);
         } catch (final SerialPortInvalidPortException e) {
-            throw new IllegalArgumentException(Errors.INVALID_PORT.createErrorMessage(applicationContext));
+            throw new IllegalArgumentException(Errors.INVALID_PORT.createErrorMessage(context));
         } catch (final NoSuchElementException e) {
-            throw new IllegalStateException(Errors.NO_PORT_SET.createErrorMessage(applicationContext), e);
+            throw new IllegalStateException(Errors.NO_PORT_SET.createErrorMessage(context), e);
         }
 
-        final String message = MessageFormat.format("Successfully connected to device {0}", applicationContext.getPortName());
+        final String message = MessageFormat.format("Successfully connected to device {0}", context.getPortName());
         stdout.println(message);
 
         return null;

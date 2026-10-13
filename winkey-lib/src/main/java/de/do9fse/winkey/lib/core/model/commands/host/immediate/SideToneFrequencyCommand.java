@@ -5,9 +5,9 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Frequency;
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
-import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
-import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
 import de.do9fse.winkey.lib.core.model.Validations;
+import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
@@ -43,7 +43,7 @@ public record SideToneFrequencyCommand(SideToneFrequency sideToneFrequency) impl
     }
 
     @Override
-    public byte[] getPayloadBytes() {
+    public byte[] toData() {
         byte sideToneFrequencyByte = switch(sideToneFrequency) {
             case FREQUENCY_3759_HZ -> (byte) 0x01;
             case FREQUENCY_1879_HZ -> (byte) 0x02;

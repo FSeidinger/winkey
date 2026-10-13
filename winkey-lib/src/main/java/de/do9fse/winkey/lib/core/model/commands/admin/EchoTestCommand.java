@@ -29,7 +29,7 @@ public record EchoTestCommand(char echoChar) implements AdminCommand {
     }
 
     @Override
-    public byte[] getPayloadBytes() {
+    public byte[] toData() {
         return new byte[]{ 0x00, 4, (byte) echoChar };
     }
 }

@@ -6,8 +6,8 @@ import javax.measure.quantity.Dimensionless;
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.Validations;
-import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.configuration.WPMSpeed;
 import de.do9fse.winkey.lib.core.model.configuration.WPMSpeedRange;
 import tech.units.indriya.ComparableQuantity;
@@ -28,7 +28,7 @@ public record SetupSpeedPotCommand(WPMSpeed minWpm, WPMSpeedRange wpmRange, int 
     }
 
     @Override
-    public byte[] getPayloadBytes() {
+    public byte[] toData() {
         return new byte[] {
             0x05,
             (byte) minWpm.toProtocolValue(),

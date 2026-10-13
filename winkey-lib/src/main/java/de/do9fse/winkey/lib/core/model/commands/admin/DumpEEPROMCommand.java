@@ -11,7 +11,7 @@ import de.do9fse.winkey.lib.core.model.responses.EEPROMDumpResponse;
 )
 public record  DumpEEPROMCommand() implements AdminCommand {
     @Override
-    public byte[] getPayloadBytes() {
+    public byte[] toData() {
         return new byte[]{ 0x00, 12 };
     }
 }

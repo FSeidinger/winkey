@@ -117,7 +117,7 @@ public class SerialTransport implements Transport {
             final Command echoTestCommand = new EchoTestCommand(echoChar);
 
             for (int retry = 1; Instant.now().isBefore(responseDeadline); retry++) {
-                this.outputStream.write(echoTestCommand.toProtocolBytes());
+                this.outputStream.write(echoTestCommand.toData());
 
                 try {
                     final int data = readData();
@@ -220,7 +220,7 @@ public class SerialTransport implements Transport {
     }
 
     private void sendCommand(final Job job) throws WinKeyApplicationException {
-        final byte[] serialBytes = job.command().toProtocolBytes();
+        final byte[] serialBytes = job.command().toData();
 
         try {
             outputStream.write(serialBytes);

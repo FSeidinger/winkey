@@ -9,7 +9,7 @@ import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 )
 public record ResetCommand() implements AdminCommand {
     @Override
-    public byte[] getPayloadBytes() {
+    public byte[] toData() {
         return new byte[]{ 0x00, 1 };
     }
 }

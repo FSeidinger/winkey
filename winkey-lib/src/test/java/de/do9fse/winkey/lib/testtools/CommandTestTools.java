@@ -8,7 +8,6 @@ public final class CommandTestTools {
     private CommandTestTools() {}
 
     public static void assertPayload(final Command command, final byte[] expectedBytes) {
-        assertArrayEquals(expectedBytes, command.getPayloadBytes());
-        assertArrayEquals(expectedBytes, command.toProtocolBytes());
+        assertArrayEquals(expectedBytes, command.toData());
     }
 }

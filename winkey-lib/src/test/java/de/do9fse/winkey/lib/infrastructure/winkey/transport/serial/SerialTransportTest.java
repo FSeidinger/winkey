@@ -109,7 +109,7 @@ class SerialTransportTest {
 
             transport.initialize(1, TimeUnit.SECONDS);
 
-            final byte[] echoBytes = new EchoTestCommand('R').toProtocolBytes();
+            final byte[] echoBytes = new EchoTestCommand('R').toData();
             final byte[] expectedWrites = new byte[echoBytes.length * 2];
             System.arraycopy(echoBytes, 0, expectedWrites, 0, echoBytes.length);
             System.arraycopy(echoBytes, 0, expectedWrites, echoBytes.length, echoBytes.length);

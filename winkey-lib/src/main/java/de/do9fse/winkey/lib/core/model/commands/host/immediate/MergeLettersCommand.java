@@ -3,8 +3,8 @@ package de.do9fse.winkey.lib.core.model.commands.host.immediate;
 import java.text.MessageFormat;
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
-import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 
 @ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
 public record MergeLettersCommand(char first, char second) implements HostModeCommand {
@@ -22,7 +22,7 @@ public record MergeLettersCommand(char first, char second) implements HostModeCo
     }
 
     @Override
-    public byte[] getPayloadBytes() {
+    public byte[] toData() {
         return new byte[] { 0x1b, (byte) first, (byte) second };
     }
 }

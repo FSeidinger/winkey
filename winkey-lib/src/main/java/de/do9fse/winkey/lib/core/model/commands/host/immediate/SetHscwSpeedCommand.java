@@ -7,8 +7,8 @@ import javax.measure.quantity.Frequency;
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.Validations;
-import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.configuration.CustomUnits;
 import tech.units.indriya.quantity.Quantities;
 
@@ -38,7 +38,7 @@ public record SetHscwSpeedCommand(Quantity<Frequency> lpm) implements HostModeCo
     }
 
     @Override
-    public byte[] getPayloadBytes() {
+    public byte[] toData() {
         return new byte[] {
             0x0c,
             (byte) (lpm.getValue().intValue() / Validations.HSCW_SPEED_STEP_LPM)

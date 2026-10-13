@@ -21,6 +21,7 @@ import com.fazecast.jSerialComm.SerialPortTimeoutException;
 import de.do9fse.winkey.lib.core.model.ApplicationContext;
 import de.do9fse.winkey.lib.core.model.Job;
 import de.do9fse.winkey.lib.core.model.ApplicationState;
+import de.do9fse.winkey.lib.core.model.data.DataItem;
 import de.do9fse.winkey.lib.core.model.commands.CommandInfo;
 import de.do9fse.winkey.lib.core.model.commands.Command;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
@@ -231,6 +232,31 @@ public class SerialTransport implements Transport {
         LOGGER.debug("Successfully sent command " + job.command());
     }
 
+    @Override
+    public void sendDataItems(final DataItem... dataItems) {
+        Validations.validateNotNull("Data items", dataItems);
+
+        if (context.getState() != ApplicationState.READY) {
+            throw new IllegalStateException("Transport is not ready");
+        }
+
+        this.jobQueue.lock();
+        try {
+            for (final DataItem dataItem : dataItems) {
+                Validations.validateNotNull("Data item", dataItem);
+                
+                final byte[] serialBytes = dataItem.toData();
+                Validations.validateNotNull("Serial bytes", serialBytes);
+
+                outputStream.write(serialBytes);
+            }
+        } catch (final IOException e) {
+            throw new WKRuntimeException("Failed to send data items", e);
+        } finally {
+            this.jobQueue.unlock();
+        }
+    }
+
     private void serialPortReader(final CompletableFuture<Void> threadResult) {
         while (true) {
             try {
@@ -273,6 +299,7 @@ public class SerialTransport implements Transport {
         }
 
         try {
+            // TODO check if response can be response to a command
             final StatusResponse statusResponse = responseFactory.createResponse(
                 new byte[] {(byte) data},
                 wk2StatusMode
@@ -347,6 +374,7 @@ public class SerialTransport implements Transport {
             }
         }
 
+        // TODO check if status response should be handled here
         final Response response;
         try {
             response = responseType.equals(StatusResponse.class)
@@ -360,6 +388,7 @@ public class SerialTransport implements Transport {
 
             throw new WKRuntimeException(message, exception);
         }
+
         completeActiveJob(response);
     }
 
@@ -404,6 +433,7 @@ public class SerialTransport implements Transport {
         }
 
         if (receivedBytes < buffer.length) {
+            // TODO read until response completed
             final String message = MessageFormat.format(
                 "Got only partial response. Expected {0}, received {1}",
                 buffer.length,

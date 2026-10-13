@@ -6,14 +6,14 @@ import javax.measure.quantity.Dimensionless;
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.Validations;
-import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.configuration.WPMSpeed;
 import de.do9fse.winkey.lib.core.model.configuration.WPMSpeedRange;
 import tech.units.indriya.ComparableQuantity;
 
 @ImmediateCommandConfiguration(allowedProtocols = { ProtocolVersion.V1, ProtocolVersion.V2 })
-public record SetupSpeedPotCommand(WPMSpeed minWpm, WPMSpeedRange wpmRange, int potRange) implements HostModeCommand {
+public record SetupSpeedPotCommand(WPMSpeed minWpm, WPMSpeedRange wpmRange, int potRange) implements ImmediateCommand {
     public SetupSpeedPotCommand {
         Validations.validateNotNull("Minimum WPM", minWpm);
         Validations.validateNotNull("WPM range", wpmRange);

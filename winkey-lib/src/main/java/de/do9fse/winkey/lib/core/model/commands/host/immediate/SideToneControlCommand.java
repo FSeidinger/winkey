@@ -6,7 +6,7 @@ import javax.measure.quantity.Frequency;
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.Validations;
-import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
@@ -14,7 +14,7 @@ import tech.units.indriya.unit.Units;
 @ImmediateCommandConfiguration(
     allowedProtocols = ProtocolVersion.V2
 )
-public record SideToneControlCommand(boolean enablePaddleSideToneOnly, SideToneFrequency sideToneFrequency) implements HostModeCommand {
+public record SideToneControlCommand(boolean enablePaddleSideToneOnly, SideToneFrequency sideToneFrequency) implements ImmediateCommand {
     public enum SideToneFrequency {
         FREQUENCY_4000_HZ(4000),
         FREQUENCY_2000_HZ(2000),

@@ -1,11 +1,11 @@
 package de.do9fse.winkey.lib.core.model.commands.host.immediate;
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
-import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 
 @ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
-public record PauseCommand(boolean paused) implements HostModeCommand {
+public record PauseCommand(boolean paused) implements ImmediateCommand {
     @Override
     public byte[] toData() {
         return new byte[] { 0x06, (byte) (paused ? 1 : 0) };

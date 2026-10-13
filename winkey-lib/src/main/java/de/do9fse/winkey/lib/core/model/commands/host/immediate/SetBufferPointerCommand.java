@@ -4,11 +4,11 @@ import java.text.MessageFormat;
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.Validations;
-import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 
 @ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
-public record SetBufferPointerCommand(Operation operation, int positionOrNullCount) implements HostModeCommand {
+public record SetBufferPointerCommand(Operation operation, int positionOrNullCount) implements ImmediateCommand {
     private static final int RESET_VALUE = -1;
 
     public enum Operation {

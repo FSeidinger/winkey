@@ -1,4 +1,4 @@
-package de.do9fse.winkey.lib.core.port.out;
+package de.do9fse.winkey.lib.core.model;
 
 public interface DataOutputSerializer {
     byte[] toData();

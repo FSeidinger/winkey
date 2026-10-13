@@ -3,23 +3,37 @@ package de.do9fse.winkey.lib.core.model.responses;
 import java.text.MessageFormat;
 
 @ResponseConfiguration(expectedResponseBytes = 1)
-public record StatusResponse(
-    boolean waiting,
-    boolean keyDown,
-    boolean busy,
-    boolean breakIn,
-    boolean xoff,
-    boolean pushButtonStatus,
-    int pushButtonMask
-) implements CommandResponse {
+public abstract class StatusResponse implements Response {
     private static final int RESPONSE_TAG_MASK = 0b11100000;
     private static final int RESPONSE_TAG = 0b11000000;
 
-    public static StatusResponse fromProtocol(final byte[] responseBytes) {
-        return fromProtocol(responseBytes, false);
+    private final boolean waiting;
+    private final boolean keyDown;
+    private final boolean busy;
+    private final boolean breakIn;
+    private final boolean xoff;
+    private final boolean pushButtonStatus;
+    private final int pushButtonMask;
+
+    protected StatusResponse(
+        final boolean waiting,
+        final boolean keyDown,
+        final boolean busy,
+        final boolean breakIn,
+        final boolean xoff,
+        final boolean pushButtonStatus,
+        final int pushButtonMask
+    ) {
+        this.waiting = waiting;
+        this.keyDown = keyDown;
+        this.busy = busy;
+        this.breakIn = breakIn;
+        this.xoff = xoff;
+        this.pushButtonStatus = pushButtonStatus;
+        this.pushButtonMask = pushButtonMask;
     }
 
-    public static StatusResponse fromProtocol(final byte[] responseBytes, final boolean wk2Mode) {
+    protected static int getStatusByte(final byte[] responseBytes) {
         final int value = Byte.toUnsignedInt(responseBytes[0]);
 
         if ((value & RESPONSE_TAG_MASK) != RESPONSE_TAG) {
@@ -28,19 +42,34 @@ public record StatusResponse(
             );
         }
 
-        final boolean isPushButtonStatus = wk2Mode && (value & 0b00001000) != 0;
-        final int pushButtonMask = isPushButtonStatus
-            ? ((value & 0b00010000) != 0 ? 0b1000 : 0) | (value & 0b00000111)
-            : 0;
+        return value;
+    }
 
-        return new StatusResponse(
-            !isPushButtonStatus && (value & 0b00010000) != 0,
-            !wk2Mode && (value & 0b00001000) != 0,
-            !isPushButtonStatus && (value & 0b00000100) != 0,
-            !isPushButtonStatus && (value & 0b00000010) != 0,
-            !isPushButtonStatus && (value & 0b00000001) != 0,
-            isPushButtonStatus,
-            pushButtonMask
-        );
+    public boolean waiting() {
+        return waiting;
+    }
+
+    public boolean keyDown() {
+        return keyDown;
+    }
+
+    public boolean busy() {
+        return busy;
+    }
+
+    public boolean breakIn() {
+        return breakIn;
+    }
+
+    public boolean xoff() {
+        return xoff;
+    }
+
+    public boolean pushButtonStatus() {
+        return pushButtonStatus;
+    }
+
+    public int pushButtonMask() {
+        return pushButtonMask;
     }
 }

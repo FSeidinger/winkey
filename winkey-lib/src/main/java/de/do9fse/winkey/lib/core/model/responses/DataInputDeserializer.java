@@ -1,0 +1,5 @@
+package de.do9fse.winkey.lib.core.model.responses;
+
+public interface DataInputDeserializer {
+    Response fromData(final byte[] responseBytes);
+}

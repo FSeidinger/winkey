@@ -33,8 +33,8 @@ public record DefaultsResponse(
     DitDahRatio ditDahRatio,
     PinConfiguration pinConfiguration,
     int reservedValue
-) implements CommandResponse {
-    public static DefaultsResponse fromProtocol(final byte[] responseBytes) {
+) implements Response {
+    public static DefaultsResponse fromData(final byte[] responseBytes) {
         return new DefaultsResponse(
             ModeRegister.fromProtocol(responseBytes[0]),
             WPMSpeed.fromProtocol(responseBytes[1]),

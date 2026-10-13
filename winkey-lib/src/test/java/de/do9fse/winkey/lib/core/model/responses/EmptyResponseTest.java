@@ -10,6 +10,6 @@ class EmptyResponseTest {
 
     @Test
     void parsesResponseWithoutPayload() {
-        assertNotNull(EmptyResponse.fromProtocol(new byte[0]));
+        assertNotNull(EmptyResponse.fromData(new byte[0]));
     }
 }

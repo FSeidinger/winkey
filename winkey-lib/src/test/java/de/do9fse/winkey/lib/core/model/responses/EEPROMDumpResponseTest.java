@@ -17,7 +17,7 @@ class EEPROMDumpResponseTest {
         responseBytes[0] = 0x12;
         responseBytes[255] = (byte) 0xff;
 
-        final EEPROMDumpResponse response = EEPROMDumpResponse.fromProtocol(responseBytes);
+        final EEPROMDumpResponse response = EEPROMDumpResponse.fromData(responseBytes);
 
         assertArrayEquals(responseBytes, response.data());
     }
@@ -42,7 +42,7 @@ class EEPROMDumpResponseTest {
 
         final IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
-            () -> EEPROMDumpResponse.fromProtocol(responseBytes)
+            () -> EEPROMDumpResponse.fromData(responseBytes)
         );
 
         assertEquals(

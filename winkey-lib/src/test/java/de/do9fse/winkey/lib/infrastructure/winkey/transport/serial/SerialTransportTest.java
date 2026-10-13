@@ -44,10 +44,11 @@ import de.do9fse.winkey.lib.core.model.commands.admin.HostOpenCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK1ModeCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK2ModeCommand;
 import de.do9fse.winkey.lib.core.model.commands.host.immediate.BackspaceCommand;
+import de.do9fse.winkey.lib.core.model.commands.host.immediate.RequestStatusCommand;
 import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
 import de.do9fse.winkey.lib.core.model.error.WKRuntimeException;
 import de.do9fse.winkey.lib.core.model.responses.SpeedPotValueResponse;
-import de.do9fse.winkey.lib.core.model.responses.CommandResponse;
+import de.do9fse.winkey.lib.core.model.responses.Response;
 import de.do9fse.winkey.lib.core.model.responses.StatusResponse;
 import de.do9fse.winkey.lib.core.port.out.JobQueue;
 import de.do9fse.winkey.lib.infrastructure.winkey.DefaultJobQueue;
@@ -168,7 +169,7 @@ class SerialTransportTest {
                 throw new IOException("Write failed");
             }
         });
-        final CompletableFuture<CommandResponse> firstResult = new CompletableFuture<>();
+        final CompletableFuture<Response> firstResult = new CompletableFuture<>();
         final Job firstJob = new Job(new BackspaceCommand(), firstResult);
         queue.offer(firstJob);
 
@@ -185,13 +186,13 @@ class SerialTransportTest {
     @Test
     void completesCommandsWithoutResponseImmediatelyAndDoesNotConsumeNextResponseJob() throws Exception {
         final SerialTransport transport = createReadyTransport(0x23);
-        final CompletableFuture<CommandResponse> noResponse = new CompletableFuture<>();
+        final CompletableFuture<Response> noResponse = new CompletableFuture<>();
         transport.submitJob(new BackspaceCommand(), noResponse);
         assertFalse(noResponse.isDone());
         processActiveJob(transport);
         assertInstanceOf(de.do9fse.winkey.lib.core.model.responses.EmptyResponse.class, noResponse.join());
 
-        final CompletableFuture<CommandResponse> hostOpenResult = submit(transport, new HostOpenCommand());
+        final CompletableFuture<Response> hostOpenResult = submit(transport, new HostOpenCommand());
         handleStatusBytes(transport);
         processActiveJob(transport);
 
@@ -204,8 +205,8 @@ class SerialTransportTest {
     @Test
     void failsAllPendingJobsWhenTheReaderStops() {
         final JobQueue queue = new DefaultJobQueue();
-        final CompletableFuture<CommandResponse> firstResult = new CompletableFuture<>();
-        final CompletableFuture<CommandResponse> secondResult = new CompletableFuture<>();
+        final CompletableFuture<Response> firstResult = new CompletableFuture<>();
+        final CompletableFuture<Response> secondResult = new CompletableFuture<>();
         queue.offer(new Job(new HostOpenCommand(), firstResult));
         queue.offer(new Job(new HostOpenCommand(), secondResult));
 
@@ -218,9 +219,9 @@ class SerialTransportTest {
     @Test
     void leavesUnsolicitedStatusForLoggingAndCompletesHostOpenFromVersionByte() throws Exception {
         final SerialTransport transport = createReadyTransport(0xd7, 0x9f, 0x23);
-        final List<CommandResponse> unsolicitedResponses = new ArrayList<>();
+        final List<Response> unsolicitedResponses = new ArrayList<>();
         transport.addUnsolicitedResponseListener(unsolicitedResponses::add);
-        final CompletableFuture<CommandResponse> result = submit(transport, new HostOpenCommand());
+        final CompletableFuture<Response> result = submit(transport, new HostOpenCommand());
 
         handleStatusBytes(transport);
         assertFalse(result.isDone());
@@ -243,7 +244,7 @@ class SerialTransportTest {
     @Test
     void doesNotNotifyRemovedUnsolicitedResponseListener() throws Exception {
         final SerialTransport transport = createReadyTransport(0xd7);
-        final List<CommandResponse> unsolicitedResponses = new ArrayList<>();
+        final List<Response> unsolicitedResponses = new ArrayList<>();
         final de.do9fse.winkey.lib.core.port.in.UnsolicitedResponseListener listener =
             unsolicitedResponses::add;
         transport.addUnsolicitedResponseListener(listener);
@@ -257,26 +258,56 @@ class SerialTransportTest {
     @Test
     void changesStatusModeWhenReaderProcessesModeCommands() throws Exception {
         final SerialTransport transport = createReadyTransport(0xc8, 0xc8);
-        final List<CommandResponse> unsolicitedResponses = new ArrayList<>();
+        final List<Response> unsolicitedResponses = new ArrayList<>();
         transport.addUnsolicitedResponseListener(unsolicitedResponses::add);
 
-        final CompletableFuture<CommandResponse> wk2Result = submit(transport, new SetWK2ModeCommand());
+        final CompletableFuture<Response> wk2Result = submit(transport, new SetWK2ModeCommand());
         processActiveJob(transport);
         assertInstanceOf(de.do9fse.winkey.lib.core.model.responses.EmptyResponse.class, wk2Result.join());
         handleStatusBytes(transport);
 
-        final CompletableFuture<CommandResponse> wk1Result = submit(transport, new SetWK1ModeCommand());
+        final CompletableFuture<Response> wk1Result = submit(transport, new SetWK1ModeCommand());
         processActiveJob(transport);
         assertInstanceOf(de.do9fse.winkey.lib.core.model.responses.EmptyResponse.class, wk1Result.join());
         handleStatusBytes(transport);
 
         final StatusResponse wk2Status = assertInstanceOf(StatusResponse.class, unsolicitedResponses.get(0));
+        assertInstanceOf(
+            de.do9fse.winkey.lib.core.model.responses.StatusResponseWK2.class,
+            unsolicitedResponses.get(0)
+        );
         assertTrue(wk2Status.pushButtonStatus());
         assertFalse(wk2Status.keyDown());
 
         final StatusResponse wk1Status = assertInstanceOf(StatusResponse.class, unsolicitedResponses.get(1));
+        assertInstanceOf(
+            de.do9fse.winkey.lib.core.model.responses.StatusResponseWK1.class,
+            unsolicitedResponses.get(1)
+        );
         assertFalse(wk1Status.pushButtonStatus());
         assertTrue(wk1Status.keyDown());
+    }
+
+    @Test
+    void createsActiveStatusResponseUsingTheCurrentWkMode() throws Exception {
+        final SerialTransport transport = createReadyTransport(0xdf);
+
+        final CompletableFuture<Response> wk2ModeResult = submit(transport, new SetWK2ModeCommand());
+        processActiveJob(transport);
+        assertInstanceOf(
+            de.do9fse.winkey.lib.core.model.responses.EmptyResponse.class,
+            wk2ModeResult.join()
+        );
+
+        final CompletableFuture<Response> result = submit(transport, new RequestStatusCommand());
+        processActiveJob(transport);
+
+        final StatusResponse statusResponse = assertInstanceOf(StatusResponse.class, result.join());
+        assertInstanceOf(
+            de.do9fse.winkey.lib.core.model.responses.StatusResponseWK2.class,
+            statusResponse
+        );
+        assertTrue(statusResponse.pushButtonStatus());
     }
 
     private static SerialPort mockSerialPort(final InputStream inputStream, final OutputStream outputStream) throws Exception {
@@ -312,11 +343,11 @@ class SerialTransportTest {
         return transport;
     }
 
-    private static CompletableFuture<CommandResponse> submit(
+    private static CompletableFuture<Response> submit(
         final SerialTransport transport,
         final ImmediateCommand command
     ) throws Exception {
-        final CompletableFuture<CommandResponse> result = new CompletableFuture<>();
+        final CompletableFuture<Response> result = new CompletableFuture<>();
         transport.submitJob(command, result);
         return result;
     }

@@ -7,11 +7,11 @@ import java.lang.annotation.Target;
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.responses.EmptyResponse;
-import de.do9fse.winkey.lib.core.model.responses.CommandResponse;
+import de.do9fse.winkey.lib.core.model.responses.Response;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ImmediateCommandConfiguration {
     ProtocolVersion[] allowedProtocols();
-    Class<? extends CommandResponse> responseType() default EmptyResponse.class;
+    Class<? extends Response> responseType() default EmptyResponse.class;
 }

@@ -8,7 +8,7 @@ import de.do9fse.winkey.lib.core.model.Job;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
 import de.do9fse.winkey.lib.core.model.error.WKRuntimeException;
-import de.do9fse.winkey.lib.core.model.responses.CommandResponse;
+import de.do9fse.winkey.lib.core.model.responses.Response;
 import de.do9fse.winkey.lib.core.port.in.UnsolicitedResponseListener;
 
 public interface Transport extends AutoCloseable {
@@ -78,5 +78,5 @@ public interface Transport extends AutoCloseable {
      * @return The job to be submitted
      * @throws WinKeyApplicationException If submitting failed
      */
-    Job submitJob(final ImmediateCommand command, final CompletableFuture<CommandResponse> response) throws WinKeyApplicationException;
+    Job submitJob(final ImmediateCommand command, final CompletableFuture<Response> response) throws WinKeyApplicationException;
 }

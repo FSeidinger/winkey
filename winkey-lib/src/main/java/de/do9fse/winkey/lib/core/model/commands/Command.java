@@ -1,6 +1,6 @@
 package de.do9fse.winkey.lib.core.model.commands;
 
-import de.do9fse.winkey.lib.core.port.out.DataOutputSerializer;
+import de.do9fse.winkey.lib.core.model.DataOutputSerializer;
 
 /**
  * The base interface for all commands

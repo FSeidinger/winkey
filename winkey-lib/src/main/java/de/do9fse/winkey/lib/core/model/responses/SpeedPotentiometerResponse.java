@@ -1,8 +1,8 @@
 package de.do9fse.winkey.lib.core.model.responses;
 
 @ResponseConfiguration(expectedResponseBytes = 1)
-public record SpeedPotentiometerResponse(int value) implements CommandResponse {
-    public static SpeedPotentiometerResponse fromProtocol(final byte[] responseBytes) {
+public record SpeedPotentiometerResponse(int value) implements Response {
+    public static SpeedPotentiometerResponse fromData(final byte[] responseBytes) {
         return new SpeedPotentiometerResponse(Byte.toUnsignedInt(responseBytes[0]));
     }
 }

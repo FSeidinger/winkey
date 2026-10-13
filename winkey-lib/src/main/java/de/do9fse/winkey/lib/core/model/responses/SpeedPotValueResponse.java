@@ -11,7 +11,7 @@ import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
 @ResponseConfiguration(expectedResponseBytes = 1)
-public record SpeedPotValueResponse(Quantity<Dimensionless> speedOffset) implements CommandResponse {
+public record SpeedPotValueResponse(Quantity<Dimensionless> speedOffset) implements Response {
     private static final int RESPONSE_TAG_MASK = 0b11000000;
     private static final int RESPONSE_TAG = 0b10000000;
     private static final int SPEED_OFFSET_MASK = 0b00111111;
@@ -47,7 +47,7 @@ public record SpeedPotValueResponse(Quantity<Dimensionless> speedOffset) impleme
         speedOffset = normalizedSpeedOffset;
     }
 
-    public static SpeedPotValueResponse fromProtocol(final byte[] responseBytes) {
+    public static SpeedPotValueResponse fromData(final byte[] responseBytes) {
         final int responseByte = Byte.toUnsignedInt(responseBytes[0]);
         if ((responseByte & RESPONSE_TAG_MASK) != RESPONSE_TAG) {
             throw new IllegalArgumentException(

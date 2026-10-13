@@ -69,7 +69,7 @@ class VersionResponseTest {
     @Test
     @DisplayName("Test that response byte can be parsed")
     void parsesResponseByte() {
-        final VersionResponse version = VersionResponse.fromProtocol(new byte[] { 23 });
+        final VersionResponse version = VersionResponse.fromData(new byte[] { 23 });
 
         assertEquals(2, version.majorVersion());
         assertEquals(3, version.minorVersion());

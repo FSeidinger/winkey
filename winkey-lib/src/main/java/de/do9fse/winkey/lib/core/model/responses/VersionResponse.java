@@ -4,12 +4,12 @@ import java.text.MessageFormat;
 import de.do9fse.winkey.lib.core.model.Validations;
 
 @ResponseConfiguration(expectedResponseBytes = 1)
-public record VersionResponse(int majorVersion, int minorVersion) implements CommandResponse {
+public record VersionResponse(int majorVersion, int minorVersion) implements Response {
     public static final int MAJOR_VERSION_MIN = 1;
     public static final int MAJOR_VERSION_MAX = 3;
     public static final int MINOR_VERSION_MIN = 0;
 
-    public static VersionResponse fromProtocol(final byte[] responseBytes) {
+    public static VersionResponse fromData(final byte[] responseBytes) {
         final byte versionByte = responseBytes[0];
         return new VersionResponse(versionByte / 10, versionByte % 10);
     }

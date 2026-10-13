@@ -6,13 +6,13 @@ import javax.measure.quantity.Time;
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.Validations;
-import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
+import de.do9fse.winkey.lib.core.model.commands.BufferedCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
 @ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
-public record WaitCommand(Quantity<Time> duration) implements HostModeCommand {
+public record WaitCommand(Quantity<Time> duration) implements BufferedCommand {
     public WaitCommand {
         Validations.validateNotNull("Buffered wait duration", duration);
         

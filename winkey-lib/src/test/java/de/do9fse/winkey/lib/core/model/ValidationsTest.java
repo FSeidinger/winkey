@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 
-import de.do9fse.winkey.lib.core.model.configuration.WinKeyUnits;
+import de.do9fse.winkey.lib.core.model.configuration.CustomUnits;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
@@ -24,16 +24,16 @@ class ValidationsTest {
     void validatesIntegralDimensionlessQuantityRange() {
         assertThat(Validations.validateIntegralRange(
             "WPM",
-            Quantities.getQuantity(25, WinKeyUnits.WPM),
-            WinKeyUnits.WPM,
+            Quantities.getQuantity(25, CustomUnits.WPM),
+            CustomUnits.WPM,
             1,
             50
         )).isEqualTo(25);
 
         assertThatThrownBy(() -> Validations.validateIntegralRange(
             "WPM",
-            Quantities.getQuantity(25.5, WinKeyUnits.WPM),
-            WinKeyUnits.WPM,
+            Quantities.getQuantity(25.5, CustomUnits.WPM),
+            CustomUnits.WPM,
             1,
             50
         ))
@@ -64,16 +64,16 @@ class ValidationsTest {
     void validatesIntegralFrequencyRange() {
         assertThat(Validations.validateIntegralFrequencyRange(
             "HSCW speed",
-            Quantities.getQuantity(120, WinKeyUnits.LPM),
-            WinKeyUnits.LPM,
+            Quantities.getQuantity(120, CustomUnits.LPM),
+            CustomUnits.LPM,
             100,
             800
         )).isEqualTo(120);
 
         assertThatThrownBy(() -> Validations.validateIntegralFrequencyRange(
             "HSCW speed",
-            Quantities.getQuantity(120.5, WinKeyUnits.LPM),
-            WinKeyUnits.LPM,
+            Quantities.getQuantity(120.5, CustomUnits.LPM),
+            CustomUnits.LPM,
             100,
             800
         ))

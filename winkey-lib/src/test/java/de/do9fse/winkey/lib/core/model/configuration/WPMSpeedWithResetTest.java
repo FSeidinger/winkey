@@ -11,7 +11,7 @@ class WPMSpeedWithResetTest {
     @Test
     void convertsResetAndConfiguredSpeedsToProtocolValues() {
         assertEquals(0, WPMSpeedWithReset.useSpeedPot().toProtocolValue());
-        assertEquals(5, new WPMSpeedWithReset(Quantities.getQuantity(5, WinKeyUnits.WPM)).toProtocolValue());
+        assertEquals(5, new WPMSpeedWithReset(Quantities.getQuantity(5, CustomUnits.WPM)).toProtocolValue());
         assertEquals(99, new WPMSpeedWithReset(WPMSpeed.fromProtocol(99)).toProtocolValue());
     }
 
@@ -19,11 +19,11 @@ class WPMSpeedWithResetTest {
     void rejectsSpeedsOutsideSupportedRange() {
         assertThrows(
             IllegalArgumentException.class,
-            () -> new WPMSpeedWithReset(Quantities.getQuantity(4, WinKeyUnits.WPM))
+            () -> new WPMSpeedWithReset(Quantities.getQuantity(4, CustomUnits.WPM))
         );
         assertThrows(
             IllegalArgumentException.class,
-            () -> new WPMSpeedWithReset(Quantities.getQuantity(100, WinKeyUnits.WPM))
+            () -> new WPMSpeedWithReset(Quantities.getQuantity(100, CustomUnits.WPM))
         );
     }
 
@@ -31,7 +31,7 @@ class WPMSpeedWithResetTest {
     void acceptsFractionalSpeedsWithinSupportedRange() {
         assertEquals(
             46,
-            new WPMSpeedWithReset(Quantities.getQuantity(45.5, WinKeyUnits.WPM)).toProtocolValue()
+            new WPMSpeedWithReset(Quantities.getQuantity(45.5, CustomUnits.WPM)).toProtocolValue()
         );
     }
 }

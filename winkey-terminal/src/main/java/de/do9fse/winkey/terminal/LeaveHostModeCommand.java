@@ -2,11 +2,11 @@ package de.do9fse.winkey.terminal;
 
 import org.jline.shell.CommandSession;
 
-import de.do9fse.winkey.lib.core.model.WinKeyState;
-import de.do9fse.winkey.lib.core.model.commands.WinKeyImmediateCommand;
+import de.do9fse.winkey.lib.core.model.ApplicationState;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.HostCloseCommand;
-import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
-import de.do9fse.winkey.lib.core.port.out.WinKeyTransport;
+import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
+import de.do9fse.winkey.lib.core.port.out.Transport;
 
 public class LeaveHostModeCommand extends TerminalCommand {
     public LeaveHostModeCommand() {
@@ -22,13 +22,13 @@ public class LeaveHostModeCommand extends TerminalCommand {
     public Object execute(CommandSession session, String[] args) throws Exception {
         super.execute(session, args);
 
-        if (context.getState() != WinKeyState.READY) {
+        if (context.getState() != ApplicationState.READY) {
             throw new IllegalStateException("Device is closed. Please call 'connect' first.");
         }
 
-        final WinKeyTransport transport = context.getTransport();
-        final WinKeyImmediateCommand command = new HostCloseCommand();
-        final DeviceConfiguration configuration = context.getDeviceConfiguration();
+        final Transport transport = context.getTransport();
+        final ImmediateCommand command = new HostCloseCommand();
+        final SerialConfiguration configuration = context.getDeviceConfiguration();
         CommandHelper.executeCommand(transport, command, configuration.readTimeout());
 
         stdout.println("Successfully left host mode. Now in standalone mode");

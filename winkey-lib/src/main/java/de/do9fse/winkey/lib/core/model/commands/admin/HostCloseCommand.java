@@ -1,11 +1,11 @@
 package de.do9fse.winkey.lib.core.model.commands.admin;
 
-import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
+import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.commands.AdminCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 
 @ImmediateCommandConfiguration(
-    allowedProtocols = { WinKeyProtocolVersion.V1, WinKeyProtocolVersion.V2 }
+    allowedProtocols = { ProtocolVersion.V1, ProtocolVersion.V2 }
 )
 public record HostCloseCommand() implements AdminCommand {
     @Override

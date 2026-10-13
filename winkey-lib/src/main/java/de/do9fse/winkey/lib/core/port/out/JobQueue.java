@@ -1,39 +1,39 @@
 package de.do9fse.winkey.lib.core.port.out;
 
-import de.do9fse.winkey.lib.core.model.WinKeyJob;
+import de.do9fse.winkey.lib.core.model.Job;
 
 /**
- * The supported subset of queue operations for WinKey jobs.
+ * The supported subset of queue operations for the job queue.
  */
-public interface WinKeyJobQueue {
+public interface JobQueue {
     /**
      * Retrieves, but does not remove, the head of this queue, or returns null
      * if this queue is empty.
      *
      * @return the head of this queue, or null if this queue is empty
      */
-    WinKeyJob peek();
+    Job peek();
 
     /**
      * Retrieves and removes the head of this queue, or returns null if this queue is empty.
      * 
      * @return the head of this queue, or null if this queue is empty
      */
-    WinKeyJob poll();
+    Job poll();
 
     /**
      * Inserts the specified job into this queue
      * 
      * @param job the element to add
      */
-    boolean offer(final WinKeyJob job);
+    boolean offer(final Job job);
 
     /**
      * Retrieves and removes the last element of this queue, or returns null if this queue is empty.
      * 
      * @return the tail of this queue, or null if this queue is empty
      */
-    WinKeyJob pollLast();
+    Job pollLast();
 
     /**
      * Completes exceptionally and removes all queued jobs

@@ -9,7 +9,7 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Time;
 
-import de.do9fse.winkey.lib.core.model.configuration.WinKeyUnits;
+import de.do9fse.winkey.lib.core.model.configuration.CustomUnits;
 import tech.units.indriya.unit.Units;
 
 public class Validations {
@@ -137,7 +137,7 @@ public class Validations {
         final int maxMilliseconds,
         final int stepMilliseconds
     ) {
-        final double milliseconds = WinKeyUnits.asMilliseconds(duration).getValue().doubleValue();
+        final double milliseconds = CustomUnits.asMilliseconds(duration).getValue().doubleValue();
         if (milliseconds < minMilliseconds
             || milliseconds > maxMilliseconds
             || milliseconds % stepMilliseconds != 0) {

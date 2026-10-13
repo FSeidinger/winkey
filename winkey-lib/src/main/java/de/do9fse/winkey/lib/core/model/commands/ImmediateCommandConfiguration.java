@@ -5,13 +5,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
+import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.responses.EmptyResponse;
-import de.do9fse.winkey.lib.core.model.responses.WinKeyResponse;
+import de.do9fse.winkey.lib.core.model.responses.CommandResponse;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ImmediateCommandConfiguration {
-    WinKeyProtocolVersion[] allowedProtocols();
-    Class<? extends WinKeyResponse> responseType() default EmptyResponse.class;
+    ProtocolVersion[] allowedProtocols();
+    Class<? extends CommandResponse> responseType() default EmptyResponse.class;
 }

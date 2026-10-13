@@ -5,14 +5,14 @@ import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
 import de.do9fse.winkey.lib.core.model.Validations;
-import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
+import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
 import de.do9fse.winkey.lib.core.model.configuration.WPMSpeed;
-import de.do9fse.winkey.lib.core.model.configuration.WinKeyUnits;
+import de.do9fse.winkey.lib.core.model.configuration.CustomUnits;
 import tech.units.indriya.quantity.Quantities;
 
-@ImmediateCommandConfiguration(allowedProtocols = WinKeyProtocolVersion.V2)
+@ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
 public record ChangeSpeedBufferedCommand(Quantity<Dimensionless> wpm) implements HostModeCommand {
     public ChangeSpeedBufferedCommand {
         Validations.validateNotNull("Buffered WPM speed", wpm);
@@ -20,10 +20,10 @@ public record ChangeSpeedBufferedCommand(Quantity<Dimensionless> wpm) implements
         wpm = Quantities.getQuantity(Validations.validateIntegralRange(
             "Buffered WPM speed",
             wpm,
-            WinKeyUnits.WPM,
+            CustomUnits.WPM,
             WPMSpeed.WPM_MIN.getValue().intValue(),
             WPMSpeed.WPM_MAX.getValue().intValue()
-        ), WinKeyUnits.WPM);
+        ), CustomUnits.WPM);
     }
 
     @Override

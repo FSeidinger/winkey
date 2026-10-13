@@ -5,12 +5,12 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import de.do9fse.winkey.lib.core.model.WinKeyJob;
-import de.do9fse.winkey.lib.core.port.out.WinKeyJobQueue;
+import de.do9fse.winkey.lib.core.model.Job;
+import de.do9fse.winkey.lib.core.port.out.JobQueue;
 
-public class DefaultWinKeyJobQueue implements WinKeyJobQueue {
+public class DefaultJobQueue implements JobQueue {
     private final Lock lock = new ReentrantLock();
-    private final Deque<WinKeyJob> jobs = new LinkedBlockingDeque<>();
+    private final Deque<Job> jobs = new LinkedBlockingDeque<>();
    
     @Override
     public void lock() {
@@ -23,7 +23,7 @@ public class DefaultWinKeyJobQueue implements WinKeyJobQueue {
     }
 
     @Override
-    public WinKeyJob peek() {
+    public Job peek() {
         this.lock.lock();
         try {
             return this.jobs.peek();
@@ -33,7 +33,7 @@ public class DefaultWinKeyJobQueue implements WinKeyJobQueue {
     }
 
     @Override
-    public WinKeyJob poll() {
+    public Job poll() {
         this.lock.lock();
         try {
             return this.jobs.poll();
@@ -43,7 +43,7 @@ public class DefaultWinKeyJobQueue implements WinKeyJobQueue {
     }
 
     @Override
-    public boolean offer(final WinKeyJob job) {
+    public boolean offer(final Job job) {
         this.lock.lock();
         try {
             return this.jobs.offer(job);
@@ -53,7 +53,7 @@ public class DefaultWinKeyJobQueue implements WinKeyJobQueue {
     }
     
     @Override
-    public WinKeyJob pollLast() {
+    public Job pollLast() {
         return this.jobs.pollLast();
     }
 
@@ -61,7 +61,7 @@ public class DefaultWinKeyJobQueue implements WinKeyJobQueue {
     public void failPendingJobs(final Exception exception) {
         this.lock.lock();
         try {
-            WinKeyJob job;
+            Job job;
             while ((job = jobs.poll()) != null) {
                 job.response().completeExceptionally(exception);
             }

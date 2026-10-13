@@ -2,45 +2,45 @@ package de.do9fse.winkey.lib.core.model;
 
 import java.util.Optional;
 
-import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
-import de.do9fse.winkey.lib.core.port.out.WinKeyJobQueue;
-import de.do9fse.winkey.lib.core.port.out.WinKeyTransport;
-import de.do9fse.winkey.lib.infrastructure.winkey.DefaultWinKeyJobQueue;
+import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
+import de.do9fse.winkey.lib.core.port.out.JobQueue;
+import de.do9fse.winkey.lib.core.port.out.Transport;
+import de.do9fse.winkey.lib.infrastructure.winkey.DefaultJobQueue;
 
 public class ApplicationContext {
-    private final WinKeyJobQueue jobQueue;
+    private final JobQueue jobQueue;
     private final ApplicationStateMachine stateMachine;
 
-    private WinKeyProtocolVersion version;
+    private ProtocolVersion version;
     private Optional<String> portName;
-    private DeviceConfiguration deviceConfiguration;
-    private WinKeyTransport transport;
+    private SerialConfiguration deviceConfiguration;
+    private Transport transport;
 
-    public ApplicationContext(final WinKeyProtocolVersion version) {
+    public ApplicationContext(final ProtocolVersion version) {
         this.version = Validations.validateNotNull("Version", version);
         this.portName = Optional.empty();
-        this.deviceConfiguration = DeviceConfiguration.DEFAULT;
+        this.deviceConfiguration = SerialConfiguration.DEFAULT;
         this.stateMachine = new ApplicationStateMachine();
-        this.jobQueue = new DefaultWinKeyJobQueue();
+        this.jobQueue = new DefaultJobQueue();
     }
 
-    public void transitionToState(final WinKeyState newState) {
+    public void transitionToState(final ApplicationState newState) {
         this.stateMachine.transitionToState(this, newState);
     }
 
-    public WinKeyState getState() {
+    public ApplicationState getState() {
         return stateMachine.getState();
     }
    
-    public WinKeyJobQueue getJobQueue() {
+    public JobQueue getJobQueue() {
         return jobQueue;
     }
 
-    public void setVersion(final WinKeyProtocolVersion version) {
+    public void setVersion(final ProtocolVersion version) {
         this.version = Validations.validateNotNull("Version", version);
     }
 
-    public WinKeyProtocolVersion getVersion() {
+    public ProtocolVersion getVersion() {
         return version;
     }
     
@@ -52,24 +52,24 @@ public class ApplicationContext {
         return this.portName.get();
     }
 
-    public DeviceConfiguration getDeviceConfiguration() {
+    public SerialConfiguration getDeviceConfiguration() {
         return deviceConfiguration;
     }
 
-    public void setDeviceConfiguration(final DeviceConfiguration deviceConfiguration) {
-        if (stateMachine.getState() != WinKeyState.CLOSED) {
+    public void setDeviceConfiguration(final SerialConfiguration deviceConfiguration) {
+        if (stateMachine.getState() != ApplicationState.CLOSED) {
             throw new IllegalStateException("Device configuration can only be set if device is closed");
         }
 
         this.deviceConfiguration = Validations.validateNotNull("Device configuration", deviceConfiguration);
     }
 
-    public WinKeyTransport getTransport() {
+    public Transport getTransport() {
         return transport;
     }
 
-    public void setTransport(final WinKeyTransport transport) {
-        if (this.stateMachine.getState() != WinKeyState.CLOSED) {
+    public void setTransport(final Transport transport) {
+        if (this.stateMachine.getState() != ApplicationState.CLOSED) {
             throw new IllegalStateException("Transport is already running");
         }
 

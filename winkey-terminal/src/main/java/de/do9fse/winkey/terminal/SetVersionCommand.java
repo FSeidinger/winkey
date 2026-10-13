@@ -11,7 +11,7 @@ import org.jline.shell.CommandSession;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
 
-import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
+import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 
 public class SetVersionCommand extends TerminalCommand {
     public SetVersionCommand() {
@@ -20,7 +20,7 @@ public class SetVersionCommand extends TerminalCommand {
 
     @Override
     public String description() {
-        return "Set the WinKey version to be used with the keyer device";
+        return "Set the protocol version to be used with the keyer device";
     }
 
     @Override
@@ -28,7 +28,7 @@ public class SetVersionCommand extends TerminalCommand {
         super.execute(session, args);
 
         final String versionString;
-        final WinKeyProtocolVersion version;
+        final ProtocolVersion version;
 
         try {
             versionString = scanner.next().toUpperCase();
@@ -37,10 +37,10 @@ public class SetVersionCommand extends TerminalCommand {
         }
 
         try {
-            version = WinKeyProtocolVersion.valueOf(versionString);
+            version = ProtocolVersion.valueOf(versionString);
             context.setVersion(version);
         } catch (final IllegalArgumentException e) {
-            final Set<WinKeyProtocolVersion> allowedValues = EnumSet.allOf(WinKeyProtocolVersion.class);
+            final Set<ProtocolVersion> allowedValues = EnumSet.allOf(ProtocolVersion.class);
             throw new IllegalArgumentException("Version must be one of " + allowedValues + " but was " + versionString);
         }
 
@@ -64,7 +64,7 @@ public class SetVersionCommand extends TerminalCommand {
                 new ArgumentDescription(
                     "<version>",
                      List.of(
-                        new AttributedString("The WinKey protocol version to use in the form Vx"),
+                        new AttributedString("The protocol version to use in the form Vx"),
                         new AttributedString("where x can be 1, 2, or 3")
                      )
                 )

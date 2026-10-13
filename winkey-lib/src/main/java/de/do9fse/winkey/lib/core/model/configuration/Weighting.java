@@ -17,7 +17,7 @@ public record Weighting(Quantity<Dimensionless> value) {
     public Weighting {
         Validations.validateNotNull("Weighting value", value);
 
-        final ComparableQuantity<Dimensionless> inPercent = WinKeyUnits.asPercent(value);
+        final ComparableQuantity<Dimensionless> inPercent = CustomUnits.asPercent(value);
 
         if (inPercent.isLessThan(PERCENT_MIN) || inPercent.isGreaterThan(PERCENT_MAX)) {
             final String message = MessageFormat.format(

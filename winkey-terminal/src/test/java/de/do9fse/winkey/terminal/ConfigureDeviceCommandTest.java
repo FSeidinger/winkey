@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
+import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
 import de.do9fse.winkey.terminal.test.tools.AbstractCommandTest;
 import de.do9fse.winkey.terminal.test.tools.ArgumentsBuilder;
 
@@ -30,8 +30,8 @@ public class ConfigureDeviceCommandTest extends AbstractCommandTest {
 
         command.execute(session, arguments);
 
-        final DeviceConfiguration expectedDeviceConfiguration = DeviceConfiguration.DEFAULT;
-        final DeviceConfiguration deviceConfiguration = context.getDeviceConfiguration();
+        final SerialConfiguration expectedDeviceConfiguration = SerialConfiguration.DEFAULT;
+        final SerialConfiguration deviceConfiguration = context.getDeviceConfiguration();
         assertThat(deviceConfiguration).isEqualTo(expectedDeviceConfiguration);
     }
 
@@ -45,8 +45,8 @@ public class ConfigureDeviceCommandTest extends AbstractCommandTest {
 
         command.execute(session, arguments);
 
-        final DeviceConfiguration expectedDeviceConfiguration = DeviceConfiguration.DEFAULT;
-        final DeviceConfiguration deviceConfiguration = context.getDeviceConfiguration();
+        final SerialConfiguration expectedDeviceConfiguration = SerialConfiguration.DEFAULT;
+        final SerialConfiguration deviceConfiguration = context.getDeviceConfiguration();
         assertThat(deviceConfiguration).isEqualTo(expectedDeviceConfiguration);
     }
 
@@ -73,8 +73,8 @@ public class ConfigureDeviceCommandTest extends AbstractCommandTest {
 
         command.execute(session, arguments);
 
-        final DeviceConfiguration expectedDeviceConfiguration = DeviceConfiguration.DEFAULT;
-        final DeviceConfiguration deviceConfiguration = context.getDeviceConfiguration();
+        final SerialConfiguration expectedDeviceConfiguration = SerialConfiguration.DEFAULT;
+        final SerialConfiguration deviceConfiguration = context.getDeviceConfiguration();
         assertThat(deviceConfiguration).isEqualTo(expectedDeviceConfiguration);
     }
 
@@ -88,8 +88,8 @@ public class ConfigureDeviceCommandTest extends AbstractCommandTest {
 
         command.execute(session, arguments);
 
-        final DeviceConfiguration expectedDeviceConfiguration = DeviceConfiguration.DEFAULT_ALTERNATIVE;
-        final DeviceConfiguration deviceConfiguration = context.getDeviceConfiguration();
+        final SerialConfiguration expectedDeviceConfiguration = SerialConfiguration.DEFAULT_ALTERNATIVE;
+        final SerialConfiguration deviceConfiguration = context.getDeviceConfiguration();
         assertThat(deviceConfiguration).isEqualTo(expectedDeviceConfiguration);
     }
 
@@ -126,8 +126,8 @@ public class ConfigureDeviceCommandTest extends AbstractCommandTest {
 
         command.execute(session, arguments);
 
-        final DeviceConfiguration expectedDeviceConfiguration = DeviceConfiguration.DEFAULT;
-        final DeviceConfiguration deviceConfiguration = context.getDeviceConfiguration();
+        final SerialConfiguration expectedDeviceConfiguration = SerialConfiguration.DEFAULT;
+        final SerialConfiguration deviceConfiguration = context.getDeviceConfiguration();
         assertThat(deviceConfiguration).isEqualTo(expectedDeviceConfiguration);
     }
 
@@ -141,8 +141,8 @@ public class ConfigureDeviceCommandTest extends AbstractCommandTest {
 
         command.execute(session, arguments);
 
-        final DeviceConfiguration expectedDeviceConfiguration = DeviceConfiguration.DEFAULT;
-        final DeviceConfiguration deviceConfiguration = context.getDeviceConfiguration();
+        final SerialConfiguration expectedDeviceConfiguration = SerialConfiguration.DEFAULT;
+        final SerialConfiguration deviceConfiguration = context.getDeviceConfiguration();
         assertThat(deviceConfiguration).isEqualTo(expectedDeviceConfiguration);
     }
 }

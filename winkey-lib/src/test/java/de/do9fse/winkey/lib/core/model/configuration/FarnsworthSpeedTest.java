@@ -25,8 +25,8 @@ class FarnsworthSpeedTest {
     class Given_our_constants {
         @Test
         void test_that_they_are_valid() {
-            assertEquals(Quantities.getQuantity(10.0, WinKeyUnits.WPM), FarnsworthSpeed.WPM_MIN);
-            assertEquals(Quantities.getQuantity(99.0, WinKeyUnits.WPM), FarnsworthSpeed.WPM_MAX);
+            assertEquals(Quantities.getQuantity(10.0, CustomUnits.WPM), FarnsworthSpeed.WPM_MIN);
+            assertEquals(Quantities.getQuantity(99.0, CustomUnits.WPM), FarnsworthSpeed.WPM_MAX);
         }
     }
 
@@ -47,7 +47,7 @@ class FarnsworthSpeedTest {
     @CsvSource(value = { "9.99", "99.01" })
     @ParameterizedTest(name = "should fail for a farnsworth speed of {0}")
     void Creation_with_invalid_ratio(final double value) {
-        final Quantity<Dimensionless> quantity = Quantities.getQuantity(value, WinKeyUnits.WPM);
+        final Quantity<Dimensionless> quantity = Quantities.getQuantity(value, CustomUnits.WPM);
         final Exception actualException = assertThrows(IllegalArgumentException.class, () -> new FarnsworthSpeed(quantity));
         assertEquals(rejectedValueMessage(quantity), actualException.getMessage());
     }

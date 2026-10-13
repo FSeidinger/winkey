@@ -33,7 +33,7 @@ public record DefaultsResponse(
     DitDahRatio ditDahRatio,
     PinConfiguration pinConfiguration,
     int reservedValue
-) implements WinKeyResponse {
+) implements CommandResponse {
     public static DefaultsResponse fromProtocol(final byte[] responseBytes) {
         return new DefaultsResponse(
             ModeRegister.fromProtocol(responseBytes[0]),

@@ -12,13 +12,13 @@ import tech.units.indriya.unit.Units;
 class WinKeyUnitsTest {
     @Test
     void convertsDimensionlessQuantitiesToWinKeyUnits() {
-        assertEquals(Quantities.getQuantity(20, WinKeyUnits.WPM), WinKeyUnits.asWpm(
+        assertEquals(Quantities.getQuantity(20, CustomUnits.WPM), CustomUnits.asWpm(
             Quantities.getQuantity(20, AbstractUnit.ONE)
         ));
-        assertEquals(Quantities.getQuantity(3, WinKeyUnits.RATIO), WinKeyUnits.asRatio(
+        assertEquals(Quantities.getQuantity(3, CustomUnits.RATIO), CustomUnits.asRatio(
             Quantities.getQuantity(3, AbstractUnit.ONE)
         ));
-        assertEquals(Quantities.getQuantity(50, Units.PERCENT), WinKeyUnits.asPercent(
+        assertEquals(Quantities.getQuantity(50, Units.PERCENT), CustomUnits.asPercent(
             Quantities.getQuantity(0.5, AbstractUnit.ONE)
         ));
     }
@@ -27,7 +27,7 @@ class WinKeyUnitsTest {
     void convertsTimeQuantitiesToMilliseconds() {
         assertEquals(
             Quantities.getQuantity(1500, MILLI(Units.SECOND)),
-            WinKeyUnits.asMilliseconds(Quantities.getQuantity(1.5, Units.SECOND))
+            CustomUnits.asMilliseconds(Quantities.getQuantity(1.5, Units.SECOND))
         );
     }
 }

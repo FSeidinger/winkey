@@ -1,10 +1,10 @@
 package de.do9fse.winkey.lib.core.model.commands;
 
 /**
- * The base interface for all WinKey Commands
+ * The base interface for all commands
  *
  * <p>
- * The WinKey commands are grouped into Admin, Host and Other commands. For each
+ * The commands are grouped into Admin, Host and Other commands. For each
  * of this groups there is an interface extending this base interface.
  * <p>
  *
@@ -21,10 +21,10 @@ package de.do9fse.winkey.lib.core.model.commands;
  * @param <R> The type of response expected for this command or
  *     {@link de.do9fse.winkey.lib.core.model.responses.EmptyResponse EmptyResponse} if no response is expected.
  */
-public interface WinKeyCommand {
+public interface Command {
     /**
-     * The payload bytes used to transmit this command via WinKey Protocol to
-     * the WinKey device
+     * The payload bytes used to transmit this command via WinKey protocol to
+     * a WinKey device
      *
      * <p>
      * Commands are expected to override this method to deliver the payload

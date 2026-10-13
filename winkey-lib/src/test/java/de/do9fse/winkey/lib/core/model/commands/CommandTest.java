@@ -2,7 +2,7 @@ package de.do9fse.winkey.lib.core.model.commands;
 
 import org.junit.jupiter.api.BeforeEach;
 
-public class WinKeyCommandTest {
+public class CommandTest {
     private String BASE_PACKAGE;
 
     @BeforeEach

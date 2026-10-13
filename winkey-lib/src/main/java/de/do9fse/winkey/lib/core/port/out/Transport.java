@@ -4,14 +4,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import de.do9fse.winkey.lib.core.model.WinKeyJob;
-import de.do9fse.winkey.lib.core.model.commands.WinKeyImmediateCommand;
+import de.do9fse.winkey.lib.core.model.Job;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
-import de.do9fse.winkey.lib.core.model.error.WinKeyRuntimeException;
-import de.do9fse.winkey.lib.core.model.responses.WinKeyResponse;
-import de.do9fse.winkey.lib.core.port.in.WinKeyUnsolicitedResponseListener;
+import de.do9fse.winkey.lib.core.model.error.WKRuntimeException;
+import de.do9fse.winkey.lib.core.model.responses.CommandResponse;
+import de.do9fse.winkey.lib.core.port.in.UnsolicitedResponseListener;
 
-public interface WinKeyTransport extends AutoCloseable {
+public interface Transport extends AutoCloseable {
     /**
      * Opens this transport
      *
@@ -37,16 +37,16 @@ public interface WinKeyTransport extends AutoCloseable {
      * @param timeout the maximum time to wait for the echo response
      * @param unit the time unit of {@code timeout}
      * @throws TimeoutException if the echo response is not received before the timeout
-     * @throws WinKeyRuntimeException if sending the command or reading the response fails
+     * @throws WKRuntimeException if sending the command or reading the response fails
      * @throws IllegalStateException if the transport is not initializing
      * @throws IllegalArgumentException if {@code timeout} is not positive
      * @throws NullPointerException if {@code unit} is {@code null}
      */
-    void initialize(final long timeout, final TimeUnit unit) throws TimeoutException, WinKeyRuntimeException;
+    void initialize(final long timeout, final TimeUnit unit) throws TimeoutException, WKRuntimeException;
 
     /**    (non-Javadoc)
      * @throws WinKeyApplicationException If port is not open
-     * @throws WinKeyRuntimeException if closing fails
+     * @throws WKRuntimeException if closing fails
      */
     void close() throws WinKeyApplicationException;
 
@@ -55,14 +55,14 @@ public interface WinKeyTransport extends AutoCloseable {
      *
      * @param listener the listener to register
      */
-    void addUnsolicitedResponseListener(final WinKeyUnsolicitedResponseListener listener);
+    void addUnsolicitedResponseListener(final UnsolicitedResponseListener listener);
 
     /**
      * Removes a previously registered unsolicited response listener.
      *
      * @param listener the listener to remove
      */
-    void removeUnsolicitedResponseListener(final WinKeyUnsolicitedResponseListener listener);
+    void removeUnsolicitedResponseListener(final UnsolicitedResponseListener listener);
 
     /**
      * Submits a WinKey command to the transport's job queue
@@ -78,5 +78,5 @@ public interface WinKeyTransport extends AutoCloseable {
      * @return The job to be submitted
      * @throws WinKeyApplicationException If submitting failed
      */
-    WinKeyJob submitJob(final WinKeyImmediateCommand command, final CompletableFuture<WinKeyResponse> response) throws WinKeyApplicationException;
+    Job submitJob(final ImmediateCommand command, final CompletableFuture<CommandResponse> response) throws WinKeyApplicationException;
 }

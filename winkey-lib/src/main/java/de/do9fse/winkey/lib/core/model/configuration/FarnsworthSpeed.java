@@ -10,13 +10,13 @@ import tech.units.indriya.quantity.Quantities;
 import de.do9fse.winkey.lib.core.model.Validations;
 
 public record FarnsworthSpeed(Quantity<Dimensionless> value) {
-    public static final ComparableQuantity<Dimensionless> WPM_MIN = Quantities.getQuantity(10.0, WinKeyUnits.WPM);
-    public static final ComparableQuantity<Dimensionless> WPM_MAX = Quantities.getQuantity(99.0, WinKeyUnits.WPM);
+    public static final ComparableQuantity<Dimensionless> WPM_MIN = Quantities.getQuantity(10.0, CustomUnits.WPM);
+    public static final ComparableQuantity<Dimensionless> WPM_MAX = Quantities.getQuantity(99.0, CustomUnits.WPM);
 
     public FarnsworthSpeed {
         Validations.validateNotNull("Farnsworth speed", value);
 
-        final ComparableQuantity<Dimensionless> wpmSpeed = WinKeyUnits.asWpm(value);
+        final ComparableQuantity<Dimensionless> wpmSpeed = CustomUnits.asWpm(value);
 
         if (wpmSpeed.isLessThan(WPM_MIN) || wpmSpeed.isGreaterThan(WPM_MAX)) {
             final String message = MessageFormat.format(
@@ -33,7 +33,7 @@ public record FarnsworthSpeed(Quantity<Dimensionless> value) {
     }
 
     public static FarnsworthSpeed fromProtocol(final int value) {
-        return new FarnsworthSpeed(Quantities.getQuantity(value, WinKeyUnits.WPM));
+        return new FarnsworthSpeed(Quantities.getQuantity(value, CustomUnits.WPM));
     }
 
     public int toProtocolValue() {

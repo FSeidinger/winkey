@@ -1,7 +1,7 @@
 package de.do9fse.winkey.lib.core.model.responses;
 
 @ResponseConfiguration(expectedResponseBytes = 1)
-public record PaddleA2DResponse(PaddleA2DState state) implements WinKeyResponse {
+public record PaddleA2DResponse(PaddleA2DState state) implements CommandResponse {
     public enum PaddleA2DState {
         BOTH_PADDLES_UP,
         DIT_PADDLE_DOWN,

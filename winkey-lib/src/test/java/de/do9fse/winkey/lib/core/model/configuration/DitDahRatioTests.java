@@ -25,9 +25,9 @@ class DitDahRatioTests {
     class Given_our_constants {
         @Test
         void test_that_they_are_valid() {
-            assertEquals(Quantities.getQuantity(1.98, WinKeyUnits.RATIO), DitDahRatio.RATIO_MIN);
-            assertEquals(Quantities.getQuantity(3.96, WinKeyUnits.RATIO), DitDahRatio.RATIO_MAX);
-            assertEquals(Quantities.getQuantity(3.00, WinKeyUnits.RATIO), DitDahRatio.DEFAULT_RATIO);
+            assertEquals(Quantities.getQuantity(1.98, CustomUnits.RATIO), DitDahRatio.RATIO_MIN);
+            assertEquals(Quantities.getQuantity(3.96, CustomUnits.RATIO), DitDahRatio.RATIO_MAX);
+            assertEquals(Quantities.getQuantity(3.00, CustomUnits.RATIO), DitDahRatio.DEFAULT_RATIO);
         }
     }
 
@@ -72,7 +72,7 @@ class DitDahRatioTests {
     @CsvSource(value = { "1.97", "3.97" })
     @ParameterizedTest(name = "should fail for a ration of {0}")
     void Creation_with_invalid_ratio(final double value) {
-        final Quantity<Dimensionless> quantity = Quantities.getQuantity(value, WinKeyUnits.RATIO);
+        final Quantity<Dimensionless> quantity = Quantities.getQuantity(value, CustomUnits.RATIO);
         final Exception actualException = assertThrows(IllegalArgumentException.class, () -> new DitDahRatio(quantity));
         assertEquals(rejectedValueMessage(quantity), actualException.getMessage());
     }

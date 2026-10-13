@@ -4,17 +4,17 @@ import java.text.MessageFormat;
 import de.do9fse.winkey.lib.core.model.Validations;
 
 @ResponseConfiguration(expectedResponseBytes = 1)
-public record WinKeyVersionResponse(int majorVersion, int minorVersion) implements WinKeyResponse {
+public record VersionResponse(int majorVersion, int minorVersion) implements CommandResponse {
     public static final int MAJOR_VERSION_MIN = 1;
     public static final int MAJOR_VERSION_MAX = 3;
     public static final int MINOR_VERSION_MIN = 0;
 
-    public static WinKeyVersionResponse fromProtocol(final byte[] responseBytes) {
+    public static VersionResponse fromProtocol(final byte[] responseBytes) {
         final byte versionByte = responseBytes[0];
-        return new WinKeyVersionResponse(versionByte / 10, versionByte % 10);
+        return new VersionResponse(versionByte / 10, versionByte % 10);
     }
 
-    public WinKeyVersionResponse {
+    public VersionResponse {
         if (majorVersion < MAJOR_VERSION_MIN || majorVersion > MAJOR_VERSION_MAX) {
             final String message = MessageFormat.format(
                 "WinKey major version must be between {0} and {1} but was {2}",
@@ -37,7 +37,7 @@ public record WinKeyVersionResponse(int majorVersion, int minorVersion) implemen
         }
     }
 
-    public static WinKeyVersionResponse parse(final String version) {
+    public static VersionResponse parse(final String version) {
         Validations.validateNotNull("Version", version);
 
         final String[] parts = version.split("\\.", 2);
@@ -49,7 +49,7 @@ public record WinKeyVersionResponse(int majorVersion, int minorVersion) implemen
         Validations.validateNotBlank("Version minor component", parts[1]);
 
         try {
-            return new WinKeyVersionResponse(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+            return new VersionResponse(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
         } catch (final NumberFormatException exception) {
             final String message = MessageFormat.format("Version must use the notation x.y: {0}", version);
             throw new IllegalArgumentException(message, exception);

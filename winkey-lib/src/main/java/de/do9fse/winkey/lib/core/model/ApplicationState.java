@@ -1,6 +1,6 @@
 package de.do9fse.winkey.lib.core.model;
 
-public enum WinKeyState {
+public enum ApplicationState {
     CLOSED,
     INITIALIZING,
     READY

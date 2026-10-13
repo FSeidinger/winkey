@@ -2,12 +2,12 @@ package de.do9fse.winkey.lib.core.model.commands.host.immediate;
 
 import java.text.MessageFormat;
 
-import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
+import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.Validations;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
 
-@ImmediateCommandConfiguration(allowedProtocols = WinKeyProtocolVersion.V2)
+@ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
 public record SetBufferPointerCommand(Operation operation, int positionOrNullCount) implements HostModeCommand {
     private static final int RESET_VALUE = -1;
 

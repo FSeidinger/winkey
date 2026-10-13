@@ -8,18 +8,18 @@ import org.slf4j.LoggerFactory;
 public class ApplicationStateMachine {
     private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationStateMachine.class);
 
-    private WinKeyState state;
+    private ApplicationState state;
 
     public ApplicationStateMachine() {
-        this.state = WinKeyState.CLOSED;
+        this.state = ApplicationState.CLOSED;
         LOGGER.info("Application is {}", this.state);
     }
 
-    public WinKeyState getState() {
+    public ApplicationState getState() {
         return state;
     }
 
-    public void transitionToState(final ApplicationContext context, final WinKeyState newState) {
+    public void transitionToState(final ApplicationContext context, final ApplicationState newState) {
         switch (state) {
             case CLOSED:
                 switch (newState) {
@@ -55,12 +55,12 @@ public class ApplicationStateMachine {
         }
     }
 
-    private void doTransition(final WinKeyState newState) {
+    private void doTransition(final ApplicationState newState) {
         this.state = newState;
         LOGGER.info("Application is now {}", newState);
     }
 
-    private void raiseStateTransitionError(final WinKeyState oldState, final WinKeyState newState) {
+    private void raiseStateTransitionError(final ApplicationState oldState, final ApplicationState newState) {
         final String message = formatError(
             "Transitioning from state {0} to state{1} is not allowed",
             oldState,

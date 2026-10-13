@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 class WinKeyRuntimeExceptionTest {
     @Test
     void storesMessage() {
-        final WinKeyRuntimeException exception = new WinKeyRuntimeException("Runtime failure");
+        final WKRuntimeException exception = new WKRuntimeException("Runtime failure");
 
         assertEquals("Runtime failure", exception.getMessage());
     }
@@ -16,7 +16,7 @@ class WinKeyRuntimeExceptionTest {
     @Test
     void storesMessageAndCause() {
         final Throwable cause = new IllegalStateException("Root cause");
-        final WinKeyRuntimeException exception = new WinKeyRuntimeException("Runtime failure", cause);
+        final WKRuntimeException exception = new WKRuntimeException("Runtime failure", cause);
 
         assertEquals("Runtime failure", exception.getMessage());
         assertSame(cause, exception.getCause());

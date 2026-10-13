@@ -1,13 +1,13 @@
 package de.do9fse.winkey.lib.core.model.configuration;
 
 import java.text.MessageFormat;
-import java.util.Objects;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 public record DitDahRatio(Quantity<Dimensionless> value) {
     public static final double MULTIPLIER = 3.0;
@@ -18,7 +18,7 @@ public record DitDahRatio(Quantity<Dimensionless> value) {
     public static final ComparableQuantity<Dimensionless> DEFAULT_RATIO = Quantities.getQuantity(3.0, WinKeyUnits.RATIO);
 
     public DitDahRatio {
-        Objects.requireNonNull(value, "Ratio must not be null");
+        Validations.validateNotNull("Ratio", value);
 
         final ComparableQuantity<Dimensionless> ratio = WinKeyUnits.asRatio(value);
 

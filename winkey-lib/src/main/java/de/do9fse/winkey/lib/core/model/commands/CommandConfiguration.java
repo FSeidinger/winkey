@@ -13,5 +13,6 @@ import de.do9fse.winkey.lib.core.model.responses.WinKeyResponse;
 @Target(ElementType.TYPE)
 public @interface CommandConfiguration {
     WinKeyProtocolVersion[] allowedProtocols();
+    boolean isBuffered() default false;
     Class<? extends WinKeyResponse> responseType() default EmptyResponse.class;
 }

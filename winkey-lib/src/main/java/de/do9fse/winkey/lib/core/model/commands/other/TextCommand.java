@@ -1,5 +1,6 @@
 package de.do9fse.winkey.lib.core.model.commands.other;
 
+import de.do9fse.winkey.lib.core.model.Validations;
 import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
 import de.do9fse.winkey.lib.core.model.commands.CommandConfiguration;
 import de.do9fse.winkey.lib.core.model.commands.WinKeyCommand;
@@ -9,9 +10,7 @@ import de.do9fse.winkey.lib.core.model.commands.WinKeyCommand;
 )
 public record TextCommand(String text) implements WinKeyCommand {
     public TextCommand {
-        if (text == null || text.isBlank()) {
-            throw new IllegalArgumentException("Text must not be null or blank");
-        }
+        text = Validations.validateNotBlank("Text", text);
     }
 
     @Override

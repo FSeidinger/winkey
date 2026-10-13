@@ -1,7 +1,7 @@
 package de.do9fse.winkey.lib.core.model.responses;
 
 import java.text.MessageFormat;
-import java.util.Objects;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 @ResponseConfiguration(expectedResponseBytes = 1)
 public record WinKeyVersionResponse(int majorVersion, int minorVersion) implements WinKeyResponse {
@@ -38,12 +38,15 @@ public record WinKeyVersionResponse(int majorVersion, int minorVersion) implemen
     }
 
     public static WinKeyVersionResponse parse(final String version) {
-        Objects.requireNonNull(version, "Version must not be null");
+        Validations.validateNotNull("Version", version);
 
         final String[] parts = version.split("\\.", 2);
-        if (parts.length != 2 || parts[0].isBlank() || parts[1].isBlank()) {
+        if (parts.length != 2) {
             throw new IllegalArgumentException(MessageFormat.format("Version must use the notation x.y: {0}", version));
         }
+
+        Validations.validateNotBlank("Version major component", parts[0]);
+        Validations.validateNotBlank("Version minor component", parts[1]);
 
         try {
             return new WinKeyVersionResponse(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));

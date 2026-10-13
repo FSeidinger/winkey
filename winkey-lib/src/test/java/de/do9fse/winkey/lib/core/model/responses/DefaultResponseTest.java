@@ -8,7 +8,7 @@ import javax.measure.quantity.Time;
 
 import org.junit.jupiter.api.Test;
 
-import de.do9fse.winkey.lib.core.model.commands.host.SideToneControlCommand.SideToneFrequency;
+import de.do9fse.winkey.lib.core.model.commands.host.immediate.SideToneControlCommand.SideToneFrequency;
 import de.do9fse.winkey.lib.core.model.configuration.KeyMode;
 import de.do9fse.winkey.lib.core.model.configuration.PinConfiguration;
 import tech.units.indriya.unit.Units;

@@ -2,14 +2,14 @@ package de.do9fse.winkey.lib.core.model.responses;
 
 import java.text.MessageFormat;
 import java.util.Arrays;
-import java.util.Objects;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 @ResponseConfiguration(expectedResponseBytes = EEPROMDumpResponse.DATA_LENGTH)
 public record EEPROMDumpResponse(byte[] data) implements WinKeyResponse {
     public static final int DATA_LENGTH = 256;
 
     public EEPROMDumpResponse {
-        Objects.requireNonNull(data, "EEPROM dump data must not be null");
+        Validations.validateNotNull("EEPROM dump data", data);
 
         if (data.length != DATA_LENGTH) {
             final String message = MessageFormat.format(

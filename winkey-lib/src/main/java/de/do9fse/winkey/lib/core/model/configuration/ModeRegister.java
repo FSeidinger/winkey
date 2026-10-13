@@ -1,6 +1,6 @@
 package de.do9fse.winkey.lib.core.model.configuration;
 
-import java.util.Objects;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 public record ModeRegister(
     boolean isPaddleWatchdogEnabled,
@@ -12,7 +12,7 @@ public record ModeRegister(
     boolean isCTSpacingEnabled
 ) {
     public ModeRegister {
-        Objects.requireNonNull(keyMode, "Key mode must not be null");
+        Validations.validateNotNull("Key mode", keyMode);
     }
 
     public static ModeRegister fromProtocol(final int value) {

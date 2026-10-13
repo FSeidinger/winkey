@@ -2,7 +2,7 @@ package de.do9fse.winkey.terminal.test.tools;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 public final class ArgumentsBuilder {
     public static final String[] EMPTY = new String[0];
@@ -16,31 +16,31 @@ public final class ArgumentsBuilder {
     }
 
     public ArgumentsBuilder addOption(final String option) {
-        Objects.requireNonNull(option, "Option must not be null");
+        Validations.validateNotNull("Option", option);
         arguments.add(option);
 
         return this;
     }
 
     public ArgumentsBuilder addOption(final String option, final String value) {
-        Objects.requireNonNull(option, "Option must not be null");
+        Validations.validateNotNull("Option", option);
         arguments.add(option);
 
-        Objects.requireNonNull(value, "Value must not be null");
+        Validations.validateNotNull("Value", value);
         arguments.add(value);
 
         return this;
     }
 
     public ArgumentsBuilder addLongOption(final String option) {
-        Objects.requireNonNull(option, "Option must not be null");
+        Validations.validateNotNull("Option", option);
         arguments.add(option);
         return this;
     }
 
     public ArgumentsBuilder addLongOption(final String option, final String value) {
-        Objects.requireNonNull(option, "Option must not be null");
-        Objects.requireNonNull(value, "Value must not be null");
+        Validations.validateNotNull("Option", option);
+        Validations.validateNotNull("Value", value);
 
         arguments.add(option + "=" + value);
 
@@ -48,7 +48,7 @@ public final class ArgumentsBuilder {
     }
 
     public ArgumentsBuilder addArgument(final String argument) {
-        Objects.requireNonNull(argument, "Argument must not be null");
+        Validations.validateNotNull("Argument", argument);
         arguments.add(argument);
         
         return this;

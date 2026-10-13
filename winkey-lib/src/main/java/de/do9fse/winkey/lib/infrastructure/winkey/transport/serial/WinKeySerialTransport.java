@@ -8,7 +8,6 @@ import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.HexFormat;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
@@ -39,6 +38,7 @@ import de.do9fse.winkey.lib.core.model.responses.WinKeyStatusResponse;
 import de.do9fse.winkey.lib.core.port.in.WinKeyUnsolicitedResponseListener;
 import de.do9fse.winkey.lib.core.port.out.WinKeyJobQueue;
 import de.do9fse.winkey.lib.core.port.out.WinKeyTransport;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 public class WinKeySerialTransport implements WinKeyTransport {
     private static final Logger LOGGER = LoggerFactory.getLogger(WinKeySerialTransport.class);
@@ -62,9 +62,9 @@ public class WinKeySerialTransport implements WinKeyTransport {
     private final HexFormat formatter = HexFormat.of().withPrefix("0x").withSuffix(" ");
 
     public WinKeySerialTransport(final ApplicationContext context, final SerialPort serialPort) {
-        this.context = Objects.requireNonNull(context, "Application context must not be null");
-        this.jobQueue = Objects.requireNonNull(context.getJobQueue(), "Job queue must not be null");
-        this.serialPort = Objects.requireNonNull(serialPort, "Serial port must not be null");
+        this.context = Validations.validateNotNull("Application context", context);
+        this.jobQueue = Validations.validateNotNull("Job queue", context.getJobQueue());
+        this.serialPort = Validations.validateNotNull("Serial port", serialPort);
     }
 
     @Override
@@ -102,7 +102,7 @@ public class WinKeySerialTransport implements WinKeyTransport {
             throw new IllegalStateException("Transport is ready or closed");
         }
 
-        Objects.requireNonNull(unit, "Time unit must not be null");
+        Validations.validateNotNull("Time unit", unit);
 
         if (timeout < 1) {
             throw new IllegalArgumentException(formatError("The timeout must be greater than zero, but was {0}", timeout));
@@ -140,12 +140,12 @@ public class WinKeySerialTransport implements WinKeyTransport {
 
     @Override
     public void addUnsolicitedResponseListener(final WinKeyUnsolicitedResponseListener listener) {
-        this.unsolicitedResponseListeners.addIfAbsent(Objects.requireNonNull(listener, "listener must not be null"));
+        this.unsolicitedResponseListeners.addIfAbsent(Validations.validateNotNull("listener", listener));
     }
 
     @Override
     public void removeUnsolicitedResponseListener(final WinKeyUnsolicitedResponseListener listener) {
-        this.unsolicitedResponseListeners.remove(Objects.requireNonNull(listener, "listener must not be null"));
+        this.unsolicitedResponseListeners.remove(Validations.validateNotNull("listener", listener));
     }
 
     private void notifyUnsolicitedResponseListeners(final WinKeyResponse response) {

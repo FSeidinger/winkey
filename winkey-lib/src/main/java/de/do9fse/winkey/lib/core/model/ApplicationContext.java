@@ -1,6 +1,5 @@
 package de.do9fse.winkey.lib.core.model;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
@@ -18,7 +17,7 @@ public class ApplicationContext {
     private WinKeyTransport transport;
 
     public ApplicationContext(final WinKeyProtocolVersion version) {
-        this.version = Objects.requireNonNull(version, "Version must not be null");
+        this.version = Validations.validateNotNull("Version", version);
         this.portName = Optional.empty();
         this.deviceConfiguration = DeviceConfiguration.DEFAULT;
         this.stateMachine = new ApplicationStateMachine();
@@ -38,7 +37,7 @@ public class ApplicationContext {
     }
 
     public void setVersion(final WinKeyProtocolVersion version) {
-        this.version = Objects.requireNonNull(version, "Version must not be null");
+        this.version = Validations.validateNotNull("Version", version);
     }
 
     public WinKeyProtocolVersion getVersion() {
@@ -62,7 +61,7 @@ public class ApplicationContext {
             throw new IllegalStateException("Device configuration can only be set if device is closed");
         }
 
-        this.deviceConfiguration = Objects.requireNonNull(deviceConfiguration, "Device configuration must not be null");
+        this.deviceConfiguration = Validations.validateNotNull("Device configuration", deviceConfiguration);
     }
 
     public WinKeyTransport getTransport() {

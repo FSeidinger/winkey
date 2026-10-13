@@ -1,6 +1,5 @@
 package de.do9fse.winkey.terminal;
 
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -11,12 +10,13 @@ import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
 import de.do9fse.winkey.lib.core.model.error.WinKeyRuntimeException;
 import de.do9fse.winkey.lib.core.model.responses.WinKeyResponse;
 import de.do9fse.winkey.lib.core.port.out.WinKeyTransport;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 public interface CommandHelper {
     static WinKeyResponse executeCommand(final WinKeyTransport transport, final WinKeyCommand command, final Timeout timeout) {
-        Objects.requireNonNull(transport, "Transport must not be null");
-        Objects.requireNonNull(command, "Command must not be null");
-        Objects.requireNonNull(timeout, "Timeout unit must not be null");
+        Validations.validateNotNull("Transport", transport);
+        Validations.validateNotNull("Command", command);
+        Validations.validateNotNull("Timeout unit", timeout);
 
         try {
             final CompletableFuture<WinKeyResponse> response = new CompletableFuture<>();

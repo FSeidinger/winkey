@@ -4,9 +4,9 @@ import java.text.MessageFormat;
 import java.util.Arrays;
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
-import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
-import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
 import de.do9fse.winkey.lib.core.model.Validations;
+import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 
 @ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
 public record LoadDefaultsCommand(byte[] values) implements HostModeCommand {
@@ -33,7 +33,7 @@ public record LoadDefaultsCommand(byte[] values) implements HostModeCommand {
     }
 
     @Override
-    public byte[] getPayloadBytes() {
+    public byte[] toData() {
         final byte[] payload = new byte[DEFAULTS_BYTES + 1];
         payload[0] = 0x0f;
         System.arraycopy(values, 0, payload, 1, DEFAULTS_BYTES);

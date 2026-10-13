@@ -2,10 +2,10 @@ package de.do9fse.winkey.lib.core.model.commands.host.immediate;
 
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
-import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
-import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
-import de.do9fse.winkey.lib.core.model.configuration.WPMSpeedWithReset;
 import de.do9fse.winkey.lib.core.model.Validations;
+import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
+import de.do9fse.winkey.lib.core.model.configuration.WPMSpeedWithReset;
 
 @ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
 public record SetSpeedCommand(WPMSpeedWithReset wpm) implements HostModeCommand {
@@ -18,7 +18,7 @@ public record SetSpeedCommand(WPMSpeedWithReset wpm) implements HostModeCommand 
     }
 
     @Override
-    public byte[] getPayloadBytes() {
+    public byte[] toData() {
         return new byte[] { 0x02, (byte) wpm.toProtocolValue() };
     }
 }

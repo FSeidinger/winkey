@@ -4,8 +4,8 @@ import java.text.MessageFormat;
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.Validations;
-import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 
 @ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
 public record SetBufferPointerCommand(Operation operation, int positionOrNullCount) implements HostModeCommand {
@@ -45,7 +45,7 @@ public record SetBufferPointerCommand(Operation operation, int positionOrNullCou
     }
 
     @Override
-    public byte[] getPayloadBytes() {
+    public byte[] toData() {
         if (operation == Operation.RESET) {
             return new byte[] { 0x16, 0x00 };
         }

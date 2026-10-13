@@ -8,7 +8,8 @@ import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
     allowedProtocols = { ProtocolVersion.V1, ProtocolVersion.V2, ProtocolVersion.V3 }
 )
 public record AdminCommandWithoutResponse() implements AdminCommand {
-    public byte[] getPayloadBytes() {
+    @Override 
+    public byte[] toData() {
         return null;
     }
 }

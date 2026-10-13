@@ -11,7 +11,7 @@ import de.do9fse.winkey.lib.core.model.responses.VersionResponse;
 )
 public record AdminCommandWithResponse() implements AdminCommand {
     @Override
-    public byte[] getPayloadBytes() {
+    public byte[] toData() {
         return null;
     }
 }

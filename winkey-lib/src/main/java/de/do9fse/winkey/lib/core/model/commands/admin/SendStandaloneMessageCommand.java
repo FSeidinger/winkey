@@ -26,7 +26,7 @@ public record SendStandaloneMessageCommand(int messageId) implements AdminComman
     }
 
     @Override
-    public byte[] getPayloadBytes() {
+    public byte[] toData() {
         return new byte[]{ 0x00, 14, (byte) messageId };
     }
 }

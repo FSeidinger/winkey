@@ -7,9 +7,9 @@ import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 @ImmediateCommandConfiguration(
     allowedProtocols = ProtocolVersion.V2
 )
-public record LoadEEPROMCommand() implements AdminCommand{
+public record LoadEEPROMCommand() implements AdminCommand {
     @Override
-    public byte[] getPayloadBytes() {
+    public byte[] toData() {
         return new byte[]{ 0x00, 13 };
     }
 }

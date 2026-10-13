@@ -38,7 +38,7 @@ import de.do9fse.winkey.lib.core.model.ApplicationContext;
 import de.do9fse.winkey.lib.core.model.WinKeyJob;
 import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
 import de.do9fse.winkey.lib.core.model.WinKeyState;
-import de.do9fse.winkey.lib.core.model.commands.WinKeyCommand;
+import de.do9fse.winkey.lib.core.model.commands.WinKeyImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.EchoTestCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.HostOpenCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK1ModeCommand;
@@ -314,7 +314,7 @@ class WinKeySerialTransportTest {
 
     private static CompletableFuture<WinKeyResponse> submit(
         final WinKeySerialTransport transport,
-        final WinKeyCommand command
+        final WinKeyImmediateCommand command
     ) throws Exception {
         final CompletableFuture<WinKeyResponse> result = new CompletableFuture<>();
         transport.submitJob(command, result);

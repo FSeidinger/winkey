@@ -5,12 +5,12 @@ import javax.measure.quantity.Time;
 
 import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
 import de.do9fse.winkey.lib.core.model.Validations;
-import de.do9fse.winkey.lib.core.model.commands.CommandConfiguration;
-
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
+import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
-@CommandConfiguration(allowedProtocols = WinKeyProtocolVersion.V2)
+@ImmediateCommandConfiguration(allowedProtocols = WinKeyProtocolVersion.V2)
 public record TimedKeyDownCommand(Quantity<Time> duration) implements HostModeCommand {
     public TimedKeyDownCommand {
         Validations.validateNotNull("Timed key down duration", duration);

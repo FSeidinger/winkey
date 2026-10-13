@@ -2,11 +2,12 @@ package de.do9fse.winkey.lib.core.model.commands.host.immediate;
 
 
 import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
-import de.do9fse.winkey.lib.core.model.commands.CommandConfiguration;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
+import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
 import de.do9fse.winkey.lib.core.model.configuration.ModeRegister;
 import de.do9fse.winkey.lib.core.model.Validations;
 
-@CommandConfiguration(allowedProtocols = WinKeyProtocolVersion.V2)
+@ImmediateCommandConfiguration(allowedProtocols = WinKeyProtocolVersion.V2)
 public record SetModeCommand(ModeRegister mode) implements HostModeCommand {
     public SetModeCommand {
         Validations.validateNotNull("Mode register", mode);

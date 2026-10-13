@@ -1,10 +1,10 @@
 package de.do9fse.winkey.lib.core.model.commands.host.buffered;
 
 import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
-import de.do9fse.winkey.lib.core.model.commands.CommandConfiguration;
-import de.do9fse.winkey.lib.core.model.commands.host.immediate.HostModeCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
+import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
 
-@CommandConfiguration(allowedProtocols = WinKeyProtocolVersion.V2, isBuffered = true)
+@ImmediateCommandConfiguration(allowedProtocols = WinKeyProtocolVersion.V2)
 public record NopCommand() implements HostModeCommand {
     @Override
     public byte[] getPayloadBytes() {

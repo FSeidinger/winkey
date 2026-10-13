@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import de.do9fse.winkey.lib.core.model.WinKeyJob;
-import de.do9fse.winkey.lib.core.model.commands.WinKeyCommand;
+import de.do9fse.winkey.lib.core.model.commands.WinKeyImmediateCommand;
 import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
 import de.do9fse.winkey.lib.core.model.error.WinKeyRuntimeException;
 import de.do9fse.winkey.lib.core.model.responses.WinKeyResponse;
@@ -78,5 +78,5 @@ public interface WinKeyTransport extends AutoCloseable {
      * @return The job to be submitted
      * @throws WinKeyApplicationException If submitting failed
      */
-    WinKeyJob submitJob(final WinKeyCommand command, final CompletableFuture<WinKeyResponse> response) throws WinKeyApplicationException;
+    WinKeyJob submitJob(final WinKeyImmediateCommand command, final CompletableFuture<WinKeyResponse> response) throws WinKeyApplicationException;
 }

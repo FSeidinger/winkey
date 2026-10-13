@@ -3,10 +3,11 @@ package de.do9fse.winkey.lib.core.model.commands.admin;
 import java.text.MessageFormat;
 
 import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
-import de.do9fse.winkey.lib.core.model.commands.CommandConfiguration;
+import de.do9fse.winkey.lib.core.model.commands.AdminCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.responses.EchoResponse;
 
-@CommandConfiguration(
+@ImmediateCommandConfiguration(
     allowedProtocols = { WinKeyProtocolVersion.V1, WinKeyProtocolVersion.V2 },
     responseType = EchoResponse.class
 )

@@ -25,6 +25,7 @@ import de.do9fse.winkey.lib.core.model.WinKeyJob;
 import de.do9fse.winkey.lib.core.model.WinKeyState;
 import de.do9fse.winkey.lib.core.model.commands.CommandInfo;
 import de.do9fse.winkey.lib.core.model.commands.WinKeyCommand;
+import de.do9fse.winkey.lib.core.model.commands.WinKeyImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.EchoTestCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK1ModeCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK2ModeCommand;
@@ -185,11 +186,11 @@ public class WinKeySerialTransport implements WinKeyTransport {
     }
    
     @Override
-    public WinKeyJob submitJob(final WinKeyCommand command, final CompletableFuture<WinKeyResponse> jobResult) throws WinKeyApplicationException {
+    public WinKeyJob submitJob(final WinKeyImmediateCommand command, final CompletableFuture<WinKeyResponse> jobResult) throws WinKeyApplicationException {
         return submitJob(command, jobResult, true);
     }
 
-    public WinKeyJob submitJob(final WinKeyCommand command, final CompletableFuture<WinKeyResponse> jobResult, final boolean doSend) throws WinKeyApplicationException {
+    public WinKeyJob submitJob(final WinKeyImmediateCommand command, final CompletableFuture<WinKeyResponse> jobResult, final boolean doSend) throws WinKeyApplicationException {
         if (context.getState() != WinKeyState.READY) {
             throw new IllegalStateException("Transport is not ready");
         }

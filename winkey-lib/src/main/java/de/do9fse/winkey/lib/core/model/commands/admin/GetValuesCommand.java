@@ -1,10 +1,11 @@
 package de.do9fse.winkey.lib.core.model.commands.admin;
 
 import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
-import de.do9fse.winkey.lib.core.model.commands.CommandConfiguration;
+import de.do9fse.winkey.lib.core.model.commands.AdminCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.responses.DefaultsResponse;
 
-@CommandConfiguration(
+@ImmediateCommandConfiguration(
     allowedProtocols = WinKeyProtocolVersion.V2,
     responseType = DefaultsResponse.class
 )

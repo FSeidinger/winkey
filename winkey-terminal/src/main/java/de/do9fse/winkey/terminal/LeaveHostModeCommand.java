@@ -3,7 +3,7 @@ package de.do9fse.winkey.terminal;
 import org.jline.shell.CommandSession;
 
 import de.do9fse.winkey.lib.core.model.WinKeyState;
-import de.do9fse.winkey.lib.core.model.commands.WinKeyCommand;
+import de.do9fse.winkey.lib.core.model.commands.WinKeyImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.HostCloseCommand;
 import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
 import de.do9fse.winkey.lib.core.port.out.WinKeyTransport;
@@ -27,7 +27,7 @@ public class LeaveHostModeCommand extends TerminalCommand {
         }
 
         final WinKeyTransport transport = context.getTransport();
-        final WinKeyCommand command = new HostCloseCommand();
+        final WinKeyImmediateCommand command = new HostCloseCommand();
         final DeviceConfiguration configuration = context.getDeviceConfiguration();
         CommandHelper.executeCommand(transport, command, configuration.readTimeout());
 

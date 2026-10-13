@@ -1,9 +1,10 @@
 package de.do9fse.winkey.lib.core.model.commands.admin;
 
 import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
-import de.do9fse.winkey.lib.core.model.commands.CommandConfiguration;
+import de.do9fse.winkey.lib.core.model.commands.AdminCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 
-@CommandConfiguration(
+@ImmediateCommandConfiguration(
     allowedProtocols = WinKeyProtocolVersion.V1
 )
 public record CalibrateCommand() implements AdminCommand {

@@ -23,7 +23,7 @@ public class EnterHostModeCommand extends TerminalCommand {
         super.execute(session, args);
 
         if (context.getState() != ApplicationState.READY) {
-            throw new IllegalStateException("Device is closed. Please call 'connect' first.");
+            throw new IllegalStateException(Errors.APPLICATION_MUST_BE_READY.createErrorMessage(context));
         }
 
         final Transport transport = context.getTransport();

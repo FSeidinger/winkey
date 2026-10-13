@@ -1,20 +1,20 @@
 package de.do9fse.winkey.lib.core.model.configuration;
 
 import java.text.MessageFormat;
-import java.util.Objects;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 public record FarnsworthSpeed(Quantity<Dimensionless> value) {
     public static final ComparableQuantity<Dimensionless> WPM_MIN = Quantities.getQuantity(10.0, WinKeyUnits.WPM);
     public static final ComparableQuantity<Dimensionless> WPM_MAX = Quantities.getQuantity(99.0, WinKeyUnits.WPM);
 
     public FarnsworthSpeed {
-        Objects.requireNonNull(value, "Farnsworth speed must not be null");
+        Validations.validateNotNull("Farnsworth speed", value);
 
         final ComparableQuantity<Dimensionless> wpmSpeed = WinKeyUnits.asWpm(value);
 

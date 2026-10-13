@@ -1,7 +1,6 @@
 package de.do9fse.winkey.lib.core.model;
 
 import java.text.MessageFormat;
-import java.util.Objects;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,7 @@ public class ApplicationStateMachine {
             case CLOSED:
                 switch (newState) {
                     case INITIALIZING:
-                        Objects.requireNonNull(context.getDeviceConfiguration(), "Device configuration must not be null");
+                        Validations.validateNotNull("Device configuration", context.getDeviceConfiguration());
                         doTransition(newState);
                         break;
 

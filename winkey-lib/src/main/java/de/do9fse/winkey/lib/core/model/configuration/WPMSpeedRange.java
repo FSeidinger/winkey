@@ -1,20 +1,20 @@
 package de.do9fse.winkey.lib.core.model.configuration;
 
 import java.text.MessageFormat;
-import java.util.Objects;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 public record WPMSpeedRange(Quantity<Dimensionless> value) {
     public static final ComparableQuantity<Dimensionless> RANGE_MIN = Quantities.getQuantity(0, WinKeyUnits.WPM);
     public static final ComparableQuantity<Dimensionless> RANGE_MAX = Quantities.getQuantity(99, WinKeyUnits.WPM);
 
     public WPMSpeedRange {
-        Objects.requireNonNull(value, "WPM speed range must not be null");
+        Validations.validateNotNull("WPM speed range", value);
 
         final ComparableQuantity<Dimensionless> inWpm = WinKeyUnits.asWpm(value);
 

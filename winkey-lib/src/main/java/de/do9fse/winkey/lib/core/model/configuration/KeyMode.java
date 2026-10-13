@@ -1,6 +1,6 @@
 package de.do9fse.winkey.lib.core.model.configuration;
 
-import java.util.Objects;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 public enum KeyMode {
     IAMBIC_B("Iambic B mode"),
@@ -11,7 +11,7 @@ public enum KeyMode {
     private final String description;
 
     KeyMode(final String description) {
-        this.description = Objects.requireNonNull(description, "Description must not be null");
+        this.description = Validations.validateNotNull("Description", description);
     }
 
     public String getDescription() {

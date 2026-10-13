@@ -3,7 +3,6 @@ package de.do9fse.winkey.lib.core.model.configuration;
 import static javax.measure.MetricPrefix.MILLI;
 
 import java.text.MessageFormat;
-import java.util.Objects;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Time;
@@ -11,13 +10,14 @@ import javax.measure.quantity.Time;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 public record FirstExtensionDelay(Quantity<Time> value) {
     public static final ComparableQuantity<Time> DELAY_MIN = Quantities.getQuantity(0, MILLI(Units.SECOND));
     public static final ComparableQuantity<Time> DELAY_MAX = Quantities.getQuantity(250, MILLI(Units.SECOND));
 
     public FirstExtensionDelay {
-        Objects.requireNonNull(value, "First extension delay must not be null");
+        Validations.validateNotNull("First extension delay", value);
 
         final ComparableQuantity<Time> inMilliseconds = WinKeyUnits.asMilliseconds(value);
 

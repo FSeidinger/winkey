@@ -1,7 +1,6 @@
 package de.do9fse.winkey.lib.core.model.configuration;
 
 import java.text.MessageFormat;
-import java.util.Objects;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
@@ -9,13 +8,14 @@ import javax.measure.quantity.Dimensionless;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 public record Weighting(Quantity<Dimensionless> value) {
     public static final ComparableQuantity<Dimensionless> PERCENT_MIN = Quantities.getQuantity(10, Units.PERCENT);
     public static final ComparableQuantity<Dimensionless> PERCENT_MAX = Quantities.getQuantity(90, Units.PERCENT);
 
     public Weighting {
-        Objects.requireNonNull(value, "Weighting value must not be null");
+        Validations.validateNotNull("Weighting value", value);
 
         final ComparableQuantity<Dimensionless> inPercent = WinKeyUnits.asPercent(value);
 

@@ -1,6 +1,6 @@
 package de.do9fse.winkey.lib.core.model.responses;
 
-import de.do9fse.winkey.lib.core.model.commands.host.SideToneControlCommand.SideToneFrequency;
+import de.do9fse.winkey.lib.core.model.commands.host.immediate.SideToneControlCommand.SideToneFrequency;
 import de.do9fse.winkey.lib.core.model.configuration.DitDahRatio;
 import de.do9fse.winkey.lib.core.model.configuration.FarnsworthSpeed;
 import de.do9fse.winkey.lib.core.model.configuration.FirstExtensionDelay;

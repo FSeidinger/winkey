@@ -1,9 +1,9 @@
 package de.do9fse.winkey.terminal;
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 public class ArgumentScanner {
     public record CommandOption(String option, String value, boolean isLongOption) {
@@ -29,7 +29,7 @@ public class ArgumentScanner {
     private int position = 0;
 
     public ArgumentScanner(final String[] arguments) {
-        this.arguments = Objects.requireNonNull(arguments, "Arguments must not be null");
+        this.arguments = Validations.validateNotNull("Arguments", arguments);
     }
 
     public boolean hasNext() {

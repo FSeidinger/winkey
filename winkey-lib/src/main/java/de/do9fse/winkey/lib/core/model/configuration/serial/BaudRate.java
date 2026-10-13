@@ -1,6 +1,6 @@
 package de.do9fse.winkey.lib.core.model.configuration.serial;
 
-import java.util.Objects;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 public record BaudRate(int value) {
     public static final BaudRate DEFAULT = new BaudRate(1200);
@@ -16,7 +16,7 @@ public record BaudRate(int value) {
     }
 
     public static BaudRate parseCustomBaudRate(final String defaultBaudRateValue) {
-        Objects.requireNonNull(defaultBaudRateValue, "Baud rate value must not be null");
+        Validations.validateNotNull("Baud rate value", defaultBaudRateValue);
         final int baudRate = Integer.parseInt(defaultBaudRateValue);
         return new BaudRate(baudRate);
     }

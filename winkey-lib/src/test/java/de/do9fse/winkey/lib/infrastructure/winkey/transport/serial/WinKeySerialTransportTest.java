@@ -43,7 +43,7 @@ import de.do9fse.winkey.lib.core.model.commands.admin.EchoTestCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.HostOpenCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK1ModeCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK2ModeCommand;
-import de.do9fse.winkey.lib.core.model.commands.host.BackspaceCommand;
+import de.do9fse.winkey.lib.core.model.commands.host.immediate.BackspaceCommand;
 import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
 import de.do9fse.winkey.lib.core.model.error.WinKeyRuntimeException;
 import de.do9fse.winkey.lib.core.model.responses.SpeedPotValueResponse;

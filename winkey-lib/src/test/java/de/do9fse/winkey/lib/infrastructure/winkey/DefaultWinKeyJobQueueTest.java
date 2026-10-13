@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
 import de.do9fse.winkey.lib.core.model.WinKeyJob;
-import de.do9fse.winkey.lib.core.model.commands.host.BackspaceCommand;
+import de.do9fse.winkey.lib.core.model.commands.host.immediate.BackspaceCommand;
 import de.do9fse.winkey.lib.core.model.responses.WinKeyResponse;
 import de.do9fse.winkey.lib.core.port.out.WinKeyJobQueue;
 

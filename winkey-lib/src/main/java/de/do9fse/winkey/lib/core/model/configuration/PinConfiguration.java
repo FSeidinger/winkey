@@ -1,6 +1,6 @@
 package de.do9fse.winkey.lib.core.model.configuration;
 
-import java.util.Objects;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 public record PinConfiguration(
     boolean isPttEnabled,
@@ -25,8 +25,8 @@ public record PinConfiguration(
     }
 
     public PinConfiguration {
-        Objects.requireNonNull(ultimaticPriority, "Ultimatic priority must not be null");
-        Objects.requireNonNull(paddleHangTime, "Paddle hang time must not be null");
+        Validations.validateNotNull("Ultimatic priority", ultimaticPriority);
+        Validations.validateNotNull("Paddle hang time", paddleHangTime);
     }
 
     public static PinConfiguration fromProtocol(final int value) {

@@ -1,7 +1,6 @@
 package de.do9fse.winkey.lib.core.model.configuration;
 
 import java.text.MessageFormat;
-import java.util.Objects;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
@@ -9,6 +8,7 @@ import javax.measure.quantity.Dimensionless;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 public record PaddleSetpoint(Quantity<Dimensionless> value) {
     public static final ComparableQuantity<Dimensionless> PERCENT_MIN = Quantities.getQuantity(10, Units.PERCENT);
@@ -16,7 +16,7 @@ public record PaddleSetpoint(Quantity<Dimensionless> value) {
     public static final ComparableQuantity<Dimensionless> DISABLED = Quantities.getQuantity(0, Units.PERCENT);
 
     public PaddleSetpoint {
-        Objects.requireNonNull(value, "Paddle setpoint must not be null");
+        Validations.validateNotNull("Paddle setpoint", value);
 
         final ComparableQuantity<Dimensionless> inPercent = WinKeyUnits.asPercent(value);
         final double percentageValue = inPercent.getValue().doubleValue();

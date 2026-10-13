@@ -1,12 +1,12 @@
 package de.do9fse.winkey.lib.core.model.responses;
 
 import java.text.MessageFormat;
-import java.util.Objects;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
 import de.do9fse.winkey.lib.core.model.configuration.WinKeyUnits;
+import de.do9fse.winkey.lib.core.model.Validations;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
@@ -20,7 +20,7 @@ public record SpeedPotValueResponse(Quantity<Dimensionless> speedOffset) impleme
     public static final ComparableQuantity<Dimensionless> SPEED_OFFSET_MAX = Quantities.getQuantity(31, WinKeyUnits.WPM);
 
     public SpeedPotValueResponse {
-        Objects.requireNonNull(speedOffset, "Speed pot value must not be null");
+        Validations.validateNotNull("Speed pot value", speedOffset);
 
         final ComparableQuantity<Dimensionless> normalizedSpeedOffset = WinKeyUnits.asWpm(speedOffset);
         if (normalizedSpeedOffset.isLessThan(SPEED_OFFSET_MIN) || normalizedSpeedOffset.isGreaterThan(SPEED_OFFSET_MAX)) {

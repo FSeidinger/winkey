@@ -1,19 +1,19 @@
 package de.do9fse.winkey.lib.core.model.configuration;
 
 import java.text.MessageFormat;
-import java.util.Objects;
 
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
+import de.do9fse.winkey.lib.core.model.Validations;
 
 public record WPMSpeedWithReset(Quantity<Dimensionless> value) {
     private static final double WPM_SPEED_RESET = 0;
 
     public WPMSpeedWithReset {
-        Objects.requireNonNull(value, "WPM speed must not be null");
+        Validations.validateNotNull("WPM speed", value);
 
         final ComparableQuantity<Dimensionless> speed = WinKeyUnits.asWpm(value);
         final double speedValue = speed.getValue().doubleValue();
@@ -34,7 +34,7 @@ public record WPMSpeedWithReset(Quantity<Dimensionless> value) {
     }
 
     public WPMSpeedWithReset(final WPMSpeed speed) {
-        this(Objects.requireNonNull(speed, "WPM speed must not be null").value());
+        this(Validations.validateNotNull("WPM speed", speed).value());
     }
 
     public static WPMSpeedWithReset useSpeedPot() {

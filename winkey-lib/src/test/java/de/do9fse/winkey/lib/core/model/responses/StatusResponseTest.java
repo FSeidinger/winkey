@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class StatusResponseTest {
     @Test
     void parsesWk1CompatibleStatusFields() {
-        final StatusResponse response = StatusResponse.fromProtocol(new byte[] { (byte) 0xdf });
+        final StatusResponse response = StatusResponseWK1.fromData(new byte[] { (byte) 0xdf });
 
         assertTrue(response.waiting());
         assertTrue(response.keyDown());
@@ -23,10 +23,7 @@ class StatusResponseTest {
 
     @Test
     void parsesWk2StatusAndPushButtonFieldsWhenConfigured() {
-        final StatusResponse statusResponse = StatusResponse.fromProtocol(
-            new byte[] { (byte) 0xd7 },
-            true
-        );
+        final StatusResponse statusResponse = StatusResponseWK2.fromData(new byte[] { (byte) 0xd7 });
         assertTrue(statusResponse.waiting());
         assertFalse(statusResponse.keyDown());
         assertTrue(statusResponse.busy());
@@ -34,10 +31,7 @@ class StatusResponseTest {
         assertTrue(statusResponse.xoff());
         assertFalse(statusResponse.pushButtonStatus());
 
-        final StatusResponse buttonResponse = StatusResponse.fromProtocol(
-            new byte[] { (byte) 0xdf },
-            true
-        );
+        final StatusResponse buttonResponse = StatusResponseWK2.fromData(new byte[] { (byte) 0xdf });
         assertFalse(buttonResponse.keyDown());
         assertFalse(buttonResponse.waiting());
         assertFalse(buttonResponse.busy());
@@ -49,7 +43,7 @@ class StatusResponseTest {
     void rejectsStatusBytesWithoutTheProtocolTag() {
         assertThrows(
             IllegalArgumentException.class,
-            () -> StatusResponse.fromProtocol(new byte[] { 0x7f })
+            () -> StatusResponseWK1.fromData(new byte[] { 0x7f })
         );
     }
 }

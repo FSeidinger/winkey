@@ -5,7 +5,7 @@ import java.util.Arrays;
 import de.do9fse.winkey.lib.core.model.Validations;
 
 @ResponseConfiguration(expectedResponseBytes = EEPROMDumpResponse.DATA_LENGTH)
-public record EEPROMDumpResponse(byte[] data) implements CommandResponse {
+public record EEPROMDumpResponse(byte[] data) implements Response {
     public static final int DATA_LENGTH = 256;
 
     public EEPROMDumpResponse {
@@ -29,7 +29,7 @@ public record EEPROMDumpResponse(byte[] data) implements CommandResponse {
         return Arrays.copyOf(data, data.length);
     }
 
-    public static EEPROMDumpResponse fromProtocol(final byte[] responseBytes) {
+    public static EEPROMDumpResponse fromData(final byte[] responseBytes) {
         return new EEPROMDumpResponse(responseBytes);
     }
 }

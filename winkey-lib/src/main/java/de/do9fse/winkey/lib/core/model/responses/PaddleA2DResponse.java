@@ -1,7 +1,7 @@
 package de.do9fse.winkey.lib.core.model.responses;
 
 @ResponseConfiguration(expectedResponseBytes = 1)
-public record PaddleA2DResponse(PaddleA2DState state) implements CommandResponse {
+public record PaddleA2DResponse(PaddleA2DState state) implements Response {
     public enum PaddleA2DState {
         BOTH_PADDLES_UP,
         DIT_PADDLE_DOWN,
@@ -9,7 +9,7 @@ public record PaddleA2DResponse(PaddleA2DState state) implements CommandResponse
         BOTH_PADDLES_DOWN
     }
 
-    public static PaddleA2DResponse fromProtocol(final byte[] responseBytes) {
+    public static PaddleA2DResponse fromData(final byte[] responseBytes) {
         final Integer adcValue = Byte.toUnsignedInt(responseBytes[0]);
         
         final PaddleA2DState state = switch(adcValue) {

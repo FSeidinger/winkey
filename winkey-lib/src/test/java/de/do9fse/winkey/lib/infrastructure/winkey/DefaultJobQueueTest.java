@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import de.do9fse.winkey.lib.core.model.Job;
 import de.do9fse.winkey.lib.core.model.commands.host.immediate.BackspaceCommand;
-import de.do9fse.winkey.lib.core.model.responses.CommandResponse;
+import de.do9fse.winkey.lib.core.model.responses.Response;
 import de.do9fse.winkey.lib.core.port.out.JobQueue;
 
 class DefaultJobQueueTest {
@@ -68,6 +68,6 @@ class DefaultJobQueueTest {
     }
 
     private static Job newJob() {
-        return new Job(new BackspaceCommand(), new CompletableFuture<CommandResponse>());
+        return new Job(new BackspaceCommand(), new CompletableFuture<Response>());
     }
 }

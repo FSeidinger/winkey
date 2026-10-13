@@ -5,7 +5,7 @@ import java.util.Set;
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.error.WKRuntimeException;
-import de.do9fse.winkey.lib.core.model.responses.CommandResponse;
+import de.do9fse.winkey.lib.core.model.responses.Response;
 
 public interface ImmediateCommand extends Command {
     /**
@@ -32,7 +32,7 @@ public interface ImmediateCommand extends Command {
 
         final Set<ProtocolVersion> supportedKeyProtocolVersions = Set.of(configuration.allowedProtocols());
         @SuppressWarnings("unchecked")
-        final Class<CommandResponse> responseClass = (Class<CommandResponse>) configuration.responseType();
+        final Class<Response> responseClass = (Class<Response>) configuration.responseType();
 
         return new CommandInfo(commandClass, responseClass, supportedKeyProtocolVersions);
     }

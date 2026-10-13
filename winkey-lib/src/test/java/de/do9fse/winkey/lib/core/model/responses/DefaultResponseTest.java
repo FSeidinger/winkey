@@ -33,7 +33,7 @@ class DefaultResponseTest {
         responseBytes[13] = (byte) 0b10011011;
         responseBytes[14] = (byte) 0xff;
 
-        final DefaultsResponse response = DefaultsResponse.fromProtocol(responseBytes);
+        final DefaultsResponse response = DefaultsResponse.fromData(responseBytes);
 
         assertEquals(KeyMode.BUG_MODE, response.mode().keyMode());
         assertEquals(25.0, response.wpmSpeed().value().getValue().doubleValue());

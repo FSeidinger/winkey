@@ -1,6 +1,6 @@
 package de.do9fse.winkey.lib.core.port.in;
 
-import de.do9fse.winkey.lib.core.model.responses.CommandResponse;
+import de.do9fse.winkey.lib.core.model.responses.Response;
 
 @FunctionalInterface
 public interface UnsolicitedResponseListener {
@@ -10,5 +10,5 @@ public interface UnsolicitedResponseListener {
      *
      * @param response the decoded unsolicited response
      */
-    void onUnsolicitedResponse(CommandResponse response);
+    void onUnsolicitedResponse(Response response);
 }

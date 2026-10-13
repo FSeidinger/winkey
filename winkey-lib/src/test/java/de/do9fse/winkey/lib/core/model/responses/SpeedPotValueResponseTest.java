@@ -11,7 +11,7 @@ import tech.units.indriya.quantity.Quantities;
 class SpeedPotValueResponseTest {
     @Test
     void parsesSpeedPotValueAndIgnoresProtocolTagBits() {
-        final SpeedPotValueResponse response = SpeedPotValueResponse.fromProtocol(new byte[] { (byte) 0x9f });
+        final SpeedPotValueResponse response = SpeedPotValueResponse.fromData(new byte[] { (byte) 0x9f });
 
         assertEquals(31, response.speedOffset().getValue().intValue());
     }
@@ -20,7 +20,7 @@ class SpeedPotValueResponseTest {
     void rejectsResponseWithoutExpectedTagBits() {
         assertThrows(
             IllegalArgumentException.class,
-            () -> SpeedPotValueResponse.fromProtocol(new byte[] { (byte) 0xbf })
+            () -> SpeedPotValueResponse.fromData(new byte[] { (byte) 0xbf })
         );
     }
 
@@ -28,7 +28,7 @@ class SpeedPotValueResponseTest {
     void rejectsSpeedPotValuesWithReservedHighValueBitSet() {
         assertThrows(
             IllegalArgumentException.class,
-            () -> SpeedPotValueResponse.fromProtocol(new byte[] { (byte) 0xa0 })
+            () -> SpeedPotValueResponse.fromData(new byte[] { (byte) 0xa0 })
         );
     }
 

@@ -3,8 +3,6 @@ package de.do9fse.winkey.lib.infrastructure.winkey.transport.serial;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PushbackInputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.util.HexFormat;
@@ -31,10 +29,10 @@ import de.do9fse.winkey.lib.core.model.commands.admin.SetWK1ModeCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK2ModeCommand;
 import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
 import de.do9fse.winkey.lib.core.model.error.WKRuntimeException;
-import de.do9fse.winkey.lib.core.model.responses.EmptyResponse;
 import de.do9fse.winkey.lib.core.model.responses.ResponseConfiguration;
 import de.do9fse.winkey.lib.core.model.responses.SpeedPotValueResponse;
-import de.do9fse.winkey.lib.core.model.responses.CommandResponse;
+import de.do9fse.winkey.lib.core.model.responses.Response;
+import de.do9fse.winkey.lib.core.model.responses.ResponseFactory;
 import de.do9fse.winkey.lib.core.model.responses.StatusResponse;
 import de.do9fse.winkey.lib.core.port.in.UnsolicitedResponseListener;
 import de.do9fse.winkey.lib.core.port.out.JobQueue;
@@ -52,6 +50,8 @@ public class SerialTransport implements Transport {
     private CompletableFuture<Void> serialPortReaderThreadResult;
 
     private final JobQueue jobQueue;
+
+    private final ResponseFactory responseFactory = new ResponseFactory();
 
     private PushbackInputStream inputStream;
     private OutputStream outputStream;
@@ -149,7 +149,7 @@ public class SerialTransport implements Transport {
         this.unsolicitedResponseListeners.remove(Validations.validateNotNull("listener", listener));
     }
 
-    private void notifyUnsolicitedResponseListeners(final CommandResponse response) {
+    private void notifyUnsolicitedResponseListeners(final Response response) {
         for (final UnsolicitedResponseListener listener : this.unsolicitedResponseListeners) {
             try {
                 listener.onUnsolicitedResponse(response);
@@ -186,11 +186,11 @@ public class SerialTransport implements Transport {
     }
    
     @Override
-    public Job submitJob(final ImmediateCommand command, final CompletableFuture<CommandResponse> jobResult) throws WinKeyApplicationException {
+    public Job submitJob(final ImmediateCommand command, final CompletableFuture<Response> jobResult) throws WinKeyApplicationException {
         return submitJob(command, jobResult, true);
     }
 
-    public Job submitJob(final ImmediateCommand command, final CompletableFuture<CommandResponse> jobResult, final boolean doSend) throws WinKeyApplicationException {
+    public Job submitJob(final ImmediateCommand command, final CompletableFuture<Response> jobResult, final boolean doSend) throws WinKeyApplicationException {
         if (context.getState() != ApplicationState.READY) {
             throw new IllegalStateException("Transport is not ready");
         }
@@ -273,7 +273,10 @@ public class SerialTransport implements Transport {
         }
 
         try {
-            final StatusResponse statusResponse = StatusResponse.fromProtocol(new byte[] {(byte) data}, wk2StatusMode);
+            final StatusResponse statusResponse = responseFactory.createResponse(
+                new byte[] {(byte) data},
+                wk2StatusMode
+            );
             notifyUnsolicitedResponseListeners(statusResponse);
             LOGGER.debug("Notified unsolicited status response {}", statusResponse);
         } catch (final IllegalArgumentException exception) {
@@ -289,7 +292,10 @@ public class SerialTransport implements Transport {
         }
 
         try {
-            final SpeedPotValueResponse speedPotResponse = SpeedPotValueResponse.fromProtocol(new byte[] {(byte) data});
+            final Response speedPotResponse = responseFactory.createResponse(
+                SpeedPotValueResponse.class,
+                new byte[] {(byte) data}
+            );
             notifyUnsolicitedResponseListeners(speedPotResponse);
             LOGGER.debug("Notified unsolicited speed pot response {}", formatter.toHexDigits(data));
 
@@ -327,43 +333,42 @@ public class SerialTransport implements Transport {
         }
 
         final CommandInfo commandInfo = job.command().getCommandInfo();
-        final Class<CommandResponse> responseType = commandInfo.responseType();
+        final Class<Response> responseType = commandInfo.responseType();
 
-        if (responseType.equals(EmptyResponse.class)) {
-            final EmptyResponse emptyResponse = new EmptyResponse();
-            completeActiveJob(emptyResponse);
-        } else {
-            final ResponseConfiguration responseConfiguration = responseType.getAnnotation(ResponseConfiguration.class);
-            final int expectedResponseByte = responseConfiguration.expectedResponseBytes();
+        final ResponseConfiguration responseConfiguration = responseType.getAnnotation(ResponseConfiguration.class);
+        final int expectedResponseByte = responseConfiguration.expectedResponseBytes();
 
-            final byte[] buffer = new byte[expectedResponseByte];
+        final byte[] buffer = new byte[expectedResponseByte];
+        if (expectedResponseByte > 0) {
             try {
                 readData(buffer);
             } catch (final SerialPortTimeoutException e) {
                 return;
             }
-
-            try {
-                final Method factory = responseType.getMethod("fromProtocol", byte[].class);
-                final CommandResponse response = (CommandResponse) factory.invoke(null, buffer);
-                completeActiveJob(response);
-            } catch (final NoSuchMethodException | SecurityException | IllegalAccessException | InvocationTargetException e) {
-                final String message = MessageFormat.format(
-                    "Failed to create response for active job {0}",
-                    job
-                );
-
-                throw new WKRuntimeException(message, e);
-            }
         }
+
+        final Response response;
+        try {
+            response = responseType.equals(StatusResponse.class)
+                ? responseFactory.createResponse(buffer, wk2StatusMode)
+                : responseFactory.createResponse(responseType, buffer);
+        } catch (final IllegalArgumentException exception) {
+            final String message = MessageFormat.format(
+                "Failed to create response for active job {0}",
+                job
+            );
+
+            throw new WKRuntimeException(message, exception);
+        }
+        completeActiveJob(response);
     }
 
-    private void completeActiveJob(final CommandResponse response) {
+    private void completeActiveJob(final Response response) {
         try {
             this.jobQueue.lock();
 
             final Job job = this.jobQueue.poll();
-            final CompletableFuture<CommandResponse> responseHolder = job.response();
+            final CompletableFuture<Response> responseHolder = job.response();
 
             responseHolder.complete(response);
 

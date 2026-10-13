@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
+import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
 
 class ApplicationContextTest {
     // Subject under test
@@ -14,22 +14,22 @@ class ApplicationContextTest {
 
     @BeforeEach
     void setUp() {
-        this.context = new ApplicationContext(WinKeyProtocolVersion.V2);
-        this.context.setDeviceConfiguration(DeviceConfiguration.DEFAULT);
+        this.context = new ApplicationContext(ProtocolVersion.V2);
+        this.context.setDeviceConfiguration(SerialConfiguration.DEFAULT);
     }
 
     @Test
     void retainsConfiguredProtocolVersionAndStartsClosed() {
-        assertEquals(WinKeyProtocolVersion.V2, context.getVersion());
-        assertEquals(WinKeyState.CLOSED, context.getState());
+        assertEquals(ProtocolVersion.V2, context.getVersion());
+        assertEquals(ApplicationState.CLOSED, context.getState());
     }
 
     @Test
     void delegatesStateTransitionsToItsStateMachine() {
-        context.transitionToState(WinKeyState.INITIALIZING);
-        context.transitionToState(WinKeyState.READY);
+        context.transitionToState(ApplicationState.INITIALIZING);
+        context.transitionToState(ApplicationState.READY);
 
-        assertEquals(WinKeyState.READY, context.getState());
+        assertEquals(ApplicationState.READY, context.getState());
     }
 
     @Test

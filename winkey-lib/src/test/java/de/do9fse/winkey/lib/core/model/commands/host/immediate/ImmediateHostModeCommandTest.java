@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
-import de.do9fse.winkey.lib.core.model.commands.WinKeyImmediateCommand;
+import de.do9fse.winkey.lib.core.model.ProtocolVersion;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.configuration.DitDahRatio;
 import de.do9fse.winkey.lib.core.model.configuration.FarnsworthSpeed;
 import de.do9fse.winkey.lib.core.model.configuration.FirstExtensionDelay;
@@ -24,9 +24,9 @@ import de.do9fse.winkey.lib.core.model.configuration.WPMSpeed;
 import de.do9fse.winkey.lib.core.model.configuration.WPMSpeedRange;
 import de.do9fse.winkey.lib.core.model.configuration.WPMSpeedWithReset;
 import de.do9fse.winkey.lib.core.model.configuration.Weighting;
-import de.do9fse.winkey.lib.core.model.configuration.WinKeyUnits;
+import de.do9fse.winkey.lib.core.model.configuration.CustomUnits;
 import de.do9fse.winkey.lib.core.model.responses.SpeedPotValueResponse;
-import de.do9fse.winkey.lib.core.model.responses.WinKeyStatusResponse;
+import de.do9fse.winkey.lib.core.model.responses.StatusResponse;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
@@ -102,7 +102,7 @@ class ImmediateHostModeCommandTest {
         assertPayload(new ClearBufferCommand(), new byte[] { 0x0a });
         assertPayload(new KeyImmediateCommand(true), new byte[] { 0x0b, 0x01 });
         assertPayload(
-            new SetHscwSpeedCommand(Quantities.getQuantity(2000, WinKeyUnits.LPM)),
+            new SetHscwSpeedCommand(Quantities.getQuantity(2000, CustomUnits.LPM)),
             new byte[] { 0x0c, 0x14 }
         );
         assertPayload(
@@ -139,7 +139,7 @@ class ImmediateHostModeCommandTest {
             new SoftwarePaddleCommand(SoftwarePaddleCommand.PaddleSelection.BOTH),
             new byte[] { 0x14, 0x03 }
         );
-        assertPayload(new RequestWinKeyStatusCommand(), new byte[] { 0x15 });
+        assertPayload(new RequestStatusCommand(), new byte[] { 0x15 });
         assertPayload(SetBufferPointerCommand.reset(), new byte[] { 0x16, 0x00 });
         assertPayload(
             new SetBufferPointerCommand(SetBufferPointerCommand.Operation.OVERWRITE, 8),
@@ -166,22 +166,22 @@ class ImmediateHostModeCommandTest {
 
     @Test
     void hostCommandsDeclareProtocolAndResponseMetadata() {
-        final WinKeyImmediateCommand setupSpeedPotCommand = new SetupSpeedPotCommand(
+        final ImmediateCommand setupSpeedPotCommand = new SetupSpeedPotCommand(
             WPMSpeed.fromProtocol(10),
             WPMSpeedRange.fromProtocol(15),
             42
         );
-        assertTrue(setupSpeedPotCommand.getCommandInfo().supportsProtocol(WinKeyProtocolVersion.V1));
-        assertTrue(setupSpeedPotCommand.getCommandInfo().supportsProtocol(WinKeyProtocolVersion.V2));
+        assertTrue(setupSpeedPotCommand.getCommandInfo().supportsProtocol(ProtocolVersion.V1));
+        assertTrue(setupSpeedPotCommand.getCommandInfo().supportsProtocol(ProtocolVersion.V2));
 
-        final WinKeyImmediateCommand speedPotCommand = new GetSpeedPotCommand();
-        assertTrue(speedPotCommand.getCommandInfo().supportsProtocol(WinKeyProtocolVersion.V2));
+        final ImmediateCommand speedPotCommand = new GetSpeedPotCommand();
+        assertTrue(speedPotCommand.getCommandInfo().supportsProtocol(ProtocolVersion.V2));
         assertEquals(SpeedPotValueResponse.class, speedPotCommand.getCommandInfo().responseType());
 
-        final WinKeyImmediateCommand statusCommand = new RequestWinKeyStatusCommand();
-        assertTrue(statusCommand.getCommandInfo().supportsProtocol(WinKeyProtocolVersion.V2));
-        assertEquals(WinKeyStatusResponse.class, statusCommand.getCommandInfo().responseType());
-        assertFalse(statusCommand.getCommandInfo().supportsProtocol(WinKeyProtocolVersion.V1));
+        final ImmediateCommand statusCommand = new RequestStatusCommand();
+        assertTrue(statusCommand.getCommandInfo().supportsProtocol(ProtocolVersion.V2));
+        assertEquals(StatusResponse.class, statusCommand.getCommandInfo().responseType());
+        assertFalse(statusCommand.getCommandInfo().supportsProtocol(ProtocolVersion.V1));
 
         // TODO Implement after refactoring
         // assertEquals(
@@ -194,7 +194,7 @@ class ImmediateHostModeCommandTest {
     void validatesProtocolRangesAndCopiesLoadDefaults() {
         final IllegalArgumentException belowMinimumSpeed = assertThrows(
             IllegalArgumentException.class,
-            () -> new WPMSpeedWithReset(Quantities.getQuantity(4, WinKeyUnits.WPM))
+            () -> new WPMSpeedWithReset(Quantities.getQuantity(4, CustomUnits.WPM))
         );
         assertEquals(
             "CW speed must be between "
@@ -206,11 +206,11 @@ class ImmediateHostModeCommandTest {
         );
         assertThrows(
             IllegalArgumentException.class,
-            () -> new WPMSpeedWithReset(Quantities.getQuantity(100, WinKeyUnits.WPM))
+            () -> new WPMSpeedWithReset(Quantities.getQuantity(100, CustomUnits.WPM))
         );
         assertEquals(
             46,
-            new WPMSpeedWithReset(Quantities.getQuantity(45.5, WinKeyUnits.WPM)).toProtocolValue()
+            new WPMSpeedWithReset(Quantities.getQuantity(45.5, CustomUnits.WPM)).toProtocolValue()
         );
         assertThrows(
             IllegalArgumentException.class,
@@ -229,7 +229,7 @@ class ImmediateHostModeCommandTest {
         );
         assertThrows(
             IllegalArgumentException.class,
-            () -> new SetHscwSpeedCommand(Quantities.getQuantity(900, WinKeyUnits.LPM))
+            () -> new SetHscwSpeedCommand(Quantities.getQuantity(900, CustomUnits.LPM))
         );
         assertThrows(
             IllegalArgumentException.class,

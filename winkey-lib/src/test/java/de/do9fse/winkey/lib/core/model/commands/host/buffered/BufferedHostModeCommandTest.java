@@ -4,7 +4,7 @@ import static de.do9fse.winkey.lib.testtools.CommandTestTools.assertPayload;
 
 import org.junit.jupiter.api.Test;
 
-import de.do9fse.winkey.lib.core.model.configuration.WinKeyUnits;
+import de.do9fse.winkey.lib.core.model.configuration.CustomUnits;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
@@ -17,11 +17,11 @@ class BufferedHostModeCommandTest {
             new byte[] { 0x1a, 0x0f }
         );
         assertPayload(
-            new ChangeSpeedBufferedCommand(Quantities.getQuantity(25, WinKeyUnits.WPM)),
+            new ChangeSpeedBufferedCommand(Quantities.getQuantity(25, CustomUnits.WPM)),
             new byte[] { 0x1c, 0x19 }
         );
         assertPayload(
-            new HscwSpeedChangeCommand(Quantities.getQuantity(4000, WinKeyUnits.LPM)),
+            new HscwSpeedChangeCommand(Quantities.getQuantity(4000, CustomUnits.LPM)),
             new byte[] { 0x1d, 0x28 }
         );
         assertPayload(new CancelBufferedSpeedCommand(), new byte[] { 0x1e });

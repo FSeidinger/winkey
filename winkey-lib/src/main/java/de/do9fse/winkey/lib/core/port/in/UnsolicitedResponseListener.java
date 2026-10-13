@@ -1,14 +1,14 @@
 package de.do9fse.winkey.lib.core.port.in;
 
-import de.do9fse.winkey.lib.core.model.responses.WinKeyResponse;
+import de.do9fse.winkey.lib.core.model.responses.CommandResponse;
 
 @FunctionalInterface
-public interface WinKeyUnsolicitedResponseListener {
+public interface UnsolicitedResponseListener {
     /**
      * Called on the serial reader thread when the device sends a response that does not belong to the active command.
      * Implementations should return quickly; listener exceptions are logged and do not stop the reader.
      *
      * @param response the decoded unsolicited response
      */
-    void onUnsolicitedResponse(WinKeyResponse response);
+    void onUnsolicitedResponse(CommandResponse response);
 }

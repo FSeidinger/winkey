@@ -21,7 +21,7 @@ class WPMSpeedRangeTest {
 
     @Test
     void convertsRangeToWpmUnit() {
-        final Quantity<Dimensionless> oneWpm = Quantities.getQuantity(1, WinKeyUnits.WPM);
+        final Quantity<Dimensionless> oneWpm = Quantities.getQuantity(1, CustomUnits.WPM);
 
         assertEquals(oneWpm, new WPMSpeedRange(oneWpm).value());
     }

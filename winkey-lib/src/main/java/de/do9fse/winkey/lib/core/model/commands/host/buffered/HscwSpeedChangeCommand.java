@@ -5,14 +5,14 @@ import java.text.MessageFormat;
 import javax.measure.Quantity;
 import javax.measure.quantity.Frequency;
 
-import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
+import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.Validations;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
-import de.do9fse.winkey.lib.core.model.configuration.WinKeyUnits;
+import de.do9fse.winkey.lib.core.model.configuration.CustomUnits;
 import tech.units.indriya.quantity.Quantities;
 
-@ImmediateCommandConfiguration(allowedProtocols = WinKeyProtocolVersion.V2)
+@ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
 public record HscwSpeedChangeCommand(Quantity<Frequency> lpm) implements HostModeCommand {
     public HscwSpeedChangeCommand {
         Validations.validateNotNull("Buffered HSCW speed", lpm);
@@ -20,7 +20,7 @@ public record HscwSpeedChangeCommand(Quantity<Frequency> lpm) implements HostMod
         final int lpmValue = Validations.validateIntegralFrequencyRange(
             "Buffered HSCW speed",
             lpm,
-            WinKeyUnits.LPM,
+            CustomUnits.LPM,
             Validations.HSCW_SPEED_MIN_LPM,
             Validations.HSCW_SPEED_MAX_LPM
         );
@@ -35,7 +35,7 @@ public record HscwSpeedChangeCommand(Quantity<Frequency> lpm) implements HostMod
             throw new IllegalArgumentException(message);
         }
         
-        lpm = Quantities.getQuantity(lpmValue, WinKeyUnits.LPM);
+        lpm = Quantities.getQuantity(lpmValue, CustomUnits.LPM);
     }
 
     @Override

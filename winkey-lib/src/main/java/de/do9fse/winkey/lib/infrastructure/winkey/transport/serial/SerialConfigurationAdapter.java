@@ -4,13 +4,13 @@ import com.fazecast.jSerialComm.SerialPort;
 
 import de.do9fse.winkey.lib.core.model.ApplicationContext;
 import de.do9fse.winkey.lib.core.model.Validations;
-import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
+import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
 
 public class SerialConfigurationAdapter {
     private final ApplicationContext context;
-    private final DeviceConfiguration deviceConfiguration;
+    private final SerialConfiguration deviceConfiguration;
 
-    public SerialConfigurationAdapter(final ApplicationContext context, final DeviceConfiguration deviceConfiguration) {
+    public SerialConfigurationAdapter(final ApplicationContext context, final SerialConfiguration deviceConfiguration) {
         this.context = Validations.validateNotNull("Application context", context);
         this.deviceConfiguration = Validations.validateNotNull("Device configuration", deviceConfiguration);
     }

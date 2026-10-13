@@ -19,7 +19,7 @@ public record FirstExtensionDelay(Quantity<Time> value) {
     public FirstExtensionDelay {
         Validations.validateNotNull("First extension delay", value);
 
-        final ComparableQuantity<Time> inMilliseconds = WinKeyUnits.asMilliseconds(value);
+        final ComparableQuantity<Time> inMilliseconds = CustomUnits.asMilliseconds(value);
 
         if (inMilliseconds.isLessThan(DELAY_MIN) || inMilliseconds.isGreaterThan(DELAY_MAX)) {
             final String message = MessageFormat.format(

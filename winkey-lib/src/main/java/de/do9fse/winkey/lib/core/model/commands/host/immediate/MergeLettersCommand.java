@@ -2,11 +2,11 @@ package de.do9fse.winkey.lib.core.model.commands.host.immediate;
 
 import java.text.MessageFormat;
 
-import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
+import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
 
-@ImmediateCommandConfiguration(allowedProtocols = WinKeyProtocolVersion.V2)
+@ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
 public record MergeLettersCommand(char first, char second) implements HostModeCommand {
     private static final char MAX_ASCII_CHARACTER = 0x7f;
 

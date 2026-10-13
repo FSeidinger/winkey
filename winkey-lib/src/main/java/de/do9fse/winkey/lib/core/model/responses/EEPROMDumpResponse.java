@@ -5,7 +5,7 @@ import java.util.Arrays;
 import de.do9fse.winkey.lib.core.model.Validations;
 
 @ResponseConfiguration(expectedResponseBytes = EEPROMDumpResponse.DATA_LENGTH)
-public record EEPROMDumpResponse(byte[] data) implements WinKeyResponse {
+public record EEPROMDumpResponse(byte[] data) implements CommandResponse {
     public static final int DATA_LENGTH = 256;
 
     public EEPROMDumpResponse {

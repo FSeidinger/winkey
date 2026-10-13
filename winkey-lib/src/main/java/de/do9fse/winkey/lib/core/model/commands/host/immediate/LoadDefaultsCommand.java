@@ -3,12 +3,12 @@ package de.do9fse.winkey.lib.core.model.commands.host.immediate;
 import java.text.MessageFormat;
 import java.util.Arrays;
 
-import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
+import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
 import de.do9fse.winkey.lib.core.model.Validations;
 
-@ImmediateCommandConfiguration(allowedProtocols = WinKeyProtocolVersion.V2)
+@ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
 public record LoadDefaultsCommand(byte[] values) implements HostModeCommand {
     private static final int DEFAULTS_BYTES = 15;
 

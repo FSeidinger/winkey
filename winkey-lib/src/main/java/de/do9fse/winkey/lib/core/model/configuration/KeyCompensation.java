@@ -19,7 +19,7 @@ public record KeyCompensation(Quantity<Time> value) {
     public KeyCompensation {
         Validations.validateNotNull("Duration of key compensation", value);
 
-        final ComparableQuantity<Time> inMilliseconds = WinKeyUnits.asMilliseconds(value);
+        final ComparableQuantity<Time> inMilliseconds = CustomUnits.asMilliseconds(value);
 
         if (inMilliseconds.isLessThan(DURATION_MIN) || inMilliseconds.isGreaterThan(DURATION_MAX)) {
             final String message = MessageFormat.format(

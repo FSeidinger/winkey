@@ -10,13 +10,13 @@ import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayName("Keyer version tests")
-class WinKeyVersionResponseTest {
+class VersionResponseTest {
 
     @ParameterizedTest
     @ValueSource(ints = { 1, 2, 3 })
     @DisplayName("Test that valid major version is accepted")
     void acceptsValidMajorVersion(final int majorVersion) {
-        final WinKeyVersionResponse version = new WinKeyVersionResponse(majorVersion, 0);
+        final VersionResponse version = new VersionResponse(majorVersion, 0);
         assertEquals(majorVersion, version.majorVersion());
     }
 
@@ -26,14 +26,14 @@ class WinKeyVersionResponseTest {
     void rejectsInvalidMajorVersion(final int majorVersion) {
         final IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
-            () -> new WinKeyVersionResponse(majorVersion, 0)
+            () -> new VersionResponse(majorVersion, 0)
         );
 
         assertEquals(
             "WinKey major version must be between "
-                + WinKeyVersionResponse.MAJOR_VERSION_MIN
+                + VersionResponse.MAJOR_VERSION_MIN
                 + " and "
-                + WinKeyVersionResponse.MAJOR_VERSION_MAX
+                + VersionResponse.MAJOR_VERSION_MAX
                 + " but was "
                 + majorVersion,
             exception.getMessage()
@@ -45,12 +45,12 @@ class WinKeyVersionResponseTest {
     void rejectsNegativeMinorVersion() {
         final IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
-            () -> new WinKeyVersionResponse(2, -1)
+            () -> new VersionResponse(2, -1)
         );
 
         assertEquals(
             "Minor version must not be less than "
-                + WinKeyVersionResponse.MINOR_VERSION_MIN
+                + VersionResponse.MINOR_VERSION_MIN
                 + " but was -1",
             exception.getMessage()
         );
@@ -59,7 +59,7 @@ class WinKeyVersionResponseTest {
     @Test
     @DisplayName("Test that version can be parsed")
     void parsesMajorAndMinorVersion() {
-        final WinKeyVersionResponse version = WinKeyVersionResponse.parse("2.1");
+        final VersionResponse version = VersionResponse.parse("2.1");
 
         assertEquals(2, version.majorVersion());
         assertEquals(1, version.minorVersion());
@@ -69,7 +69,7 @@ class WinKeyVersionResponseTest {
     @Test
     @DisplayName("Test that response byte can be parsed")
     void parsesResponseByte() {
-        final WinKeyVersionResponse version = WinKeyVersionResponse.fromProtocol(new byte[] { 23 });
+        final VersionResponse version = VersionResponse.fromProtocol(new byte[] { 23 });
 
         assertEquals(2, version.majorVersion());
         assertEquals(3, version.minorVersion());
@@ -88,13 +88,13 @@ class WinKeyVersionResponseTest {
     })
     @DisplayName("Test that malformed or unsupported version strings are rejected")
     void rejectsInvalidVersionStrings(final String value) {
-        assertThrows(IllegalArgumentException.class, () -> WinKeyVersionResponse.parse(value));
+        assertThrows(IllegalArgumentException.class, () -> VersionResponse.parse(value));
     }
 
     @ParameterizedTest
     @NullSource
     @DisplayName("Test that null version strings are rejected")
     void rejectsNullVersionString(final String value) {
-        assertThrows(NullPointerException.class, () -> WinKeyVersionResponse.parse(value));
+        assertThrows(NullPointerException.class, () -> VersionResponse.parse(value));
     }
 }

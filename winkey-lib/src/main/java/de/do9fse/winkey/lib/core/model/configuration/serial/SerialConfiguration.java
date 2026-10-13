@@ -2,8 +2,8 @@ package de.do9fse.winkey.lib.core.model.configuration.serial;
 
 import de.do9fse.winkey.lib.core.model.Validations;
 
-public record DeviceConfiguration(BaudRate baudRate, DataBits dataBits, Parity parity, StopBits stopBits, Timeout initializationTimeout, Timeout readTimeout) {
-    public DeviceConfiguration {
+public record SerialConfiguration(BaudRate baudRate, DataBits dataBits, Parity parity, StopBits stopBits, Timeout initializationTimeout, Timeout readTimeout) {
+    public SerialConfiguration {
         Validations.validateNotNull("Baud rate", baudRate);
         Validations.validateNotNull("Data bits", dataBits);
         Validations.validateNotNull("Parity", parity);
@@ -12,7 +12,7 @@ public record DeviceConfiguration(BaudRate baudRate, DataBits dataBits, Parity p
         Validations.validateNotNull("Read timeout", readTimeout);
     }
 
-    public static final DeviceConfiguration DEFAULT = new DeviceConfiguration(
+    public static final SerialConfiguration DEFAULT = new SerialConfiguration(
         BaudRate.DEFAULT,
         DataBits.DEFAULT,
         Parity.DEFAULT,
@@ -21,7 +21,7 @@ public record DeviceConfiguration(BaudRate baudRate, DataBits dataBits, Parity p
         Timeout.DEFAULT_READ_TIMEOUT
     );
 
-    public static final DeviceConfiguration DEFAULT_ALTERNATIVE = new DeviceConfiguration(
+    public static final SerialConfiguration DEFAULT_ALTERNATIVE = new SerialConfiguration(
         BaudRate.DEFAULT_ALTERNATIVE,
         DataBits.DEFAULT,
         Parity.DEFAULT,

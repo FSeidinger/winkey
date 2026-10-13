@@ -16,12 +16,12 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortInvalidPortException;
 
 import de.do9fse.winkey.lib.core.model.ApplicationContext;
-import de.do9fse.winkey.lib.core.model.WinKeyState;
-import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
+import de.do9fse.winkey.lib.core.model.ApplicationState;
+import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
 import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
-import de.do9fse.winkey.lib.core.port.out.WinKeyTransport;
+import de.do9fse.winkey.lib.core.port.out.Transport;
 import de.do9fse.winkey.lib.infrastructure.winkey.transport.serial.SerialConfigurationAdapter;
-import de.do9fse.winkey.lib.infrastructure.winkey.transport.serial.WinKeySerialTransport;
+import de.do9fse.winkey.lib.infrastructure.winkey.transport.serial.SerialTransport;
 
 public class ConnectCommand extends TerminalCommand {
     protected ConnectCommand() {
@@ -42,11 +42,11 @@ public class ConnectCommand extends TerminalCommand {
         }
 
         final ApplicationContext applicationContext = Constants.getApplicationContext(session);
-        if (applicationContext.getState() != WinKeyState.CLOSED) {
+        if (applicationContext.getState() != ApplicationState.CLOSED) {
             throw new IllegalStateException(Errors.DEVICE_ALREADY_OPEN.createErrorMessage(applicationContext));
         } 
 
-        final DeviceConfiguration deviceConfiguration = applicationContext.getDeviceConfiguration();
+        final SerialConfiguration deviceConfiguration = applicationContext.getDeviceConfiguration();
 
         try {
             final SerialPort serialPort = createSerialPort(stderr, applicationContext, deviceConfiguration);
@@ -63,28 +63,28 @@ public class ConnectCommand extends TerminalCommand {
         return null;
     }
 
-    private SerialPort createSerialPort(final PrintStream stderr, final ApplicationContext context, final DeviceConfiguration deviceConfiguration) throws SerialPortInvalidPortException {
+    private SerialPort createSerialPort(final PrintStream stderr, final ApplicationContext context, final SerialConfiguration deviceConfiguration) throws SerialPortInvalidPortException {
         final SerialConfigurationAdapter adapter = new SerialConfigurationAdapter(context, deviceConfiguration);
         return adapter.createSerialPort();
     }
 
     private void openAndInitializeTransport(final PrintStream stderr, final ApplicationContext context, final SerialPort serialPort) throws WinKeyApplicationException, TimeoutException {
-        WinKeyTransport transport = null;
+        Transport transport = null;
 
         try {
-            transport = new WinKeySerialTransport(context, serialPort);
+            transport = new SerialTransport(context, serialPort);
             context.setTransport(transport);
 
             transport.open();
             transport.initialize(10, TimeUnit.SECONDS);
         } finally {
-            if (context.getState() != WinKeyState.READY) {
+            if (context.getState() != ApplicationState.READY) {
                 closeTransport(transport);
             }
         }
     }
 
-    private void closeTransport(final WinKeyTransport transport) {
+    private void closeTransport(final Transport transport) {
         try {
             transport.close();
         } catch (final WinKeyApplicationException e) {

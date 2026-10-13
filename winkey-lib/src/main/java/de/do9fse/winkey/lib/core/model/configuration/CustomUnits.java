@@ -13,8 +13,8 @@ import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
-public final class WinKeyUnits {
-    private WinKeyUnits() {}
+public final class CustomUnits {
+    private CustomUnits() {}
 
     public static final Unit<Dimensionless> WPM = AbstractUnit.ONE.alternate("WPM");
     public static final Unit<Dimensionless> RATIO = AbstractUnit.ONE.alternate("Ratio");

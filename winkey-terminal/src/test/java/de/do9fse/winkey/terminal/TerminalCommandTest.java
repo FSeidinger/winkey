@@ -9,7 +9,7 @@ import org.jline.terminal.TerminalBuilder;
 import org.junit.jupiter.api.Test;
 
 import de.do9fse.winkey.lib.core.model.ApplicationContext;
-import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
+import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.terminal.test.tools.ArgumentsBuilder;
 
 public class TerminalCommandTest {
@@ -40,7 +40,7 @@ public class TerminalCommandTest {
 
     private RuntimeContext setupRuntimeContext() throws Exception {
         final MessageGenerator generator = new MessageGenerator();
-        final ApplicationContext context = new ApplicationContext(WinKeyProtocolVersion.V1);
+        final ApplicationContext context = new ApplicationContext(ProtocolVersion.V1);
 
         final Terminal terminal = TerminalBuilder.builder().system(true).build();
         final DefaultCommandDispatcher dispatcher = new DefaultCommandDispatcher(terminal);

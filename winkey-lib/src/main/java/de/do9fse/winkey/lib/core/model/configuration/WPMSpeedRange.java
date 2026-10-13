@@ -10,13 +10,13 @@ import tech.units.indriya.quantity.Quantities;
 import de.do9fse.winkey.lib.core.model.Validations;
 
 public record WPMSpeedRange(Quantity<Dimensionless> value) {
-    public static final ComparableQuantity<Dimensionless> RANGE_MIN = Quantities.getQuantity(0, WinKeyUnits.WPM);
-    public static final ComparableQuantity<Dimensionless> RANGE_MAX = Quantities.getQuantity(99, WinKeyUnits.WPM);
+    public static final ComparableQuantity<Dimensionless> RANGE_MIN = Quantities.getQuantity(0, CustomUnits.WPM);
+    public static final ComparableQuantity<Dimensionless> RANGE_MAX = Quantities.getQuantity(99, CustomUnits.WPM);
 
     public WPMSpeedRange {
         Validations.validateNotNull("WPM speed range", value);
 
-        final ComparableQuantity<Dimensionless> inWpm = WinKeyUnits.asWpm(value);
+        final ComparableQuantity<Dimensionless> inWpm = CustomUnits.asWpm(value);
 
         if (inWpm.isLessThan(RANGE_MIN) || inWpm.isGreaterThan(RANGE_MAX)) {
             final String message = MessageFormat.format(
@@ -37,7 +37,7 @@ public record WPMSpeedRange(Quantity<Dimensionless> value) {
     }
 
     public static WPMSpeedRange fromProtocol(final int value) {
-        return new WPMSpeedRange(Quantities.getQuantity(value & 0xff, WinKeyUnits.WPM));
+        return new WPMSpeedRange(Quantities.getQuantity(value & 0xff, CustomUnits.WPM));
     }
 
     public int toProtocolValue() {

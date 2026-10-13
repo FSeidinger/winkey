@@ -5,24 +5,24 @@ import java.text.MessageFormat;
 import javax.measure.Quantity;
 import javax.measure.quantity.Dimensionless;
 
-import de.do9fse.winkey.lib.core.model.configuration.WinKeyUnits;
+import de.do9fse.winkey.lib.core.model.configuration.CustomUnits;
 import de.do9fse.winkey.lib.core.model.Validations;
 import tech.units.indriya.ComparableQuantity;
 import tech.units.indriya.quantity.Quantities;
 
 @ResponseConfiguration(expectedResponseBytes = 1)
-public record SpeedPotValueResponse(Quantity<Dimensionless> speedOffset) implements WinKeyResponse {
+public record SpeedPotValueResponse(Quantity<Dimensionless> speedOffset) implements CommandResponse {
     private static final int RESPONSE_TAG_MASK = 0b11000000;
     private static final int RESPONSE_TAG = 0b10000000;
     private static final int SPEED_OFFSET_MASK = 0b00111111;
 
-    public static final ComparableQuantity<Dimensionless> SPEED_OFFSET_MIN = Quantities.getQuantity(0, WinKeyUnits.WPM);
-    public static final ComparableQuantity<Dimensionless> SPEED_OFFSET_MAX = Quantities.getQuantity(31, WinKeyUnits.WPM);
+    public static final ComparableQuantity<Dimensionless> SPEED_OFFSET_MIN = Quantities.getQuantity(0, CustomUnits.WPM);
+    public static final ComparableQuantity<Dimensionless> SPEED_OFFSET_MAX = Quantities.getQuantity(31, CustomUnits.WPM);
 
     public SpeedPotValueResponse {
         Validations.validateNotNull("Speed pot value", speedOffset);
 
-        final ComparableQuantity<Dimensionless> normalizedSpeedOffset = WinKeyUnits.asWpm(speedOffset);
+        final ComparableQuantity<Dimensionless> normalizedSpeedOffset = CustomUnits.asWpm(speedOffset);
         if (normalizedSpeedOffset.isLessThan(SPEED_OFFSET_MIN) || normalizedSpeedOffset.isGreaterThan(SPEED_OFFSET_MAX)) {
             final String message = MessageFormat.format(
                 "Speed pot value must be between {0} and {1} but was {2}",
@@ -55,7 +55,7 @@ public record SpeedPotValueResponse(Quantity<Dimensionless> speedOffset) impleme
             );
         }
         return new SpeedPotValueResponse(
-            Quantities.getQuantity(responseByte & SPEED_OFFSET_MASK, WinKeyUnits.WPM)
+            Quantities.getQuantity(responseByte & SPEED_OFFSET_MASK, CustomUnits.WPM)
         );
     }
 }

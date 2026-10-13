@@ -3,7 +3,7 @@ package de.do9fse.winkey.lib.core.model.responses;
 import java.text.MessageFormat;
 
 @ResponseConfiguration(expectedResponseBytes = 1)
-public record WinKeyStatusResponse(
+public record StatusResponse(
     boolean waiting,
     boolean keyDown,
     boolean busy,
@@ -11,15 +11,15 @@ public record WinKeyStatusResponse(
     boolean xoff,
     boolean pushButtonStatus,
     int pushButtonMask
-) implements WinKeyResponse {
+) implements CommandResponse {
     private static final int RESPONSE_TAG_MASK = 0b11100000;
     private static final int RESPONSE_TAG = 0b11000000;
 
-    public static WinKeyStatusResponse fromProtocol(final byte[] responseBytes) {
+    public static StatusResponse fromProtocol(final byte[] responseBytes) {
         return fromProtocol(responseBytes, false);
     }
 
-    public static WinKeyStatusResponse fromProtocol(final byte[] responseBytes, final boolean wk2Mode) {
+    public static StatusResponse fromProtocol(final byte[] responseBytes, final boolean wk2Mode) {
         final int value = Byte.toUnsignedInt(responseBytes[0]);
 
         if ((value & RESPONSE_TAG_MASK) != RESPONSE_TAG) {
@@ -33,7 +33,7 @@ public record WinKeyStatusResponse(
             ? ((value & 0b00010000) != 0 ? 0b1000 : 0) | (value & 0b00000111)
             : 0;
 
-        return new WinKeyStatusResponse(
+        return new StatusResponse(
             !isPushButtonStatus && (value & 0b00010000) != 0,
             !wk2Mode && (value & 0b00001000) != 0,
             !isPushButtonStatus && (value & 0b00000100) != 0,

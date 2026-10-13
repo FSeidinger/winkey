@@ -14,17 +14,17 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.Test;
 
-import de.do9fse.winkey.lib.core.model.WinKeyJob;
+import de.do9fse.winkey.lib.core.model.Job;
 import de.do9fse.winkey.lib.core.model.commands.host.immediate.BackspaceCommand;
-import de.do9fse.winkey.lib.core.model.responses.WinKeyResponse;
-import de.do9fse.winkey.lib.core.port.out.WinKeyJobQueue;
+import de.do9fse.winkey.lib.core.model.responses.CommandResponse;
+import de.do9fse.winkey.lib.core.port.out.JobQueue;
 
-class DefaultWinKeyJobQueueTest {
+class DefaultJobQueueTest {
     @Test
     void supportsTheWinKeyQueueContractIncludingRemovingTheTail() {
-        final WinKeyJobQueue queue = new DefaultWinKeyJobQueue();
-        final WinKeyJob firstJob = newJob();
-        final WinKeyJob lastJob = newJob();
+        final JobQueue queue = new DefaultJobQueue();
+        final Job firstJob = newJob();
+        final Job lastJob = newJob();
 
         assertNull(queue.peek());
         assertNull(queue.poll());
@@ -40,12 +40,12 @@ class DefaultWinKeyJobQueueTest {
 
     @Test
     void lockPreventsTheReceiverFromPollingUntilTheSenderUnlocks() throws Exception {
-        final WinKeyJobQueue queue = new DefaultWinKeyJobQueue();
-        final WinKeyJob job = newJob();
+        final JobQueue queue = new DefaultJobQueue();
+        final Job job = newJob();
         final CountDownLatch pollStarted = new CountDownLatch(1);
         final ExecutorService executor = Executors.newSingleThreadExecutor();
         queue.offer(job);
-        final Future<WinKeyJob> polledJob;
+        final Future<Job> polledJob;
 
         queue.lock();
         try {
@@ -67,7 +67,7 @@ class DefaultWinKeyJobQueueTest {
         }
     }
 
-    private static WinKeyJob newJob() {
-        return new WinKeyJob(new BackspaceCommand(), new CompletableFuture<WinKeyResponse>());
+    private static Job newJob() {
+        return new Job(new BackspaceCommand(), new CompletableFuture<CommandResponse>());
     }
 }

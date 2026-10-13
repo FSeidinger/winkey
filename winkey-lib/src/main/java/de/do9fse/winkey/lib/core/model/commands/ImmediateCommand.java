@@ -3,11 +3,11 @@ package de.do9fse.winkey.lib.core.model.commands;
 import java.text.MessageFormat;
 import java.util.Set;
 
-import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
-import de.do9fse.winkey.lib.core.model.error.WinKeyRuntimeException;
-import de.do9fse.winkey.lib.core.model.responses.WinKeyResponse;
+import de.do9fse.winkey.lib.core.model.ProtocolVersion;
+import de.do9fse.winkey.lib.core.model.error.WKRuntimeException;
+import de.do9fse.winkey.lib.core.model.responses.CommandResponse;
 
-public interface WinKeyImmediateCommand extends WinKeyCommand {
+public interface ImmediateCommand extends Command {
     /**
      * Returns the command info of this command
      *
@@ -21,18 +21,18 @@ public interface WinKeyImmediateCommand extends WinKeyCommand {
      */
     default CommandInfo getCommandInfo() {
         @SuppressWarnings("unchecked")
-        final Class<WinKeyImmediateCommand> commandClass = (Class<WinKeyImmediateCommand>) getClass();
+        final Class<ImmediateCommand> commandClass = (Class<ImmediateCommand>) getClass();
         final String commandName = commandClass.getName();
 
         final ImmediateCommandConfiguration configuration = commandClass.getAnnotation(ImmediateCommandConfiguration.class);
         if (configuration == null) {
             final String message = MessageFormat.format("Command {0} must support the command configuration", commandName);
-            throw new WinKeyRuntimeException(message);
+            throw new WKRuntimeException(message);
         }
 
-        final Set<WinKeyProtocolVersion> supportedKeyProtocolVersions = Set.of(configuration.allowedProtocols());
+        final Set<ProtocolVersion> supportedKeyProtocolVersions = Set.of(configuration.allowedProtocols());
         @SuppressWarnings("unchecked")
-        final Class<WinKeyResponse> responseClass = (Class<WinKeyResponse>) configuration.responseType();
+        final Class<CommandResponse> responseClass = (Class<CommandResponse>) configuration.responseType();
 
         return new CommandInfo(commandClass, responseClass, supportedKeyProtocolVersions);
     }

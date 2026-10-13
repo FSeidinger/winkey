@@ -15,7 +15,7 @@ public record WPMSpeedWithReset(Quantity<Dimensionless> value) {
     public WPMSpeedWithReset {
         Validations.validateNotNull("WPM speed", value);
 
-        final ComparableQuantity<Dimensionless> speed = WinKeyUnits.asWpm(value);
+        final ComparableQuantity<Dimensionless> speed = CustomUnits.asWpm(value);
         final double speedValue = speed.getValue().doubleValue();
 
         if (speedValue != WPM_SPEED_RESET && (speed.isLessThan(WPMSpeed.WPM_MIN) || speed.isGreaterThan(WPMSpeed.WPM_MAX))) {
@@ -38,7 +38,7 @@ public record WPMSpeedWithReset(Quantity<Dimensionless> value) {
     }
 
     public static WPMSpeedWithReset useSpeedPot() {
-        return new WPMSpeedWithReset(Quantities.getQuantity(WPM_SPEED_RESET, WinKeyUnits.WPM));
+        return new WPMSpeedWithReset(Quantities.getQuantity(WPM_SPEED_RESET, CustomUnits.WPM));
     }
 
     public int toProtocolValue() {

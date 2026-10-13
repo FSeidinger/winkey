@@ -10,7 +10,7 @@ import org.jline.utils.AttributedStyle;
 
 import de.do9fse.winkey.lib.core.model.configuration.serial.BaudRate;
 import de.do9fse.winkey.lib.core.model.configuration.serial.DataBits;
-import de.do9fse.winkey.lib.core.model.configuration.serial.DeviceConfiguration;
+import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
 import de.do9fse.winkey.lib.core.model.configuration.serial.Parity;
 import de.do9fse.winkey.lib.core.model.configuration.serial.StopBits;
 import de.do9fse.winkey.lib.core.model.configuration.serial.Timeout;
@@ -65,7 +65,7 @@ public class ConfigureDeviceCommand extends TerminalCommand {
        
         context.setPortName(portName);
 
-        final DeviceConfiguration deviceConfiguration = new DeviceConfiguration(
+        final SerialConfiguration deviceConfiguration = new SerialConfiguration(
             baudRate,
             DataBits.DEFAULT,
             Parity.DEFAULT,

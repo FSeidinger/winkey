@@ -9,8 +9,8 @@ import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
 
 import de.do9fse.winkey.lib.core.model.ApplicationContext;
-import de.do9fse.winkey.lib.core.model.WinKeyState;
-import de.do9fse.winkey.lib.core.port.out.WinKeyTransport;
+import de.do9fse.winkey.lib.core.model.ApplicationState;
+import de.do9fse.winkey.lib.core.port.out.Transport;
 
 public class DisconnectCommand extends TerminalCommand {
     protected DisconnectCommand() {
@@ -19,7 +19,7 @@ public class DisconnectCommand extends TerminalCommand {
 
     @Override
     public String description() {
-        return "disconnect the WinKey device";
+        return "disconnect from the device";
     }
 
     @Override
@@ -31,11 +31,11 @@ public class DisconnectCommand extends TerminalCommand {
         }
 
         final ApplicationContext applicationContext = Constants.getApplicationContext(session);
-        if (applicationContext.getState() == WinKeyState.CLOSED) {
+        if (applicationContext.getState() == ApplicationState.CLOSED) {
             throw new IllegalStateException(Errors.DEVICE_ALREADY_CLOSED.createErrorMessage(applicationContext));
         }
 
-        final WinKeyTransport transport = applicationContext.getTransport();
+        final Transport transport = applicationContext.getTransport();
         transport.close();
 
         final String message = MessageFormat.format("Successfully disconnected device {0}", applicationContext.getPortName());

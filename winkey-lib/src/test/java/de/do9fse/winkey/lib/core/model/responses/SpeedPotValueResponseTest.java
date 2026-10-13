@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import de.do9fse.winkey.lib.core.model.configuration.WinKeyUnits;
+import de.do9fse.winkey.lib.core.model.configuration.CustomUnits;
 import tech.units.indriya.quantity.Quantities;
 
 class SpeedPotValueResponseTest {
@@ -36,7 +36,7 @@ class SpeedPotValueResponseTest {
     void rejectsSpeedPotValuesOutsideProtocolRange() {
         final IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
-            () -> new SpeedPotValueResponse(Quantities.getQuantity(32, WinKeyUnits.WPM))
+            () -> new SpeedPotValueResponse(Quantities.getQuantity(32, CustomUnits.WPM))
         );
         assertEquals(
             "Speed pot value must be between "
@@ -52,7 +52,7 @@ class SpeedPotValueResponseTest {
     void rejectsNonIntegerSpeedPotValues() {
         final IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
-            () -> new SpeedPotValueResponse(Quantities.getQuantity(1.5, WinKeyUnits.WPM))
+            () -> new SpeedPotValueResponse(Quantities.getQuantity(1.5, CustomUnits.WPM))
         );
 
         assertEquals("Speed pot value must be an integer but was 1.5 WPM", exception.getMessage());

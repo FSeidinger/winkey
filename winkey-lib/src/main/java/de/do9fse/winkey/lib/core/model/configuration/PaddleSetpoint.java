@@ -18,7 +18,7 @@ public record PaddleSetpoint(Quantity<Dimensionless> value) {
     public PaddleSetpoint {
         Validations.validateNotNull("Paddle setpoint", value);
 
-        final ComparableQuantity<Dimensionless> inPercent = WinKeyUnits.asPercent(value);
+        final ComparableQuantity<Dimensionless> inPercent = CustomUnits.asPercent(value);
         final double percentageValue = inPercent.getValue().doubleValue();
 
         if (percentageValue != 0 && (inPercent.isLessThan(PERCENT_MIN) || inPercent.isGreaterThan(PERCENT_MAX))) {

@@ -4,7 +4,7 @@ import org.jline.shell.CommandSession;
 import org.junit.jupiter.api.BeforeEach;
 
 import de.do9fse.winkey.lib.core.model.ApplicationContext;
-import de.do9fse.winkey.lib.core.model.WinKeyProtocolVersion;
+import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.terminal.Constants;
 import de.do9fse.winkey.terminal.MessageGenerator;
 
@@ -32,7 +32,7 @@ public abstract class AbstractCommandTest {
      */
     @BeforeEach
     protected void setupBaseTest() {
-        context = new ApplicationContext(WinKeyProtocolVersion.V1);
+        context = new ApplicationContext(ProtocolVersion.V1);
         generator = new MessageGenerator();
 
         session = new CommandSession();

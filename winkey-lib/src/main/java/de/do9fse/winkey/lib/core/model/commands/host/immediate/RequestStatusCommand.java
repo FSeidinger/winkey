@@ -1,6 +1,6 @@
 package de.do9fse.winkey.lib.core.model.commands.host.immediate;
 
-import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.responses.StatusResponse;
 
@@ -8,7 +8,7 @@ import de.do9fse.winkey.lib.core.model.responses.StatusResponse;
     allowedProtocols = de.do9fse.winkey.lib.core.model.ProtocolVersion.V2,
     responseType = StatusResponse.class
 )
-public record RequestStatusCommand() implements HostModeCommand {
+public record RequestStatusCommand() implements ImmediateCommand {
     @Override
     public byte[] toData() {
         return new byte[] { 0x15 };

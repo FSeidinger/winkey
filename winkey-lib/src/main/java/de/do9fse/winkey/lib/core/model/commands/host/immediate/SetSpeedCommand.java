@@ -3,12 +3,12 @@ package de.do9fse.winkey.lib.core.model.commands.host.immediate;
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.Validations;
-import de.do9fse.winkey.lib.core.model.commands.HostModeCommand;
+import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.configuration.WPMSpeedWithReset;
 
 @ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
-public record SetSpeedCommand(WPMSpeedWithReset wpm) implements HostModeCommand {
+public record SetSpeedCommand(WPMSpeedWithReset wpm) implements ImmediateCommand {
     public SetSpeedCommand {
         Validations.validateNotNull("WPM speed", wpm);
     }

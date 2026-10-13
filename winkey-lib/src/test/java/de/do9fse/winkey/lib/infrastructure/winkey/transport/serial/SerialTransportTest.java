@@ -45,6 +45,9 @@ import de.do9fse.winkey.lib.core.model.commands.admin.SetWK1ModeCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK2ModeCommand;
 import de.do9fse.winkey.lib.core.model.commands.host.immediate.BackspaceCommand;
 import de.do9fse.winkey.lib.core.model.commands.host.immediate.RequestStatusCommand;
+import de.do9fse.winkey.lib.core.model.commands.host.buffered.NopCommand;
+import de.do9fse.winkey.lib.core.model.commands.host.buffered.PttCommand;
+import de.do9fse.winkey.lib.core.model.data.TextDataItem;
 import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
 import de.do9fse.winkey.lib.core.model.error.WKRuntimeException;
 import de.do9fse.winkey.lib.core.model.responses.SpeedPotValueResponse;
@@ -96,6 +99,20 @@ class SerialTransportTest {
 
             transport.close();
             assertEquals(ApplicationState.CLOSED, context.getState());
+        }
+
+        @Test
+        void rejectsSendingDataItemsUntilReady() throws Exception {
+            final SerialPort serialPort = mockSerialPort(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream());
+            final SerialTransport transport = new SerialTransport(context, serialPort);
+            transport.open();
+
+            assertThrows(
+                IllegalStateException.class,
+                () -> transport.sendDataItems(new NopCommand())
+            );
+
+            transport.close();
         }
 
         @Test
@@ -308,6 +325,26 @@ class SerialTransportTest {
             statusResponse
         );
         assertTrue(statusResponse.pushButtonStatus());
+    }
+
+    @Test
+    void sendsDataItemsInOrder() throws Exception {
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        final SerialTransport transport = createReadyTransport(
+            new DefaultJobQueue(),
+            outputStream
+        );
+
+        transport.sendDataItems(
+            new NopCommand(),
+            new TextDataItem("CQ"),
+            new PttCommand(true)
+        );
+
+        assertArrayEquals(
+            new byte[] { 0x1f, 'C', 'Q', 0x18, 0x01 },
+            outputStream.toByteArray()
+        );
     }
 
     private static SerialPort mockSerialPort(final InputStream inputStream, final OutputStream outputStream) throws Exception {

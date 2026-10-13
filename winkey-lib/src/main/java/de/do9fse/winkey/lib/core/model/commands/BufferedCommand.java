@@ -1,3 +1,5 @@
 package de.do9fse.winkey.lib.core.model.commands;
 
-public interface BufferedCommand extends Command { }
+import de.do9fse.winkey.lib.core.model.data.DataItem;
+
+public interface BufferedCommand extends Command, DataItem { }

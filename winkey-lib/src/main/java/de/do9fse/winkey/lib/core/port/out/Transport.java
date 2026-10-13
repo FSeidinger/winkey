@@ -6,8 +6,9 @@ import java.util.concurrent.TimeoutException;
 
 import de.do9fse.winkey.lib.core.model.Job;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
-import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
+import de.do9fse.winkey.lib.core.model.data.DataItem;
 import de.do9fse.winkey.lib.core.model.error.WKRuntimeException;
+import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
 import de.do9fse.winkey.lib.core.model.responses.Response;
 import de.do9fse.winkey.lib.core.port.in.UnsolicitedResponseListener;
 
@@ -79,4 +80,11 @@ public interface Transport extends AutoCloseable {
      * @throws WinKeyApplicationException If submitting failed
      */
     Job submitJob(final ImmediateCommand command, final CompletableFuture<Response> response) throws WinKeyApplicationException;
+
+    /**
+     * Sends buffered data items to the device in the given order.
+     *
+     * @param dataItems data items to send
+     */
+    void sendDataItems(final DataItem ... dataItems);
 }

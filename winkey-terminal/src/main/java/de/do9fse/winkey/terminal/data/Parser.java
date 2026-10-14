@@ -1,104 +1,117 @@
 package de.do9fse.winkey.terminal.data;
 
+import static javax.measure.MetricPrefix.values;
+
 import java.io.IOException;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import javax.measure.Unit;
-import javax.measure.format.MeasurementParseException;
-import javax.measure.quantity.Time;
-
+import de.do9fse.winkey.lib.core.model.commands.host.buffered.CancelBufferedSpeedCommand;
+import de.do9fse.winkey.lib.core.model.commands.host.buffered.ChangeSpeedBufferedCommand;
+import de.do9fse.winkey.lib.core.model.commands.host.buffered.HscwSpeedChangeCommand;
+import de.do9fse.winkey.lib.core.model.commands.host.buffered.NopCommand;
+import de.do9fse.winkey.lib.core.model.commands.host.buffered.PttCommand;
 import de.do9fse.winkey.lib.core.model.commands.host.buffered.WaitCommand;
+import de.do9fse.winkey.lib.core.model.configuration.CustomUnits;
 import de.do9fse.winkey.lib.core.model.data.DataItem;
 import de.do9fse.winkey.lib.core.model.data.TextDataItem;
-import tech.units.indriya.AbstractUnit;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
 public class Parser {
     private final Lexer lexer;
-    private final Locale locale;
 
-    public final Pattern commandPattern;
+    private Iterator<Token> tokens;
 
     public Parser() {
-        this(Locale.US);
-    }
-
-    public Parser(final Locale locale) {
         this.lexer = new Lexer();
-        this.locale = locale;
-
-        final char decimalSeparator = DecimalFormatSymbols.getInstance(locale).getDecimalSeparator();
-        this.commandPattern = Pattern.compile("(?<command>[a-zA-Z])(?<value>[+-]?\\d+(\\" + decimalSeparator + "\\d+)?)(?<unit>[a-zA-ZµpP]*)");
     }
 
     public List<DataItem> parse(final String line) throws IOException {
+        this.tokens = lexer.parse(line).iterator();
         final List<DataItem> dataItems = new ArrayList<>();
-        final List<Token> tokens = lexer.parse(line);
 
-        for (final Token token: tokens) {
-            final DataItem dataItem = switch (token.token()) {
-                case TEXT -> new TextDataItem(token.value());
-                case BUFFERED_COMMAND -> parseCommand(token.value(), locale);
-            };
+        while (tokens.hasNext()) {
+            final Token token = tokens.next();
 
-            dataItems.add(dataItem);
+            switch (token.tokenType()) {
+                case TEXT:
+                    dataItems.add(new TextDataItem(token.value()));
+                    break;
+
+                case BUFFERED_COMMAND_IDENTIFIER:
+                    dataItems.add(parseCommand(token));
+                    break;
+
+                default:
+                    throw new IllegalStateException("Unexpected token " + token.tokenType());
+            }
         }
 
         return dataItems;
     }
 
-    private DataItem parseCommand(final String commandString, final Locale locale) {
-        final Matcher matcher = commandPattern.matcher(commandString);
+    private DataItem parseCommand(final Token commandIdentifierToken) {
+        return switch (commandIdentifierToken.value()) {
+            case "c", "C" -> {
+                    yield new CancelBufferedSpeedCommand();
+                }
 
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("Illegal command format - " + commandString);
-        }
+            case "l", "L" -> {
+                    yield new HscwSpeedChangeCommand(Quantities.getQuantity(readIntParameter() * 100, CustomUnits.LPM));
+                }
 
-        try {
-            final String commandIdentifier = matcher.group("command");
-            final NumberFormat format = NumberFormat.getInstance(locale);
-            final Number number = format.parse(matcher.group("value"));
+            case "n", "N" -> {
+                    yield new NopCommand();
+                }
 
-            final Unit<?> unit = parseUnit(matcher.group("unit"));
+            case "p", "P" -> {
+                    yield new PttCommand(readBooleanParameter());
+                }
 
-            return switch (commandIdentifier) {
-                case "w", "W" -> {
-                        final Unit<Time> duration = toTime(unit);
-                        yield new WaitCommand(Quantities.getQuantity(number, duration));
-                    }
+            case "s", "S" -> {
+                    yield new ChangeSpeedBufferedCommand(Quantities.getQuantity(readIntParameter(), CustomUnits.WPM));
+                }
 
-                default -> throw new IllegalArgumentException("Unknown command identifier '" + commandIdentifier + "'");
-            };
-        } catch (final ParseException e) {
-            throw new IllegalArgumentException("Parameter " + matcher.group("value" + "is not a valid number"));
-        }
+            case "w", "W" -> {
+                    yield new WaitCommand(Quantities.getQuantity(readIntParameter(), Units.SECOND));
+                }
+
+            default -> throw new IllegalArgumentException("Unknown command identifier '" + commandIdentifierToken.value() + "'");
+        };
     }
 
-    private Unit<Time> toTime(final Unit<?> unit) {
-        try {
-            if (AbstractUnit.ONE.isCompatible(unit)) {
-                return Units.SECOND;
-            }
-
-            return unit.asType(Time.class);
-        } catch (final ClassCastException e) {
-            throw new IllegalArgumentException("Unit " + unit + " is not compatible with " + Time.class.getSimpleName());
+    private int readIntParameter() {
+        if (!tokens.hasNext()) {
+            throw new IllegalStateException("Expected integer parameter but got EOF");
         }
+
+        final Token token = tokens.next();
+        if (token.tokenType() != TokenType.BUFFERED_COMMAND_PARAMETER) {
+            throw new IllegalStateException("Expected integer but got " + token.tokenType());
+        }
+
+        return Integer.parseInt(token.value());
     }
 
-    private Unit<?> parseUnit(final String unitString) {
-        try {
-            return AbstractUnit.parse(unitString);
-        } catch (final MeasurementParseException e) {
-            throw new IllegalArgumentException("Your unit " + unitString + " is not a valid SI unit");
+    private boolean readBooleanParameter() {
+        if (!tokens.hasNext()) {
+            throw new IllegalStateException("Expected boolean parameter but got EOF");
         }
+
+        final Token token = tokens.next();
+        if (token.tokenType() != TokenType.BUFFERED_COMMAND_PARAMETER) {
+            throw new IllegalStateException("Expected boolean parameter but got " + token.tokenType());
+        }
+
+        final String value = token.value().toLowerCase();
+
+        return switch (value) {
+            case "true", "on", "1", "enabled", "yes" -> true;
+            case "off", "0", "false", "disabled", "no" -> false;
+            default -> throw new IllegalArgumentException("Invalid boolean parameter value: '" + token.value() + "'");
+        };
     }
 }

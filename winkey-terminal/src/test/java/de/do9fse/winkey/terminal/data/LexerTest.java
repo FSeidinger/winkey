@@ -1,12 +1,15 @@
 package de.do9fse.winkey.terminal.data;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 public class LexerTest {
     private Lexer lexer = new Lexer();
@@ -73,7 +76,31 @@ public class LexerTest {
             .containsExactlyElementsOf(expectedTokens);
     }
 
+    @CsvSource({
+        "'@C'",
+        "' @C'",
+        "' @C '"
+    })
+    @ParameterizedTest(name = "''{0}'' should be tokenized into one token")
+    void assertThatParsingCommandsWithoutParameterSucceeds(final String line) throws Exception {
+        final List<Token> tokens = lexer.parse(line);
+        assertEquals(1, tokens.size());
+    }
+
+    @CsvSource({
+        "'@L10'",
+        "' @L10'",
+        "' @L10 '"
+    })
+    @ParameterizedTest(name = "''{0}'' should be tokenized into two tokens")
+    void assertThatParsingCommandsWithParameterSucceeds(final String line) throws Exception {
+        final List<Token> tokens = lexer.parse(line);
+        assertEquals(2, tokens.size());
+        assertEquals(TokenType.BUFFERED_COMMAND_IDENTIFIER, tokens.get(0).tokenType());
+        assertEquals(TokenType.BUFFERED_COMMAND_PARAMETER, tokens.get(1).tokenType());
+    }
     @Test
+
     void assertThatParsingTextWithBackslashesAndEscapesSucceeds() throws Exception {
         final List<Token> tokens = lexer.parse("Howdy \\ \\@ @W50 @W1.5 test");
         
@@ -82,11 +109,11 @@ public class LexerTest {
             new Token(TokenType.TEXT, "\\"),
             new Token(TokenType.TEXT, " "),
             new Token(TokenType.TEXT, "@"),
-            new Token(TokenType.TEXT, " "),
-            new Token(TokenType.BUFFERED_COMMAND, "W50"),
-            new Token(TokenType.TEXT, " "),
-            new Token(TokenType.BUFFERED_COMMAND, "W1.5"),
-            new Token(TokenType.TEXT, " test")
+            new Token(TokenType.BUFFERED_COMMAND_IDENTIFIER, "W"),
+            new Token(TokenType.BUFFERED_COMMAND_PARAMETER, "50"),
+            new Token(TokenType.BUFFERED_COMMAND_IDENTIFIER, "W"),
+            new Token(TokenType.BUFFERED_COMMAND_PARAMETER, "1.5"),
+            new Token(TokenType.TEXT, "test")
 
         );
 

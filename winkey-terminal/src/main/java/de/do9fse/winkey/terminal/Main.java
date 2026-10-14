@@ -31,6 +31,7 @@ public class Main {
         final CommandSession session = dispatcher.session();
         session.put(Constants.MESSAGE_GENERATOR_KEY, generator);
         session.put(Constants.APPLICATION_CONTEXT_KEY, context);
+        session.put(Constants.DISPATCHER_KEY, dispatcher);
 
         final CommandGroup applicationCommands = new SimpleCommandGroup(
             "application",

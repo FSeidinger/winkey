@@ -11,6 +11,7 @@ public abstract class TerminalCommand extends AbstractCommand {
     protected PrintStream stdout;
     protected PrintStream stderr;
 
+    protected ErrorHandlingCommandDispatcher dispatcher;
     protected MessageGenerator generator;
     protected ApplicationContext context;
 
@@ -29,6 +30,7 @@ public abstract class TerminalCommand extends AbstractCommand {
         this.stdout = session.out();
         this.stderr = session.err();
 
+        this.dispatcher = (ErrorHandlingCommandDispatcher) session.get(Constants.DISPATCHER_KEY);
         this.generator = (MessageGenerator) session.get(Constants.MESSAGE_GENERATOR_KEY);
         this.context = (ApplicationContext) session.get(Constants.APPLICATION_CONTEXT_KEY);
 

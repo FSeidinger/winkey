@@ -8,13 +8,20 @@ import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStringBuilder;
 
 public class ErrorHandlingCommandDispatcher extends DefaultCommandDispatcher {
+    private String currentCommandLine;
+
     public ErrorHandlingCommandDispatcher(final Terminal terminal) {
         super(terminal);
     }
 
+    public String getCurrentCommandLine() {
+        return currentCommandLine;
+    }
+    
     @Override
     public Object execute(String line) throws Exception {
         try {
+            this.currentCommandLine = line;
             return super.execute(line);
         } catch (final IllegalStateException | IllegalArgumentException e) {
             return handleError(e);

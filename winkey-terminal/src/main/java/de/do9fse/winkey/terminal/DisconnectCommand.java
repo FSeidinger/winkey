@@ -8,7 +8,6 @@ import org.jline.shell.CommandSession;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
 
-import de.do9fse.winkey.lib.core.model.ApplicationContext;
 import de.do9fse.winkey.lib.core.model.ApplicationState;
 import de.do9fse.winkey.lib.core.port.out.Transport;
 
@@ -30,15 +29,14 @@ public class DisconnectCommand extends TerminalCommand {
              throw new IllegalArgumentException("Error: the disconnect command does not support parameters");
         }
 
-        final ApplicationContext applicationContext = Constants.getApplicationContext(session);
-        if (applicationContext.getState() == ApplicationState.CLOSED) {
-            throw new IllegalStateException(Errors.DEVICE_ALREADY_CLOSED.createErrorMessage(applicationContext));
+        if (context.getState() == ApplicationState.CLOSED) {
+            throw new IllegalStateException(Errors.DEVICE_ALREADY_CLOSED.createErrorMessage(context));
         }
 
-        final Transport transport = applicationContext.getTransport();
+        final Transport transport = context.getTransport();
         transport.close();
 
-        final String message = MessageFormat.format("Successfully disconnected device {0}", applicationContext.getPortName());
+        final String message = MessageFormat.format("Successfully disconnected device {0}", context.getPortName());
         stdout.println(message);
 
         return null;

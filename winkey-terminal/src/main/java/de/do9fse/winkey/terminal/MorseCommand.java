@@ -1,5 +1,6 @@
 package de.do9fse.winkey.terminal;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.jline.reader.LineReader;
@@ -57,10 +58,25 @@ public class MorseCommand extends TerminalCommand {
                 continue;
             }
 
-            final List<DataItem> dataItems = parser.parse(line);
-            transport.sendDataItems(dataItems.toArray(new DataItem[0]));
+            final List<DataItem> dataItems = parseOrHandleError(transport, parser, line);
+
+            if (!dataItems.isEmpty()) {
+                transport.sendDataItems(dataItems.toArray(new DataItem[0]));
+            }
         }
         
         return null;
+    }
+
+    private List<DataItem> parseOrHandleError(final Transport transport, final Parser parser, final String line) {
+        try {
+            return parser.parse(line);
+        } catch (final IllegalArgumentException e) {
+            stderr.println("Error parsing morse code line - " + e.getMessage());
+        } catch (final IOException e) {
+            stderr.println("Failed to send morse line - " + e.getMessage());
+        }
+
+        return List.of();
     }
 }

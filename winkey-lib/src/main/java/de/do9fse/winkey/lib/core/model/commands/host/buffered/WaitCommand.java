@@ -31,12 +31,7 @@ public record WaitCommand(Quantity<Time> duration) implements BufferedCommand {
     public byte[] toData() {
         return new byte[] {
             0x1a,
-            (byte) Validations.validateIntegralDurationSeconds(
-                "Buffered wait",
-                duration,
-                Validations.DURATION_SECONDS_MIN,
-                Validations.DURATION_SECONDS_MAX
-            )
+            duration.getValue().byteValue()
         };
     }
 }

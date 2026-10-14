@@ -1,11 +1,15 @@
 package de.do9fse.winkey.terminal;
 
+import java.util.List;
+
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.shell.CommandSession;
 
 import de.do9fse.winkey.lib.core.model.ApplicationState;
-import de.do9fse.winkey.lib.core.model.data.TextDataItem;
+import de.do9fse.winkey.lib.core.model.data.DataItem;
+import de.do9fse.winkey.lib.core.port.out.Transport;
+import de.do9fse.winkey.terminal.data.Parser;
 
 public class MorseCommand extends TerminalCommand {
     public MorseCommand() {
@@ -39,6 +43,9 @@ public class MorseCommand extends TerminalCommand {
         stdout.println("Type text with commands (e.g., cq cq cq do9fse@W500).");
         stdout.println("Type 'exit' or 'quit' to exit the morse mode.");
 
+        final Transport transport = context.getTransport();
+        final Parser parser = new Parser();
+
         while (true) {
             final String line = lineReader.readLine("morse>");
 
@@ -50,8 +57,8 @@ public class MorseCommand extends TerminalCommand {
                 continue;
             }
 
-            final TextDataItem item = new TextDataItem(line.toUpperCase());
-            context.getTransport().sendDataItems(item);
+            final List<DataItem> dataItems = parser.parse(line);
+            transport.sendDataItems(dataItems.toArray(new DataItem[0]));
         }
         
         return null;

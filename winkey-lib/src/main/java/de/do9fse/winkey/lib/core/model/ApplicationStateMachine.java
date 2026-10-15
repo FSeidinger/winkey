@@ -35,7 +35,7 @@ public class ApplicationStateMachine {
             case INITIALIZING:
                 switch (newState) {
                     case CLOSED:
-                    case READY:
+                    case STANDALONE_MODE:
                         doTransition(newState);
                         break;
                 
@@ -43,12 +43,24 @@ public class ApplicationStateMachine {
                 }
                 break;
 
-            case READY:
+            case STANDALONE_MODE:
                 switch (newState) {
                     case CLOSED:
+                    case HOST_MODE:
                         doTransition(newState);
                         break;
                 
+                    default: raiseStateTransitionError(this.state, newState);
+                }
+                break;
+
+            case HOST_MODE:
+                switch (newState) {
+                    case CLOSED:
+                    case STANDALONE_MODE:
+                        doTransition(newState);
+                        break;
+
                     default: raiseStateTransitionError(this.state, newState);
                 }
                 break;
@@ -62,7 +74,7 @@ public class ApplicationStateMachine {
 
     private void raiseStateTransitionError(final ApplicationState oldState, final ApplicationState newState) {
         final String message = formatError(
-            "Transitioning from state {0} to state{1} is not allowed",
+            "Transitioning from state {0} to state {1} is not allowed",
             oldState,
             newState
         );

@@ -26,6 +26,8 @@ import de.do9fse.winkey.lib.core.model.commands.CommandInfo;
 import de.do9fse.winkey.lib.core.model.commands.Command;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.EchoTestCommand;
+import de.do9fse.winkey.lib.core.model.commands.admin.HostCloseCommand;
+import de.do9fse.winkey.lib.core.model.commands.admin.HostOpenCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK1ModeCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK2ModeCommand;
 import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
@@ -35,6 +37,7 @@ import de.do9fse.winkey.lib.core.model.responses.SpeedPotValueResponse;
 import de.do9fse.winkey.lib.core.model.responses.Response;
 import de.do9fse.winkey.lib.core.model.responses.ResponseFactory;
 import de.do9fse.winkey.lib.core.model.responses.StatusResponse;
+import de.do9fse.winkey.lib.core.model.responses.VersionResponse;
 import de.do9fse.winkey.lib.core.port.in.UnsolicitedResponseListener;
 import de.do9fse.winkey.lib.core.port.out.JobQueue;
 import de.do9fse.winkey.lib.core.port.out.Transport;
@@ -72,7 +75,7 @@ public class SerialTransport implements Transport {
     @Override
     public void open() throws WinKeyApplicationException {
         if (context.getState() != ApplicationState.CLOSED) {
-            throw new IllegalStateException("Transport is already initializing or ready");
+            throw new IllegalStateException("Transport is already initializing or in standalone mode");
         }
         
         this.serialPort.openPort();
@@ -86,11 +89,11 @@ public class SerialTransport implements Transport {
 
     @Override
     public void close() throws WinKeyApplicationException {
-        if (context.getState() != ApplicationState.READY && context.getState() != ApplicationState.INITIALIZING) {
+        if (context.getState() == ApplicationState.CLOSED) {
             throw new IllegalStateException("Transport is already closed");
         }
 
-        if (context.getState() == ApplicationState.READY) {
+        if (context.getState() == ApplicationState.STANDALONE_MODE || context.getState() == ApplicationState.HOST_MODE) {
             stopSerialReaderThread();
         }
 
@@ -101,7 +104,7 @@ public class SerialTransport implements Transport {
     @Override
     public void initialize(final long timeout, final TimeUnit unit) throws TimeoutException, WKRuntimeException {
         if (context.getState() != ApplicationState.INITIALIZING) {
-            throw new IllegalStateException("Transport is ready or closed");
+            throw new IllegalStateException("Transport is in standalone mode or closed");
         }
 
         Validations.validateNotNull("Time unit", unit);
@@ -126,7 +129,7 @@ public class SerialTransport implements Transport {
 
                     if (response == echoChar) {
                         startSerialPortReaderThread();
-                        context.transitionToState(ApplicationState.READY);
+                        context.transitionToState(ApplicationState.STANDALONE_MODE);
                         return;
                     }
                 } catch(final SerialPortTimeoutException e) {
@@ -192,7 +195,7 @@ public class SerialTransport implements Transport {
     }
 
     public Job submitJob(final ImmediateCommand command, final CompletableFuture<Response> jobResult, final boolean doSend) throws WinKeyApplicationException {
-        if (context.getState() != ApplicationState.READY) {
+        if (context.getState() != ApplicationState.STANDALONE_MODE && context.getState() != ApplicationState.HOST_MODE) {
             throw new IllegalStateException("Transport is not ready");
         }
 
@@ -236,7 +239,7 @@ public class SerialTransport implements Transport {
     public void sendDataItems(final DataItem... dataItems) {
         Validations.validateNotNull("Data items", dataItems);
 
-        if (context.getState() != ApplicationState.READY) {
+        if (context.getState() != ApplicationState.STANDALONE_MODE && context.getState() != ApplicationState.HOST_MODE) {
             throw new IllegalStateException("Transport is not ready");
         }
 
@@ -399,11 +402,21 @@ public class SerialTransport implements Transport {
             final Job job = this.jobQueue.poll();
             final CompletableFuture<Response> responseHolder = job.response();
 
-            responseHolder.complete(response);
-
             updateStatusMode(job.command());
+            updateApplicationState(job.command(), response);
+
+            responseHolder.complete(response);
         } finally {
             this.jobQueue.unlock();
+        }
+    }
+
+    private void updateApplicationState(final Command command, final Response response) {
+        if (command instanceof HostOpenCommand && response instanceof VersionResponse versionResponse) {
+            context.setVersion(versionResponse.toProtocolVersion());
+            context.transitionToState(ApplicationState.HOST_MODE);
+        } else if (command instanceof HostCloseCommand) {
+            context.transitionToState(ApplicationState.STANDALONE_MODE);
         }
     }
 

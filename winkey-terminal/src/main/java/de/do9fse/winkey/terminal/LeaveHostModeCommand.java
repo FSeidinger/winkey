@@ -15,15 +15,19 @@ public class LeaveHostModeCommand extends TerminalCommand {
 
     @Override
     public String description() {
-        return "Switches the WinKey device to host mode";
+        return "Leaves host mode and switches the WinKey device to standalone mode";
     }
 
     @Override
     public Object execute(CommandSession session, String[] args) throws Exception {
         super.execute(session, args);
 
-        if (context.getState() != ApplicationState.READY) {
+        if (context.getState() == ApplicationState.CLOSED) {
             throw new IllegalStateException("Device is closed. Please call 'connect' first.");
+        }
+
+        if (context.getState() != ApplicationState.HOST_MODE) {
+            throw new IllegalStateException("Device is not in host mode.");
         }
 
         final Transport transport = context.getTransport();

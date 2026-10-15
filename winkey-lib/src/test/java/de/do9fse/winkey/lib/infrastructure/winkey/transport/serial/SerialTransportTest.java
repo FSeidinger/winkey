@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -40,6 +41,7 @@ import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.ApplicationState;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.EchoTestCommand;
+import de.do9fse.winkey.lib.core.model.commands.admin.HostCloseCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.HostOpenCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK1ModeCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK2ModeCommand;
@@ -50,9 +52,11 @@ import de.do9fse.winkey.lib.core.model.commands.host.buffered.PttCommand;
 import de.do9fse.winkey.lib.core.model.data.TextDataItem;
 import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
 import de.do9fse.winkey.lib.core.model.error.WKRuntimeException;
+import de.do9fse.winkey.lib.core.model.responses.EmptyResponse;
 import de.do9fse.winkey.lib.core.model.responses.SpeedPotValueResponse;
 import de.do9fse.winkey.lib.core.model.responses.Response;
 import de.do9fse.winkey.lib.core.model.responses.StatusResponse;
+import de.do9fse.winkey.lib.core.model.responses.VersionResponse;
 import de.do9fse.winkey.lib.core.port.out.JobQueue;
 import de.do9fse.winkey.lib.infrastructure.winkey.DefaultJobQueue;
 
@@ -82,7 +86,7 @@ class SerialTransportTest {
         }
 
         @Test
-        void rejectsCommandSubmissionUntilReady() throws Exception {
+        void rejectsCommandSubmissionUntilStandaloneMode() throws Exception {
             final DefaultJobQueue queue = new DefaultJobQueue();
             final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             final SerialPort serialPort = mockSerialPort(new ByteArrayInputStream(new byte[0]), outputStream);
@@ -102,7 +106,7 @@ class SerialTransportTest {
         }
 
         @Test
-        void rejectsSendingDataItemsUntilReady() throws Exception {
+        void rejectsSendingDataItemsUntilStandaloneMode() throws Exception {
             final SerialPort serialPort = mockSerialPort(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream());
             final SerialTransport transport = new SerialTransport(context, serialPort);
             transport.open();
@@ -132,7 +136,7 @@ class SerialTransportTest {
             System.arraycopy(echoBytes, 0, expectedWrites, 0, echoBytes.length);
             System.arraycopy(echoBytes, 0, expectedWrites, echoBytes.length, echoBytes.length);
             assertArrayEquals(expectedWrites, outputStream.toByteArray());
-            assertEquals(ApplicationState.READY, context.getState());
+            assertEquals(ApplicationState.STANDALONE_MODE, context.getState());
             assertTrue((Thread) getField(transport, "serialPortReaderThread") != null);
         }
 
@@ -169,6 +173,20 @@ class SerialTransportTest {
             final SerialPort serialPort = mockSerialPort(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream());
             final SerialTransport transport = new SerialTransport(context, serialPort);
             transport.open();
+
+            transport.close();
+
+            assertEquals(ApplicationState.CLOSED, context.getState());
+            verify(serialPort).closePort();
+        }
+
+        @Test
+        void closeFromHostModeReturnsToClosed() throws Exception {
+            final SerialPort serialPort = mockSerialPort(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream());
+            final SerialTransport transport = new SerialTransport(context, serialPort);
+            transport.open();
+            context.transitionToState(ApplicationState.STANDALONE_MODE);
+            context.transitionToState(ApplicationState.HOST_MODE);
 
             transport.close();
 
@@ -231,6 +249,49 @@ class SerialTransportTest {
 
         assertTrue(firstResult.isCompletedExceptionally());
         assertTrue(secondResult.isCompletedExceptionally());
+    }
+
+    @Test
+    void updatesStateToHostModeAndSetsVersionWhenHostOpenCommandCompletes() throws Exception {
+        final ApplicationContext localContext = new ApplicationContext(ProtocolVersion.V1);
+        final SerialTransport transport = createReadyTransport(localContext, new DefaultJobQueue(), new ByteArrayOutputStream(), 23);
+        assertEquals(ProtocolVersion.V1, localContext.getVersion());
+        assertEquals(ApplicationState.STANDALONE_MODE, localContext.getState());
+
+        final CompletableFuture<Response> hostOpenResult = submit(transport, new HostOpenCommand());
+        processActiveJob(transport);
+
+        assertInstanceOf(VersionResponse.class, hostOpenResult.join());
+        assertEquals(ApplicationState.HOST_MODE, localContext.getState());
+        assertEquals(ProtocolVersion.V2, localContext.getVersion());
+    }
+
+    @Test
+    void updatesStateToStandaloneModeWhenHostCloseCommandCompletes() throws Exception {
+        final SerialTransport transport = createReadyTransport(context, new DefaultJobQueue(), new ByteArrayOutputStream(), 0x23);
+        final CompletableFuture<Response> hostOpenResult = submit(transport, new HostOpenCommand());
+        processActiveJob(transport);
+        assertInstanceOf(VersionResponse.class, hostOpenResult.join());
+        assertEquals(ApplicationState.HOST_MODE, context.getState());
+
+        final CompletableFuture<Response> hostCloseResult = submit(transport, new HostCloseCommand());
+        processActiveJob(transport);
+        assertInstanceOf(EmptyResponse.class, hostCloseResult.join());
+        assertEquals(ApplicationState.STANDALONE_MODE, context.getState());
+    }
+
+    @Test
+    void allowsSubmittingJobsAndSendingDataItemsInHostMode() throws Exception {
+        final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        final SerialTransport transport = createReadyTransport(context, new DefaultJobQueue(), outputStream, 0x23);
+        submit(transport, new HostOpenCommand());
+        processActiveJob(transport);
+        assertEquals(ApplicationState.HOST_MODE, context.getState());
+
+        transport.sendDataItems(new TextDataItem("CQ"));
+        final CompletableFuture<Response> result = new CompletableFuture<>();
+        transport.submitJob(new BackspaceCommand(), result);
+        assertNotNull(result);
     }
 
     @Test
@@ -364,15 +425,26 @@ class SerialTransportTest {
         final OutputStream outputStream,
         final int... receivedBytes
     ) throws Exception {
+        final ApplicationContext context = new ApplicationContext(ProtocolVersion.V2);
+        return createReadyTransport(context, queue, outputStream, receivedBytes);
+    }
+
+    private static SerialTransport createReadyTransport(
+        final ApplicationContext context,
+        final DefaultJobQueue queue,
+        final OutputStream outputStream,
+        final int... receivedBytes
+    ) throws Exception {
         final byte[] inputBytes = new byte[receivedBytes.length];
         for (int i = 0; i < receivedBytes.length; i++) {
             inputBytes[i] = (byte) receivedBytes[i];
         }
 
-        final ApplicationContext context = new ApplicationContext(ProtocolVersion.V2);
         context.setDeviceConfiguration(SerialConfiguration.DEFAULT);
-        context.transitionToState(ApplicationState.INITIALIZING);
-        context.transitionToState(ApplicationState.READY);
+        if (context.getState() == ApplicationState.CLOSED) {
+            context.transitionToState(ApplicationState.INITIALIZING);
+            context.transitionToState(ApplicationState.STANDALONE_MODE);
+        }
 
         final SerialTransport transport = new SerialTransport(context, mock(SerialPort.class));
         setField(transport, "inputStream", new PushbackInputStream(new ByteArrayInputStream(inputBytes)));

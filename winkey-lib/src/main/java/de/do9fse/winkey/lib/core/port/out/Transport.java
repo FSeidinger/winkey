@@ -29,7 +29,7 @@ public interface Transport extends AutoCloseable {
      * Initializes the transport by sending an echo-test command and waiting for the
      * matching response. The command is sent again whenever a serial read times out.
      * Once the response is received, the transport starts its background reader and
-     * becomes ready to accept jobs.
+     * transitions to standalone mode to accept jobs.
      *
      * <p>The transport must be in the initializing state before this method is called.
      * The serial port's read timeout should be configured to a suitable value because

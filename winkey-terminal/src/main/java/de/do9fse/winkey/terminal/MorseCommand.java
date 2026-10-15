@@ -35,7 +35,7 @@ public class MorseCommand extends TerminalCommand {
             throw new IllegalArgumentException("Error: the morse command does not support parameters");
         }
 
-        if (context.getState() != ApplicationState.READY) {
+        if (context.getState() != ApplicationState.STANDALONE_MODE) {
             throw new IllegalStateException(Errors.APPLICATION_MUST_BE_READY.createErrorMessage(context));
         }
 

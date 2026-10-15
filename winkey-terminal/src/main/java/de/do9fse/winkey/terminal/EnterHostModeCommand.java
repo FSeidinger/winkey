@@ -22,7 +22,11 @@ public class EnterHostModeCommand extends TerminalCommand {
     public Object execute(CommandSession session, String[] args) throws Exception {
         super.execute(session, args);
 
-        if (context.getState() != ApplicationState.READY) {
+        if (context.getState() == ApplicationState.HOST_MODE) {
+            throw new IllegalStateException("Device is already in host mode.");
+        }
+
+        if (context.getState() != ApplicationState.STANDALONE_MODE) {
             throw new IllegalStateException(Errors.APPLICATION_MUST_BE_READY.createErrorMessage(context));
         }
 

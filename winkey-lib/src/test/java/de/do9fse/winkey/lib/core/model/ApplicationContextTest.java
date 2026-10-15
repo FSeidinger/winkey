@@ -27,9 +27,11 @@ class ApplicationContextTest {
     @Test
     void delegatesStateTransitionsToItsStateMachine() {
         context.transitionToState(ApplicationState.INITIALIZING);
-        context.transitionToState(ApplicationState.READY);
+        context.transitionToState(ApplicationState.STANDALONE_MODE);
+        assertEquals(ApplicationState.STANDALONE_MODE, context.getState());
 
-        assertEquals(ApplicationState.READY, context.getState());
+        context.transitionToState(ApplicationState.HOST_MODE);
+        assertEquals(ApplicationState.HOST_MODE, context.getState());
     }
 
     @Test

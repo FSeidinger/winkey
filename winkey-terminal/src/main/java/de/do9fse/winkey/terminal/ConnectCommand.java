@@ -77,7 +77,7 @@ public class ConnectCommand extends TerminalCommand {
             final var timeout = context.getDeviceConfiguration().initializationTimeout();
             transport.initialize(timeout.timeout(), timeout.timeUnit());
         } finally {
-            if (context.getState() != ApplicationState.READY) {
+            if (context.getState() != ApplicationState.STANDALONE_MODE) {
                 closeTransport(transport);
             }
         }

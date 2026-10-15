@@ -1,6 +1,7 @@
 package de.do9fse.winkey.lib.core.model.responses;
 
 import java.text.MessageFormat;
+import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.Validations;
 
 @ResponseConfiguration(expectedResponseBytes = 1)
@@ -58,5 +59,9 @@ public record VersionResponse(int majorVersion, int minorVersion) implements Res
 
     public String getVersionString() {
         return "v" + majorVersion + "." + minorVersion;
+    }
+
+    public ProtocolVersion toProtocolVersion() {
+        return ProtocolVersion.fromMajorVersion(majorVersion);
     }
 }

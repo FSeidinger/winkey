@@ -14,4 +14,15 @@ public enum ProtocolVersion {
     public int getProtocolMajorVersion() {
         return protocolMajorVersion;
     }
+
+    public static ProtocolVersion fromMajorVersion(final int majorVersion) {
+        for (final ProtocolVersion version : values()) {
+            if (version.protocolMajorVersion == majorVersion) {
+                return version;
+            }
+        }
+
+        throw new IllegalArgumentException("Unsupported protocol major version: " + majorVersion);
+    }
 }
+

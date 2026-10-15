@@ -31,8 +31,8 @@ class ApplicationStateMachineTest {
         stateMachine.transitionToState(context, ApplicationState.INITIALIZING);
         assertEquals(ApplicationState.INITIALIZING, stateMachine.getState());
 
-        stateMachine.transitionToState(context, ApplicationState.READY);
-        assertEquals(ApplicationState.READY, stateMachine.getState());
+        stateMachine.transitionToState(context, ApplicationState.STANDALONE_MODE);
+        assertEquals(ApplicationState.STANDALONE_MODE, stateMachine.getState());
 
         stateMachine.transitionToState(context, ApplicationState.CLOSED);
         assertEquals(ApplicationState.CLOSED, stateMachine.getState());
@@ -50,7 +50,8 @@ class ApplicationStateMachineTest {
     @Test
     void rejectsTransitionsNotAllowedFromClosed() {
         assertThrows(IllegalStateException.class, () -> stateMachine.transitionToState(context, ApplicationState.CLOSED));
-        assertThrows(IllegalStateException.class, () -> stateMachine.transitionToState(context, ApplicationState.READY));
+        assertThrows(IllegalStateException.class, () -> stateMachine.transitionToState(context, ApplicationState.STANDALONE_MODE));
+        assertThrows(IllegalStateException.class, () -> stateMachine.transitionToState(context, ApplicationState.HOST_MODE));
         assertEquals(ApplicationState.CLOSED, stateMachine.getState());
     }
 
@@ -59,16 +60,46 @@ class ApplicationStateMachineTest {
         stateMachine.transitionToState(context, ApplicationState.INITIALIZING);
 
         assertThrows(IllegalStateException.class, () -> stateMachine.transitionToState(context, ApplicationState.INITIALIZING));
+        assertThrows(IllegalStateException.class, () -> stateMachine.transitionToState(context, ApplicationState.HOST_MODE));
         assertEquals(ApplicationState.INITIALIZING, stateMachine.getState());
     }
 
     @Test
-    void rejectsTransitionsNotAllowedFromReady() {
+    void rejectsTransitionsNotAllowedFromStandaloneMode() {
         stateMachine.transitionToState(context, ApplicationState.INITIALIZING);
-        stateMachine.transitionToState(context, ApplicationState.READY);
+        stateMachine.transitionToState(context, ApplicationState.STANDALONE_MODE);
 
-        assertThrows(IllegalStateException.class, () -> stateMachine.transitionToState(context, ApplicationState.READY));
+        assertThrows(IllegalStateException.class, () -> stateMachine.transitionToState(context, ApplicationState.STANDALONE_MODE));
         assertThrows(IllegalStateException.class, () -> stateMachine.transitionToState(context, ApplicationState.INITIALIZING));
-        assertEquals(ApplicationState.READY, stateMachine.getState());
+        assertEquals(ApplicationState.STANDALONE_MODE, stateMachine.getState());
+    }
+
+    @Test
+    void supportsTransitionsBetweenStandaloneAndHostModeAndClosingFromHostMode() {
+        stateMachine.transitionToState(context, ApplicationState.INITIALIZING);
+        stateMachine.transitionToState(context, ApplicationState.STANDALONE_MODE);
+
+        stateMachine.transitionToState(context, ApplicationState.HOST_MODE);
+        assertEquals(ApplicationState.HOST_MODE, stateMachine.getState());
+
+        stateMachine.transitionToState(context, ApplicationState.STANDALONE_MODE);
+        assertEquals(ApplicationState.STANDALONE_MODE, stateMachine.getState());
+
+        stateMachine.transitionToState(context, ApplicationState.HOST_MODE);
+        assertEquals(ApplicationState.HOST_MODE, stateMachine.getState());
+
+        stateMachine.transitionToState(context, ApplicationState.CLOSED);
+        assertEquals(ApplicationState.CLOSED, stateMachine.getState());
+    }
+
+    @Test
+    void rejectsTransitionsNotAllowedFromHostMode() {
+        stateMachine.transitionToState(context, ApplicationState.INITIALIZING);
+        stateMachine.transitionToState(context, ApplicationState.STANDALONE_MODE);
+        stateMachine.transitionToState(context, ApplicationState.HOST_MODE);
+
+        assertThrows(IllegalStateException.class, () -> stateMachine.transitionToState(context, ApplicationState.HOST_MODE));
+        assertThrows(IllegalStateException.class, () -> stateMachine.transitionToState(context, ApplicationState.INITIALIZING));
+        assertEquals(ApplicationState.HOST_MODE, stateMachine.getState());
     }
 }

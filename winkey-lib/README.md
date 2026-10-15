@@ -10,14 +10,14 @@ reading for the architecture and concurrency notes.
 
 The central object is `ApplicationContext`. It holds the protocol version,
 device configuration, transport, state and the job queue. Its state moves
-through `CLOSED`, `INITIALIZING` and `READY` as the connection is opened and
+through `CLOSED`, `INITIALIZING` and `STANDALONE_MODE` as the connection is opened and
 initialized.
 
 The main `core.model` objects are:
 
 | Object                                                              | What it represents                                                                                                                               |
 | ------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ApplicationContext`, `ApplicationState`, `ApplicationStateMachine` | Connection-wide configuration and the `CLOSED` → `INITIALIZING` → `READY` lifecycle.                                                             |
+| `ApplicationContext`, `ApplicationState`, `ApplicationStateMachine` | Connection-wide configuration and the `CLOSED` → `INITIALIZING` → `STANDALONE_MODE` / `HOST_MODE` lifecycle.                                                  |
 | `ProtocolVersion`                                                   | The WinKey protocol version used by the application.                                                                                             |
 | `SerialConfiguration`, `BaudRate`, `Timeout` and related types      | Serial settings and timeout values; other configuration records cover keyer settings such as speed, mode and weighting.                          |
 | `Command`                                                           | An object that serializes itself to the bytes sent to the keyer. Immediate commands also declare supported protocol versions and response types. |

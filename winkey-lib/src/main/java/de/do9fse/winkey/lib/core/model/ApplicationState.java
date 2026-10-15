@@ -3,5 +3,8 @@ package de.do9fse.winkey.lib.core.model;
 public enum ApplicationState {
     CLOSED,
     INITIALIZING,
-    READY
+    STANDALONE_MODE,
+    HOST_MODE
 }
+
+

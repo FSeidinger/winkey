@@ -97,4 +97,12 @@ class VersionResponseTest {
     void rejectsNullVersionString(final String value) {
         assertThrows(NullPointerException.class, () -> VersionResponse.parse(value));
     }
+
+    @Test
+    @DisplayName("Test mapping to protocol version")
+    void mapsToProtocolVersion() {
+        assertEquals(de.do9fse.winkey.lib.core.model.ProtocolVersion.V1, new VersionResponse(1, 2).toProtocolVersion());
+        assertEquals(de.do9fse.winkey.lib.core.model.ProtocolVersion.V2, new VersionResponse(2, 3).toProtocolVersion());
+        assertEquals(de.do9fse.winkey.lib.core.model.ProtocolVersion.V3, new VersionResponse(3, 1).toProtocolVersion());
+    }
 }

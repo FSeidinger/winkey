@@ -4,7 +4,6 @@ import java.io.PrintStream;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.jline.shell.CommandDescription;
@@ -75,7 +74,8 @@ public class ConnectCommand extends TerminalCommand {
             context.setTransport(transport);
 
             transport.open();
-            transport.initialize(10, TimeUnit.SECONDS);
+            final var timeout = context.getDeviceConfiguration().initializationTimeout();
+            transport.initialize(timeout.timeout(), timeout.timeUnit());
         } finally {
             if (context.getState() != ApplicationState.READY) {
                 closeTransport(transport);

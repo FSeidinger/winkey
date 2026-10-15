@@ -2,7 +2,6 @@ package de.do9fse.winkey.lib;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
@@ -12,9 +11,11 @@ import com.fazecast.jSerialComm.SerialPort;
 
 import de.do9fse.winkey.lib.core.model.ApplicationContext;
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
+import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
 import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
 import de.do9fse.winkey.lib.core.model.error.WKRuntimeException;
 import de.do9fse.winkey.lib.core.port.out.Transport;
+import de.do9fse.winkey.lib.infrastructure.winkey.transport.serial.SerialConfigurationAdapter;
 import de.do9fse.winkey.lib.infrastructure.winkey.transport.serial.SerialTransport;
 
 public final class Main {
@@ -57,7 +58,8 @@ public final class Main {
         this.transport = createSerialTransport(this.context, this.portName);
 
         this.transport.open();
-        this.transport.initialize(10, TimeUnit.SECONDS);
+        final var timeout = this.context.getDeviceConfiguration().initializationTimeout();
+        this.transport.initialize(timeout.timeout(), timeout.timeUnit());
     }
 
     private void waitForExit() throws WKRuntimeException {
@@ -80,12 +82,10 @@ public final class Main {
     }
 
     private Transport createSerialTransport(final ApplicationContext context, final String portName) {
-        final SerialPort port = SerialPort.getCommPort(portName);
-        port.setBaudRate(1200);
-        port.setComPortTimeouts(SerialPort.TIMEOUT_READ_BLOCKING, 1000, 0);
-
-        final Transport transport = new SerialTransport(context, port);
-        return transport;
+        context.setPortName(portName);
+        final SerialConfiguration configuration = context.getDeviceConfiguration();
+        final SerialPort port = new SerialConfigurationAdapter(context, configuration).createSerialPort();
+        return new SerialTransport(context, port);
     }
 
     private void setRootLogLevel(String levelName) {

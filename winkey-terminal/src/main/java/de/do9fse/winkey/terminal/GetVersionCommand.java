@@ -9,12 +9,19 @@ public class GetVersionCommand extends TerminalCommand {
 
     @Override
     public String description() {
-        return "Get the protocol version currently set";
+        return "Get the current device version";
     }
 
-        @Override
+    @Override
     public Object execute(final CommandSession session, final String[] args) throws Exception {
         super.execute(session, args);
+
+        if (scanner.hasNext()) {
+             throw new IllegalArgumentException("Error: the disconnect command does not support parameters");
+        }
+
+        stdout.println("Current protocol version is: " + context.getProtocolVersion());
+        stdout.println("Current device version is: " + context.getDeviceVersion().getVersionString());
 
         return null;
     }

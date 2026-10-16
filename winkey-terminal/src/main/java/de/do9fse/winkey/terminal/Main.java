@@ -45,7 +45,8 @@ public class Main {
             new ConnectCommand(),
             new DisconnectCommand(),
             new EnterHostModeCommand(),
-            new LeaveHostModeCommand()
+            new LeaveHostModeCommand(),
+            new GetVersionCommand()
         );
 
         try (final Shell shell = Shell

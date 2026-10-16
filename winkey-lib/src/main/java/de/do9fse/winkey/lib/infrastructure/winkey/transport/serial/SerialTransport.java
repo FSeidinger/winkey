@@ -32,6 +32,7 @@ import de.do9fse.winkey.lib.core.model.commands.admin.HostOpenCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK1ModeCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK2ModeCommand;
 import de.do9fse.winkey.lib.core.model.data.DataItem;
+import de.do9fse.winkey.lib.core.model.data.TextDataItem;
 import de.do9fse.winkey.lib.core.model.error.WKRuntimeException;
 import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
 import de.do9fse.winkey.lib.core.model.responses.Response;
@@ -233,9 +234,13 @@ public class SerialTransport implements Transport {
 
         this.jobQueue.lock();
         try {
-            for (final DataItem dataItem : dataItems) {
+            for (DataItem dataItem : dataItems) {
                 Validations.validateNotNull("Data item", dataItem);
-                
+
+                if (dataItem instanceof TextDataItem text && context.getAppConfiguration().sendTextAsUppercase()) {
+                    dataItem = new TextDataItem(text.value().toUpperCase());
+                }
+
                 final byte[] serialBytes = dataItem.toData();
                 Validations.validateNotNull("Serial bytes", serialBytes);
 

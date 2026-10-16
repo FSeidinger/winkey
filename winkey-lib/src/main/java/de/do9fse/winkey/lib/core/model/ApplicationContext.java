@@ -11,6 +11,7 @@ public class ApplicationContext {
     private final JobQueue jobQueue;
     private final ApplicationStateMachine stateMachine;
 
+    private ApplicationConfiguration appConfiguration;
     private DeviceVersion deviceVersion;
     private ProtocolVersion protocolVersion;
 
@@ -22,6 +23,7 @@ public class ApplicationContext {
     public ApplicationContext(final ProtocolVersion version) {
         this.jobQueue = new DefaultJobQueue();
         this.stateMachine = new ApplicationStateMachine();
+        this.appConfiguration = ApplicationConfiguration.DEFAULT;
 
         this.setDeviceVersion(Validations.validateNotNull("Version", version).toDeviceVersion());
 
@@ -41,10 +43,14 @@ public class ApplicationContext {
         return jobQueue;
     }
 
-    public ProtocolVersion getProtocolVersion() {
-        return protocolVersion;
+    public void setAppConfiguration(ApplicationConfiguration appConfiguration) {
+        this.appConfiguration = appConfiguration;
     }
-   
+
+    public ApplicationConfiguration getAppConfiguration() {
+        return appConfiguration;
+    }
+
     public void setDeviceVersion(final DeviceVersion deviceVersion) {
         this.deviceVersion = Validations.validateNotNull("Device version", deviceVersion);
         this.protocolVersion = deviceVersion.toProtocolVersion();
@@ -52,6 +58,10 @@ public class ApplicationContext {
 
     public DeviceVersion getDeviceVersion() {
         return deviceVersion;
+    }
+
+    public ProtocolVersion getProtocolVersion() {
+        return protocolVersion;
     }
 
     public void setPortName(final String portName) {

@@ -35,7 +35,7 @@ public class EnterHostModeCommand extends TerminalCommand {
         final SerialConfiguration configuration = context.getDeviceConfiguration();
         CommandHelper.executeCommand(transport, command, configuration.readTimeout());
 
-        stdout.println("Successfully entered host mode");
+        stdout.println("Successfully entered host mode. Device reported version " + context.getDeviceVersion().getVersionString());
         
         return null;
     }

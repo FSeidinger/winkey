@@ -19,56 +19,54 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortTimeoutException;
 
 import de.do9fse.winkey.lib.core.model.ApplicationContext;
-import de.do9fse.winkey.lib.core.model.Job;
 import de.do9fse.winkey.lib.core.model.ApplicationState;
-import de.do9fse.winkey.lib.core.model.data.DataItem;
-import de.do9fse.winkey.lib.core.model.commands.CommandInfo;
+import de.do9fse.winkey.lib.core.model.Job;
+import de.do9fse.winkey.lib.core.model.ProtocolVersion;
+import de.do9fse.winkey.lib.core.model.Validations;
 import de.do9fse.winkey.lib.core.model.commands.Command;
+import de.do9fse.winkey.lib.core.model.commands.CommandInfo;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.EchoTestCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.HostCloseCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.HostOpenCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK1ModeCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK2ModeCommand;
-import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
+import de.do9fse.winkey.lib.core.model.data.DataItem;
 import de.do9fse.winkey.lib.core.model.error.WKRuntimeException;
-import de.do9fse.winkey.lib.core.model.responses.ResponseConfiguration;
-import de.do9fse.winkey.lib.core.model.responses.SpeedPotValueResponse;
+import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
 import de.do9fse.winkey.lib.core.model.responses.Response;
+import de.do9fse.winkey.lib.core.model.responses.ResponseConfiguration;
 import de.do9fse.winkey.lib.core.model.responses.ResponseFactory;
+import de.do9fse.winkey.lib.core.model.responses.SpeedPotValueResponse;
 import de.do9fse.winkey.lib.core.model.responses.StatusResponse;
 import de.do9fse.winkey.lib.core.model.responses.VersionResponse;
-import de.do9fse.winkey.lib.core.port.in.UnsolicitedResponseListener;
+import de.do9fse.winkey.lib.core.port.in.ResponseListener;
 import de.do9fse.winkey.lib.core.port.out.JobQueue;
 import de.do9fse.winkey.lib.core.port.out.Transport;
-import de.do9fse.winkey.lib.core.model.Validations;
 
 public class SerialTransport implements Transport {
     private static final Logger LOGGER = LoggerFactory.getLogger(SerialTransport.class);
     
-    private final SerialPort serialPort;
-
-    private final CopyOnWriteArrayList<UnsolicitedResponseListener> unsolicitedResponseListeners = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<ResponseListener> responseListeners = new CopyOnWriteArrayList<>();
 
     private Thread serialPortReaderThread;
     private CompletableFuture<Void> serialPortReaderThreadResult;
 
+    private final ApplicationContext context;
     private final JobQueue jobQueue;
-
-    private final ResponseFactory responseFactory = new ResponseFactory();
+    private final ResponseFactory responseFactory;
+    private final SerialPort serialPort;
 
     private PushbackInputStream inputStream;
     private OutputStream outputStream;
 
-    private volatile ApplicationContext context;
-
-    private volatile boolean wk2StatusMode;
 
     private final HexFormat formatter = HexFormat.of().withPrefix("0x").withSuffix(" ");
 
     public SerialTransport(final ApplicationContext context, final SerialPort serialPort) {
         this.context = Validations.validateNotNull("Application context", context);
         this.jobQueue = Validations.validateNotNull("Job queue", context.getJobQueue());
+        this.responseFactory = new ResponseFactory(context);
         this.serialPort = Validations.validateNotNull("Serial port", serialPort);
     }
 
@@ -144,23 +142,13 @@ public class SerialTransport implements Transport {
     }
 
     @Override
-    public void addUnsolicitedResponseListener(final UnsolicitedResponseListener listener) {
-        this.unsolicitedResponseListeners.addIfAbsent(Validations.validateNotNull("listener", listener));
+    public void addResponseListener(final ResponseListener listener) {
+        this.responseListeners.addIfAbsent(Validations.validateNotNull("Listener", listener));
     }
 
     @Override
-    public void removeUnsolicitedResponseListener(final UnsolicitedResponseListener listener) {
-        this.unsolicitedResponseListeners.remove(Validations.validateNotNull("listener", listener));
-    }
-
-    private void notifyUnsolicitedResponseListeners(final Response response) {
-        for (final UnsolicitedResponseListener listener : this.unsolicitedResponseListeners) {
-            try {
-                listener.onUnsolicitedResponse(response);
-            } catch (final RuntimeException exception) {
-                LOGGER.error("Unsolicited response listener failed for response {}", response, exception);
-            }
-        }
+    public void removeResponseListener(final ResponseListener listener) {
+        this.responseListeners.remove(Validations.validateNotNull("Listener", listener));
     }
 
     private void startSerialPortReaderThread() {
@@ -301,17 +289,13 @@ public class SerialTransport implements Transport {
             return false;
         }
 
-        try {
-            // TODO check if response can be response to a command
-            final StatusResponse statusResponse = responseFactory.createResponse(
-                new byte[] {(byte) data},
-                wk2StatusMode
-            );
-            notifyUnsolicitedResponseListeners(statusResponse);
-            LOGGER.debug("Notified unsolicited status response {}", statusResponse);
-        } catch (final IllegalArgumentException exception) {
-            throw new WKRuntimeException("Invalid unsolicited status response", exception);
-        }
+        final byte[] responseBytes = new byte[]{ (byte) data };
+        final Response response = responseFactory.createResponse(
+            StatusResponse.class,
+            responseBytes
+        );
+
+        notifyResponseListeners(response);
 
         return true;
     }
@@ -321,26 +305,19 @@ public class SerialTransport implements Transport {
             return false;
         }
 
-        try {
-            final Response speedPotResponse = responseFactory.createResponse(
-                SpeedPotValueResponse.class,
-                new byte[] {(byte) data}
-            );
-            notifyUnsolicitedResponseListeners(speedPotResponse);
-            LOGGER.debug("Notified unsolicited speed pot response {}", formatter.toHexDigits(data));
+        final Response speedPotResponse = responseFactory.createResponse(
+            SpeedPotValueResponse.class,
+            new byte[] {(byte) data}
+        );
 
-        } catch (final IllegalArgumentException exception) {
-            throw new WKRuntimeException("Invalid unsolicited speed-pot response", exception);
-        }
+        notifyResponseListeners(speedPotResponse);
 
         return true;
     }
 
     private boolean isOutOfBandHandled(final int data) {
-        final Job job = this.jobQueue.peek();
-
-        if (job == null) {
-            LOGGER.debug("Out of band data handled {}", (char) data);
+        if (this.jobQueue.peek() == null) {
+            // TODO handle out of bound
             return true;
         }
 
@@ -377,12 +354,9 @@ public class SerialTransport implements Transport {
             }
         }
 
-        // TODO check if status response should be handled here
-        final Response response;
         try {
-            response = responseType.equals(StatusResponse.class)
-                ? responseFactory.createResponse(buffer, wk2StatusMode)
-                : responseFactory.createResponse(responseType, buffer);
+            final Response response = responseFactory.createResponse(responseType, buffer);
+            completeActiveJob(response);
         } catch (final IllegalArgumentException exception) {
             final String message = MessageFormat.format(
                 "Failed to create response for active job {0}",
@@ -392,7 +366,6 @@ public class SerialTransport implements Transport {
             throw new WKRuntimeException(message, exception);
         }
 
-        completeActiveJob(response);
     }
 
     private void completeActiveJob(final Response response) {
@@ -404,8 +377,8 @@ public class SerialTransport implements Transport {
 
             updateStatusMode(job.command());
             updateApplicationState(job.command(), response);
-
             responseHolder.complete(response);
+            notifyResponseListeners(response);
         } finally {
             this.jobQueue.unlock();
         }
@@ -422,9 +395,15 @@ public class SerialTransport implements Transport {
 
     private void updateStatusMode(final Command command) {
         if (command instanceof SetWK2ModeCommand) {
-            this.wk2StatusMode = true;
+            context.setDeviceVersion(ProtocolVersion.V2.toDeviceVersion());
         } else if (command instanceof SetWK1ModeCommand) {
-            this.wk2StatusMode = false;
+            context.setDeviceVersion(ProtocolVersion.V1.toDeviceVersion());
+        }
+    }
+
+    private void notifyResponseListeners(final Response response) {
+        for (final ResponseListener listener : this.responseListeners) {
+            listener.onResponse(response);
         }
     }
 

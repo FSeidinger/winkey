@@ -10,7 +10,7 @@ import de.do9fse.winkey.lib.core.model.data.DataItem;
 import de.do9fse.winkey.lib.core.model.error.WKRuntimeException;
 import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
 import de.do9fse.winkey.lib.core.model.responses.Response;
-import de.do9fse.winkey.lib.core.port.in.UnsolicitedResponseListener;
+import de.do9fse.winkey.lib.core.port.in.ResponseListener;
 
 public interface Transport extends AutoCloseable {
     /**
@@ -56,14 +56,14 @@ public interface Transport extends AutoCloseable {
      *
      * @param listener the listener to register
      */
-    void addUnsolicitedResponseListener(final UnsolicitedResponseListener listener);
+    void addResponseListener(final ResponseListener listener);
 
     /**
      * Removes a previously registered unsolicited response listener.
      *
      * @param listener the listener to remove
      */
-    void removeUnsolicitedResponseListener(final UnsolicitedResponseListener listener);
+    void removeResponseListener(final ResponseListener listener);
 
     /**
      * Submits a WinKey command to the transport's job queue

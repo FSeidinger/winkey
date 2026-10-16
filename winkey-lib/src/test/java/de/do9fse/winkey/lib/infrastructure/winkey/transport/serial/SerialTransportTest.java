@@ -36,25 +36,27 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortTimeoutException;
 
 import de.do9fse.winkey.lib.core.model.ApplicationContext;
+import de.do9fse.winkey.lib.core.model.ApplicationState;
 import de.do9fse.winkey.lib.core.model.Job;
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
-import de.do9fse.winkey.lib.core.model.ApplicationState;
+import de.do9fse.winkey.lib.core.model.StatusPushButton;
+import de.do9fse.winkey.lib.core.model.StatusV1;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.EchoTestCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.HostCloseCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.HostOpenCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK1ModeCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.SetWK2ModeCommand;
-import de.do9fse.winkey.lib.core.model.commands.host.immediate.BackspaceCommand;
-import de.do9fse.winkey.lib.core.model.commands.host.immediate.RequestStatusCommand;
 import de.do9fse.winkey.lib.core.model.commands.host.buffered.NopCommand;
 import de.do9fse.winkey.lib.core.model.commands.host.buffered.PttCommand;
-import de.do9fse.winkey.lib.core.model.data.TextDataItem;
+import de.do9fse.winkey.lib.core.model.commands.host.immediate.BackspaceCommand;
+import de.do9fse.winkey.lib.core.model.commands.host.immediate.RequestStatusCommand;
 import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
+import de.do9fse.winkey.lib.core.model.data.TextDataItem;
 import de.do9fse.winkey.lib.core.model.error.WKRuntimeException;
 import de.do9fse.winkey.lib.core.model.responses.EmptyResponse;
-import de.do9fse.winkey.lib.core.model.responses.SpeedPotValueResponse;
 import de.do9fse.winkey.lib.core.model.responses.Response;
+import de.do9fse.winkey.lib.core.model.responses.SpeedPotValueResponse;
 import de.do9fse.winkey.lib.core.model.responses.StatusResponse;
 import de.do9fse.winkey.lib.core.model.responses.VersionResponse;
 import de.do9fse.winkey.lib.core.port.out.JobQueue;
@@ -298,7 +300,7 @@ class SerialTransportTest {
     void leavesUnsolicitedStatusForLoggingAndCompletesHostOpenFromVersionByte() throws Exception {
         final SerialTransport transport = createReadyTransport(0xd7, 0x9f, 0x23);
         final List<Response> unsolicitedResponses = new ArrayList<>();
-        transport.addUnsolicitedResponseListener(unsolicitedResponses::add);
+        transport.addResponseListener(unsolicitedResponses::add);
         final CompletableFuture<Response> result = submit(transport, new HostOpenCommand());
 
         handleStatusBytes(transport);
@@ -314,19 +316,20 @@ class SerialTransportTest {
             de.do9fse.winkey.lib.core.model.responses.VersionResponse.class,
             result.join()
         ).version().majorVersion());
-        assertEquals(2, unsolicitedResponses.size());
+        assertEquals(3, unsolicitedResponses.size());
         assertInstanceOf(StatusResponse.class, unsolicitedResponses.get(0));
         assertInstanceOf(SpeedPotValueResponse.class, unsolicitedResponses.get(1));
+        assertInstanceOf(VersionResponse.class, unsolicitedResponses.get(2));
     }
 
     @Test
     void doesNotNotifyRemovedUnsolicitedResponseListener() throws Exception {
         final SerialTransport transport = createReadyTransport(0xd7);
         final List<Response> unsolicitedResponses = new ArrayList<>();
-        final de.do9fse.winkey.lib.core.port.in.UnsolicitedResponseListener listener =
+        final de.do9fse.winkey.lib.core.port.in.ResponseListener listener =
             unsolicitedResponses::add;
-        transport.addUnsolicitedResponseListener(listener);
-        transport.removeUnsolicitedResponseListener(listener);
+        transport.addResponseListener(listener);
+        transport.removeResponseListener(listener);
 
         handleStatusBytes(transport);
 
@@ -337,7 +340,7 @@ class SerialTransportTest {
     void changesStatusModeWhenReaderProcessesModeCommands() throws Exception {
         final SerialTransport transport = createReadyTransport(0xc8, 0xc8);
         final List<Response> unsolicitedResponses = new ArrayList<>();
-        transport.addUnsolicitedResponseListener(unsolicitedResponses::add);
+        transport.addResponseListener(unsolicitedResponses::add);
 
         final CompletableFuture<Response> wk2Result = submit(transport, new SetWK2ModeCommand());
         processActiveJob(transport);
@@ -349,21 +352,19 @@ class SerialTransportTest {
         assertInstanceOf(de.do9fse.winkey.lib.core.model.responses.EmptyResponse.class, wk1Result.join());
         handleStatusBytes(transport);
 
-        final StatusResponse wk2Status = assertInstanceOf(StatusResponse.class, unsolicitedResponses.get(0));
-        assertInstanceOf(
-            de.do9fse.winkey.lib.core.model.responses.StatusResponseWK2.class,
-            unsolicitedResponses.get(0)
+        final StatusResponse wk2Status = assertInstanceOf(StatusResponse.class, unsolicitedResponses.get(1));
+        final StatusPushButton pushButtonStatus = assertInstanceOf(
+            StatusPushButton.class,
+            wk2Status.status()
         );
-        assertTrue(wk2Status.pushButtonStatus());
-        assertFalse(wk2Status.keyDown());
+        assertNotNull(pushButtonStatus);
 
-        final StatusResponse wk1Status = assertInstanceOf(StatusResponse.class, unsolicitedResponses.get(1));
-        assertInstanceOf(
-            de.do9fse.winkey.lib.core.model.responses.StatusResponseWK1.class,
-            unsolicitedResponses.get(1)
+        final StatusResponse wk1Status = assertInstanceOf(StatusResponse.class, unsolicitedResponses.get(3));
+        final StatusV1 v1Status = assertInstanceOf(
+            StatusV1.class,
+            wk1Status.status()
         );
-        assertFalse(wk1Status.pushButtonStatus());
-        assertTrue(wk1Status.keyDown());
+        assertTrue(v1Status.keyDown());
     }
 
     @Test
@@ -381,11 +382,14 @@ class SerialTransportTest {
         processActiveJob(transport);
 
         final StatusResponse statusResponse = assertInstanceOf(StatusResponse.class, result.join());
-        assertInstanceOf(
-            de.do9fse.winkey.lib.core.model.responses.StatusResponseWK2.class,
-            statusResponse
+        final StatusPushButton pushButton = assertInstanceOf(
+            StatusPushButton.class,
+            statusResponse.status()
         );
-        assertTrue(statusResponse.pushButtonStatus());
+        assertTrue(pushButton.pb1Status());
+        assertTrue(pushButton.pb2Status());
+        assertTrue(pushButton.pb3Status());
+        assertTrue(pushButton.pb4Status());
     }
 
     @Test

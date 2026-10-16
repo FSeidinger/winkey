@@ -49,7 +49,6 @@ public class HostOpenCommandTest extends AbstractCommandTest {
     void entersHostModeSuccessfully() throws Exception {
         final Transport transport = mock(Transport.class);
         when(transport.submitJob(any(HostOpenCommand.class), any())).thenAnswer(invocation -> {
-            @SuppressWarnings("unchecked")
             final CompletableFuture<VersionResponse> future = invocation.getArgument(1);
             final VersionResponse versionResponse = new VersionResponse(new DeviceVersion(2, 3));
             context.setDeviceVersion(versionResponse.version());

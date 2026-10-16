@@ -35,8 +35,12 @@ public class MorseCommand extends TerminalCommand {
             throw new IllegalArgumentException("Error: the morse command does not support parameters");
         }
 
-        if (context.getState() != ApplicationState.STANDALONE_MODE) {
+        if (context.getState() != ApplicationState.STANDALONE_MODE && context.getState() != ApplicationState.HOST_MODE) {
             throw new IllegalStateException(Errors.APPLICATION_MUST_BE_READY.createErrorMessage(context));
+        }
+
+        if (context.getState() == ApplicationState.STANDALONE_MODE) {
+            stdout.println("Warning: device is in standalone mode. Buffered commands will not work.\n");
         }
 
         stdout.println("=== WinKey Interactive Morse Mode ===");

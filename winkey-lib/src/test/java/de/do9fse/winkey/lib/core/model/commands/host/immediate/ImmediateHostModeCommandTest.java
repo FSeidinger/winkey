@@ -182,12 +182,6 @@ class ImmediateHostModeCommandTest {
         assertTrue(statusCommand.getCommandInfo().supportsProtocol(ProtocolVersion.V2));
         assertEquals(StatusResponse.class, statusCommand.getCommandInfo().responseType());
         assertFalse(statusCommand.getCommandInfo().supportsProtocol(ProtocolVersion.V1));
-
-        // TODO Implement after refactoring
-        // assertEquals(
-        //     32,
-        //     WinKeyImmediateCommand.validateCommands("de.do9fse.winkey.lib.core.model.commands.host").size()
-        // );
     }
 
     @Test

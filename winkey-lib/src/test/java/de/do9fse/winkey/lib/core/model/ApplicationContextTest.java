@@ -20,7 +20,8 @@ class ApplicationContextTest {
 
     @Test
     void retainsConfiguredProtocolVersionAndStartsClosed() {
-        assertEquals(ProtocolVersion.V2, context.getVersion());
+        assertEquals(ProtocolVersion.V2, context.getProtocolVersion());
+        assertEquals(new DeviceVersion(2, 0), context.getDeviceVersion());
         assertEquals(ApplicationState.CLOSED, context.getState());
     }
 
@@ -37,5 +38,18 @@ class ApplicationContextTest {
     @Test
     void rejectsANullProtocolVersion() {
         assertThrows(NullPointerException.class, () -> new ApplicationContext(null));
+    }
+
+    @Test
+    void setsAndGetsDeviceVersion() {
+        final DeviceVersion newVersion = new DeviceVersion(3, 1);
+        context.setDeviceVersion(newVersion);
+        assertEquals(newVersion, context.getDeviceVersion());
+        assertEquals(ProtocolVersion.V3, context.getProtocolVersion());
+    }
+
+    @Test
+    void rejectsNullDeviceVersion() {
+        assertThrows(NullPointerException.class, () -> context.setDeviceVersion(null));
     }
 }

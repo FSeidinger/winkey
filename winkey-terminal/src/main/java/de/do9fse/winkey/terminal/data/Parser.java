@@ -1,12 +1,9 @@
 package de.do9fse.winkey.terminal.data;
 
-import static javax.measure.MetricPrefix.values;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import de.do9fse.winkey.lib.core.model.commands.host.buffered.CancelBufferedSpeedCommand;
 import de.do9fse.winkey.lib.core.model.commands.host.buffered.ChangeSpeedBufferedCommand;

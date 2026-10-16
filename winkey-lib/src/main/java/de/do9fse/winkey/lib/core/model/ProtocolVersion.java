@@ -1,28 +1,15 @@
 package de.do9fse.winkey.lib.core.model;
 
 public enum ProtocolVersion {
-    V1(1),
-    V2(2),
-    V3(3);
+    V1,
+    V2,
+    V3;
 
-    private final int protocolMajorVersion;
-
-    private ProtocolVersion(final int majorVersion) {
-        this.protocolMajorVersion = majorVersion;
-    }
-
-    public int getProtocolMajorVersion() {
-        return protocolMajorVersion;
-    }
-
-    public static ProtocolVersion fromMajorVersion(final int majorVersion) {
-        for (final ProtocolVersion version : values()) {
-            if (version.protocolMajorVersion == majorVersion) {
-                return version;
-            }
-        }
-
-        throw new IllegalArgumentException("Unsupported protocol major version: " + majorVersion);
+    public DeviceVersion toDeviceVersion() {
+        return switch (this) {
+            case V1 -> new DeviceVersion(1, DeviceVersion.MINOR_VERSION_MIN);
+            case V2 -> new DeviceVersion(2, DeviceVersion.MINOR_VERSION_MIN);
+            case V3 -> new DeviceVersion(3, DeviceVersion.MINOR_VERSION_MIN);
+        };
     }
 }
-

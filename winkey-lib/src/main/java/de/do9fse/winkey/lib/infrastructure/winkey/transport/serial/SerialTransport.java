@@ -413,7 +413,7 @@ public class SerialTransport implements Transport {
 
     private void updateApplicationState(final Command command, final Response response) {
         if (command instanceof HostOpenCommand && response instanceof VersionResponse versionResponse) {
-            context.setVersion(versionResponse.toProtocolVersion());
+            context.setDeviceVersion(versionResponse.version());
             context.transitionToState(ApplicationState.HOST_MODE);
         } else if (command instanceof HostCloseCommand) {
             context.transitionToState(ApplicationState.STANDALONE_MODE);

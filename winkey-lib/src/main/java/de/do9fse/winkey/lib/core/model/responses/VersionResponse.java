@@ -1,67 +1,21 @@
 package de.do9fse.winkey.lib.core.model.responses;
 
-import java.text.MessageFormat;
-import de.do9fse.winkey.lib.core.model.ProtocolVersion;
+import de.do9fse.winkey.lib.core.model.DeviceVersion;
 import de.do9fse.winkey.lib.core.model.Validations;
 
 @ResponseConfiguration(expectedResponseBytes = 1)
-public record VersionResponse(int majorVersion, int minorVersion) implements Response {
-    public static final int MAJOR_VERSION_MIN = 1;
-    public static final int MAJOR_VERSION_MAX = 3;
-    public static final int MINOR_VERSION_MIN = 0;
-
-    public static VersionResponse fromData(final byte[] responseBytes) {
-        final byte versionByte = responseBytes[0];
-        return new VersionResponse(versionByte / 10, versionByte % 10);
-    }
-
+public record VersionResponse(DeviceVersion version) implements Response {
     public VersionResponse {
-        if (majorVersion < MAJOR_VERSION_MIN || majorVersion > MAJOR_VERSION_MAX) {
-            final String message = MessageFormat.format(
-                "WinKey major version must be between {0} and {1} but was {2}",
-                MAJOR_VERSION_MIN,
-                MAJOR_VERSION_MAX,
-                majorVersion
-            );
-
-            throw new IllegalArgumentException(message);
-        }
-
-        if (minorVersion < MINOR_VERSION_MIN) {
-            final String message = MessageFormat.format(
-                "Minor version must not be less than {0} but was {1}",
-                MINOR_VERSION_MIN,
-                minorVersion
-            );
-            
-            throw new IllegalArgumentException(message);
-        }
-    }
-
-    public static VersionResponse parse(final String version) {
         Validations.validateNotNull("Version", version);
-
-        final String[] parts = version.split("\\.", 2);
-        if (parts.length != 2) {
-            throw new IllegalArgumentException(MessageFormat.format("Version must use the notation x.y: {0}", version));
-        }
-
-        Validations.validateNotBlank("Version major component", parts[0]);
-        Validations.validateNotBlank("Version minor component", parts[1]);
-
-        try {
-            return new VersionResponse(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
-        } catch (final NumberFormatException exception) {
-            final String message = MessageFormat.format("Version must use the notation x.y: {0}", version);
-            throw new IllegalArgumentException(message, exception);
-        }
     }
 
-    public String getVersionString() {
-        return "v" + majorVersion + "." + minorVersion;
-    }
+    public static VersionResponse fromData(final byte[] responseBytes)  {
+        final int responseByte = responseBytes[0] & 0xff;
 
-    public ProtocolVersion toProtocolVersion() {
-        return ProtocolVersion.fromMajorVersion(majorVersion);
-    }
+        final int majorVersion = responseByte / 10;
+        final int minorVersion = responseByte % 10;
+        return new VersionResponse(
+            new DeviceVersion(majorVersion, minorVersion)
+        );
+    }   
 }

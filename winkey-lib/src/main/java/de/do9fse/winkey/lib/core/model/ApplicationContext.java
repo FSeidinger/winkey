@@ -11,17 +11,22 @@ public class ApplicationContext {
     private final JobQueue jobQueue;
     private final ApplicationStateMachine stateMachine;
 
-    private ProtocolVersion version;
+    private DeviceVersion deviceVersion;
+    private ProtocolVersion protocolVersion;
+
     private Optional<String> portName;
     private SerialConfiguration deviceConfiguration;
+    
     private Transport transport;
 
     public ApplicationContext(final ProtocolVersion version) {
-        this.version = Validations.validateNotNull("Version", version);
+        this.jobQueue = new DefaultJobQueue();
+        this.stateMachine = new ApplicationStateMachine();
+
+        this.setDeviceVersion(Validations.validateNotNull("Version", version).toDeviceVersion());
+
         this.portName = Optional.empty();
         this.deviceConfiguration = SerialConfiguration.DEFAULT;
-        this.stateMachine = new ApplicationStateMachine();
-        this.jobQueue = new DefaultJobQueue();
     }
 
     public void transitionToState(final ApplicationState newState) {
@@ -36,14 +41,19 @@ public class ApplicationContext {
         return jobQueue;
     }
 
-    public void setVersion(final ProtocolVersion version) {
-        this.version = Validations.validateNotNull("Version", version);
+    public ProtocolVersion getProtocolVersion() {
+        return protocolVersion;
+    }
+   
+    public void setDeviceVersion(final DeviceVersion deviceVersion) {
+        this.deviceVersion = Validations.validateNotNull("Device version", deviceVersion);
+        this.protocolVersion = deviceVersion.toProtocolVersion();
     }
 
-    public ProtocolVersion getVersion() {
-        return version;
+    public DeviceVersion getDeviceVersion() {
+        return deviceVersion;
     }
-    
+
     public void setPortName(final String portName) {
         this.portName = Optional.of(Validations.validateNotBlank("Port name", portName));
     }

@@ -47,7 +47,6 @@ public class LeaveHostModeCommandTest extends AbstractCommandTest {
     void leavesHostModeSuccessfully() throws Exception {
         final Transport transport = mock(Transport.class);
         when(transport.submitJob(any(HostCloseCommand.class), any())).thenAnswer(invocation -> {
-            @SuppressWarnings("unchecked")
             final CompletableFuture<EmptyResponse> future = invocation.getArgument(1);
             future.complete(new EmptyResponse());
             context.transitionToState(ApplicationState.STANDALONE_MODE);

@@ -11,11 +11,12 @@ import org.jline.shell.CommandSession;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
 
+import de.do9fse.winkey.lib.core.model.DeviceVersion;
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 
 public class SetVersionCommand extends TerminalCommand {
     public SetVersionCommand() {
-        super("set-version", "v", "sv");
+        super("set-version", "sv");
     }
 
     @Override
@@ -27,24 +28,24 @@ public class SetVersionCommand extends TerminalCommand {
     public Object execute(CommandSession session, String[] args) throws Exception {
         super.execute(session, args);
 
-        final String versionString;
-        final ProtocolVersion version;
-
+        final String versionParameter;
         try {
-            versionString = scanner.next().toUpperCase();
+            versionParameter = scanner.next().toUpperCase();
         } catch (final NoSuchElementException e) {
             throw new NoSuchElementException("The version parameter is mandatory");
         }
 
+        final DeviceVersion version;
         try {
-            version = ProtocolVersion.valueOf(versionString);
-            context.setVersion(version);
+            final ProtocolVersion protocolVersion = ProtocolVersion.valueOf(versionParameter);
+            version = protocolVersion.toDeviceVersion();
+            context.setDeviceVersion(version);
         } catch (final IllegalArgumentException e) {
             final Set<ProtocolVersion> allowedValues = EnumSet.allOf(ProtocolVersion.class);
-            throw new IllegalArgumentException("Version must be one of " + allowedValues + " but was " + versionString);
+            throw new IllegalArgumentException("Version must be one of " + allowedValues + " but was " + versionParameter);
         }
 
-        stdout.println("Version " + version + " selected");
+        stdout.println("Version " + version.toProtocolVersion() + " selected");
         return null;
     }
 

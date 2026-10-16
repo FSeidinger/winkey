@@ -234,7 +234,7 @@ class SerialTransportTest {
         assertEquals(3, assertInstanceOf(
             de.do9fse.winkey.lib.core.model.responses.VersionResponse.class,
             hostOpenResult.join()
-        ).majorVersion());
+        ).version().majorVersion());
     }
 
     @Test
@@ -255,7 +255,7 @@ class SerialTransportTest {
     void updatesStateToHostModeAndSetsVersionWhenHostOpenCommandCompletes() throws Exception {
         final ApplicationContext localContext = new ApplicationContext(ProtocolVersion.V1);
         final SerialTransport transport = createReadyTransport(localContext, new DefaultJobQueue(), new ByteArrayOutputStream(), 23);
-        assertEquals(ProtocolVersion.V1, localContext.getVersion());
+        assertEquals(ProtocolVersion.V1, localContext.getProtocolVersion());
         assertEquals(ApplicationState.STANDALONE_MODE, localContext.getState());
 
         final CompletableFuture<Response> hostOpenResult = submit(transport, new HostOpenCommand());
@@ -263,7 +263,7 @@ class SerialTransportTest {
 
         assertInstanceOf(VersionResponse.class, hostOpenResult.join());
         assertEquals(ApplicationState.HOST_MODE, localContext.getState());
-        assertEquals(ProtocolVersion.V2, localContext.getVersion());
+        assertEquals(ProtocolVersion.V2, localContext.getProtocolVersion());
     }
 
     @Test
@@ -313,7 +313,7 @@ class SerialTransportTest {
         assertEquals(3, assertInstanceOf(
             de.do9fse.winkey.lib.core.model.responses.VersionResponse.class,
             result.join()
-        ).majorVersion());
+        ).version().majorVersion());
         assertEquals(2, unsolicitedResponses.size());
         assertInstanceOf(StatusResponse.class, unsolicitedResponses.get(0));
         assertInstanceOf(SpeedPotValueResponse.class, unsolicitedResponses.get(1));

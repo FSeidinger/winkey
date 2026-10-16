@@ -5,104 +5,31 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
-@DisplayName("Keyer version tests")
+import de.do9fse.winkey.lib.core.model.DeviceVersion;
+
+@DisplayName("Version response tests")
 class VersionResponseTest {
 
-    @ParameterizedTest
-    @ValueSource(ints = { 1, 2, 3 })
-    @DisplayName("Test that valid major version is accepted")
-    void acceptsValidMajorVersion(final int majorVersion) {
-        final VersionResponse version = new VersionResponse(majorVersion, 0);
-        assertEquals(majorVersion, version.majorVersion());
-    }
-
-    @ParameterizedTest
-    @ValueSource(ints = { 0, 4 })
-    @DisplayName("Test that invalid major version is rejected")
-    void rejectsInvalidMajorVersion(final int majorVersion) {
-        final IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new VersionResponse(majorVersion, 0)
-        );
-
-        assertEquals(
-            "WinKey major version must be between "
-                + VersionResponse.MAJOR_VERSION_MIN
-                + " and "
-                + VersionResponse.MAJOR_VERSION_MAX
-                + " but was "
-                + majorVersion,
-            exception.getMessage()
-        );
+    @Test
+    @DisplayName("Test that valid device version is accepted")
+    void acceptsValidDeviceVersion() {
+        final DeviceVersion deviceVersion = new DeviceVersion(2, 3);
+        final VersionResponse response = new VersionResponse(deviceVersion);
+        assertEquals(deviceVersion, response.version());
     }
 
     @Test
-    @DisplayName("Test that negative minor version is rejected")
-    void rejectsNegativeMinorVersion() {
-        final IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> new VersionResponse(2, -1)
-        );
-
-        assertEquals(
-            "Minor version must not be less than "
-                + VersionResponse.MINOR_VERSION_MIN
-                + " but was -1",
-            exception.getMessage()
-        );
-    }
-
-    @Test
-    @DisplayName("Test that version can be parsed")
-    void parsesMajorAndMinorVersion() {
-        final VersionResponse version = VersionResponse.parse("2.1");
-
-        assertEquals(2, version.majorVersion());
-        assertEquals(1, version.minorVersion());
-        assertEquals("v2.1", version.getVersionString());
+    @DisplayName("Test that null device version is rejected")
+    void rejectsNullDeviceVersion() {
+        assertThrows(NullPointerException.class, () -> new VersionResponse(null));
     }
 
     @Test
     @DisplayName("Test that response byte can be parsed")
     void parsesResponseByte() {
-        final VersionResponse version = VersionResponse.fromData(new byte[] { 23 });
+        final VersionResponse response = VersionResponse.fromData(new byte[] { 23 });
 
-        assertEquals(2, version.majorVersion());
-        assertEquals(3, version.minorVersion());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {
-        "",
-        "2",
-        ".1",
-        "2.",
-        "x.1",
-        "2.x",
-        "4.0",
-        "2.-1"
-    })
-    @DisplayName("Test that malformed or unsupported version strings are rejected")
-    void rejectsInvalidVersionStrings(final String value) {
-        assertThrows(IllegalArgumentException.class, () -> VersionResponse.parse(value));
-    }
-
-    @ParameterizedTest
-    @NullSource
-    @DisplayName("Test that null version strings are rejected")
-    void rejectsNullVersionString(final String value) {
-        assertThrows(NullPointerException.class, () -> VersionResponse.parse(value));
-    }
-
-    @Test
-    @DisplayName("Test mapping to protocol version")
-    void mapsToProtocolVersion() {
-        assertEquals(de.do9fse.winkey.lib.core.model.ProtocolVersion.V1, new VersionResponse(1, 2).toProtocolVersion());
-        assertEquals(de.do9fse.winkey.lib.core.model.ProtocolVersion.V2, new VersionResponse(2, 3).toProtocolVersion());
-        assertEquals(de.do9fse.winkey.lib.core.model.ProtocolVersion.V3, new VersionResponse(3, 1).toProtocolVersion());
+        assertEquals(new DeviceVersion(2, 3), response.version());
     }
 }

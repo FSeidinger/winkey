@@ -10,6 +10,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import de.do9fse.winkey.lib.core.model.DeviceVersion;
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.terminal.test.tools.AbstractCommandTest;
 import de.do9fse.winkey.terminal.test.tools.ArgumentsBuilder;
@@ -35,7 +36,8 @@ public class SetVersionCommandTest extends AbstractCommandTest {
         command.execute(session, arguments);
 
         final ProtocolVersion expected = ProtocolVersion.V2;
-        assertEquals(expected, context.getVersion());
+        assertEquals(expected, context.getProtocolVersion());
+        assertEquals(new DeviceVersion(2, 0), context.getDeviceVersion());
     }
 
     @Test

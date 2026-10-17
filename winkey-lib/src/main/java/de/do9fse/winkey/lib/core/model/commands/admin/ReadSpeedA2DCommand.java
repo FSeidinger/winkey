@@ -12,6 +12,6 @@ import de.do9fse.winkey.lib.core.model.responses.SpeedPotentiometerResponse;
 public record ReadSpeedA2DCommand() implements AdminCommand {
     @Override
     public byte[] toData() {
-        return new byte[]{ 0x00, 6 };
+        return new byte[]{ 0x00, 0x06 };
     }
 }

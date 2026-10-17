@@ -17,7 +17,7 @@ class AdminCommandTest {
         assertPayload(new ReadPaddleA2DCommand(), new byte[] { 0x00, 5 });
         assertPayload(new ReadSpeedA2DCommand(), new byte[] { 0x00, 6 });
         assertPayload(new GetValuesCommand(), new byte[] { 0x00, 7 });
-        assertPayload(new ReservedCommand(), new byte[] { 0x00, 8 });
+        assertPayload(new Reserved1Command(), new byte[] { 0x00, 8 });
         assertPayload(new GetCalibrationValueCommand(), new byte[] { 0x00, 9 });
         assertPayload(new SetWK1ModeCommand(), new byte[] { 0x00, 10 });
         assertPayload(new SetWK2ModeCommand(), new byte[] { 0x00, 11 });

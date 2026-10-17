@@ -12,6 +12,6 @@ import de.do9fse.winkey.lib.core.model.responses.VersionResponse;
 public record HostOpenCommand() implements AdminCommand {
     @Override
     public byte[] toData() {
-        return new byte[] { 0x00, 2 };
+        return new byte[] { 0x00, 0x02 };
     }
 }

@@ -6,12 +6,12 @@ import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.responses.DefaultsResponse;
 
 @ImmediateCommandConfiguration(
-    allowedProtocols = ProtocolVersion.V2,
+    allowedProtocols = { ProtocolVersion.V1, ProtocolVersion.V2 },
     responseType = DefaultsResponse.class
 )
 public record GetValuesCommand() implements AdminCommand {
     @Override
     public byte[] toData() {
-        return new byte[]{ 0x00, 7 };
+        return new byte[]{ 0x00, 0x07 };
     }
 }

@@ -30,6 +30,6 @@ public record EchoTestCommand(char echoChar) implements AdminCommand {
 
     @Override
     public byte[] toData() {
-        return new byte[]{ 0x00, 4, (byte) echoChar };
+        return new byte[]{ 0x00, 0x04, (byte) echoChar };
     }
 }

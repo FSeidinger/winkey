@@ -5,11 +5,11 @@ import de.do9fse.winkey.lib.core.model.commands.AdminCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 
 @ImmediateCommandConfiguration(
-    allowedProtocols = ProtocolVersion.V1
+    allowedProtocols = { ProtocolVersion.V1, ProtocolVersion.V2 }
 )
 public record CalibrateCommand() implements AdminCommand {
     @Override
     public byte[] toData() {
-        return new byte[]{ 0x00, 0 };
+        return new byte[]{ 0x00, 0x00 };
     }
 }

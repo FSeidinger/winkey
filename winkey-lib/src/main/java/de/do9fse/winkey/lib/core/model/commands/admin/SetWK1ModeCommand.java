@@ -10,6 +10,6 @@ import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 public record SetWK1ModeCommand() implements AdminCommand {
     @Override
     public byte[] toData() {
-        return new byte[]{ 0x00, 10 };
+        return new byte[]{ 0x00, 0x0A };
     }
 }

@@ -6,12 +6,12 @@ import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.responses.CalibrationValueResponse;
 
 @ImmediateCommandConfiguration(
-    allowedProtocols = { ProtocolVersion.V1, ProtocolVersion.V2 },
+    allowedProtocols = { ProtocolVersion.V1 },
     responseType = CalibrationValueResponse.class
 )
 public record GetCalibrationValueCommand() implements AdminCommand {
     @Override
     public byte[] toData() {
-        return new byte[]{ 0x00, 9 };
+        return new byte[]{ 0x00, 0x09 };
     }
 }

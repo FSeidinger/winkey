@@ -7,7 +7,7 @@ import de.do9fse.winkey.lib.core.model.commands.AdminCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 
 @ImmediateCommandConfiguration(
-    allowedProtocols = { ProtocolVersion.V1, ProtocolVersion.V2 }
+    allowedProtocols = { ProtocolVersion.V2 }
 )
 public record SendStandaloneMessageCommand(int messageId) implements AdminCommand {
     private static final int MESSAGE_ID_MIN = 0;
@@ -27,6 +27,6 @@ public record SendStandaloneMessageCommand(int messageId) implements AdminComman
 
     @Override
     public byte[] toData() {
-        return new byte[]{ 0x00, 14, (byte) messageId };
+        return new byte[]{ 0x00, 0x0E, (byte) messageId };
     }
 }

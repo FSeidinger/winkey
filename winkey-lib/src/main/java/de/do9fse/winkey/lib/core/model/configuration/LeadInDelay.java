@@ -35,8 +35,7 @@ public record LeadInDelay(Quantity<Time> value) {
     }
 
     public static LeadInDelay fromProtocol(final int value) {
-        final int delayInMilliseconds = value & 0xff;
-        return new LeadInDelay(Quantities.getQuantity(delayInMilliseconds, MILLI(Units.SECOND)));
+        return new LeadInDelay(Quantities.getQuantity(value, MILLI(Units.SECOND)));
     }
 
     public int toProtocolValue() {

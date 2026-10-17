@@ -2,7 +2,6 @@ package de.do9fse.winkey.lib.core.model.responses;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.DisplayName;
@@ -17,23 +16,9 @@ class EEPROMDumpResponseTest {
         responseBytes[0] = 0x12;
         responseBytes[255] = (byte) 0xff;
 
-        final EEPROMDumpResponse response = EEPROMDumpResponse.fromData(responseBytes);
+        final EEPROMResponse response = EEPROMResponse.fromData(responseBytes);
 
         assertArrayEquals(responseBytes, response.data());
-    }
-
-    @Test
-    void copiesDataWhenConstructedAndWhenAccessed() {
-        final byte[] input = new byte[256];
-        final EEPROMDumpResponse response = new EEPROMDumpResponse(input);
-        input[0] = 0x01;
-
-        final byte[] data = response.data();
-        assertNotSame(input, data);
-        assertEquals(0, data[0]);
-
-        data[1] = 0x02;
-        assertEquals(0, response.data()[1]);
     }
 
     @Test
@@ -42,11 +27,11 @@ class EEPROMDumpResponseTest {
 
         final IllegalArgumentException exception = assertThrows(
             IllegalArgumentException.class,
-            () -> EEPROMDumpResponse.fromData(responseBytes)
+            () -> EEPROMResponse.fromData(responseBytes)
         );
 
         assertEquals(
-            "EEPROM dump must contain exactly " + EEPROMDumpResponse.DATA_LENGTH + " bytes but contained 255",
+            "EEPROM dump must contain exactly " + EEPROMResponse.DATA_LENGTH + " bytes but contained 255",
             exception.getMessage()
         );
     }
@@ -55,7 +40,7 @@ class EEPROMDumpResponseTest {
     void rejectsNullData() {
         final NullPointerException exception = assertThrows(
             NullPointerException.class,
-            () -> new EEPROMDumpResponse(null)
+            () -> new EEPROMResponse(null)
         );
 
         assertEquals("EEPROM dump data must not be null", exception.getMessage());

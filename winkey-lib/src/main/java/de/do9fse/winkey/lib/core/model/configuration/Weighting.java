@@ -33,7 +33,7 @@ public record Weighting(Quantity<Dimensionless> value) {
     }
 
     public static Weighting fromProtocol(final int value) {
-        return new Weighting(Quantities.getQuantity(value & 0xff, Units.PERCENT));
+        return new Weighting(Quantities.getQuantity(value, Units.PERCENT));
     }
 
     public int toProtocolValue() {

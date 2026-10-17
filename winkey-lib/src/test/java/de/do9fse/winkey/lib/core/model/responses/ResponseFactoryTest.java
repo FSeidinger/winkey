@@ -42,7 +42,7 @@ class ResponseFactoryTest {
         final Map<Class<? extends Response>, byte[]> responses = Map.of(
             CalibrationValueResponse.class, new byte[] { (byte) 0xff },
             DefaultsResponse.class, new byte[] { 0x31, 25, 4, 50, 12, 25, 10, 20, 50, 7, 18, 55, 50, (byte) 0b10011011, (byte) 0xff },
-            EEPROMDumpResponse.class, new byte[EEPROMDumpResponse.DATA_LENGTH],
+            EEPROMResponse.class, new byte[EEPROMResponse.DATA_LENGTH],
             EmptyResponse.class, new byte[0],
             EchoResponse.class, new byte[] { 'K' },
             PaddleA2DResponse.class, new byte[] { 0 },

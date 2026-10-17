@@ -36,7 +36,7 @@ public record PaddleSetpoint(Quantity<Dimensionless> value) {
     }
 
     public static PaddleSetpoint fromProtocol(final int value) {
-        return new PaddleSetpoint(Quantities.getQuantity(value & 0xff, Units.PERCENT));
+        return new PaddleSetpoint(Quantities.getQuantity(value, Units.PERCENT));
     }
 
     public int toProtocolValue() {

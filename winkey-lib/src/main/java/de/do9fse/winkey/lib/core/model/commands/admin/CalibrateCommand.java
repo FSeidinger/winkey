@@ -10,6 +10,7 @@ import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 public record CalibrateCommand() implements AdminCommand {
     @Override
     public byte[] toData() {
-        return new byte[]{ 0x00, 0x00 };
+        // TODO special case for 100 mS pause between second and third byte
+        return new byte[]{ 0x00, 0x00, (byte) 0xFF };
     }
 }

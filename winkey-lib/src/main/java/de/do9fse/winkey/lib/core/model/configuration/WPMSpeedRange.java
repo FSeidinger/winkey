@@ -37,7 +37,7 @@ public record WPMSpeedRange(Quantity<Dimensionless> value) {
     }
 
     public static WPMSpeedRange fromProtocol(final int value) {
-        return new WPMSpeedRange(Quantities.getQuantity(value & 0xff, CustomUnits.WPM));
+        return new WPMSpeedRange(Quantities.getQuantity(value, CustomUnits.WPM));
     }
 
     public int toProtocolValue() {

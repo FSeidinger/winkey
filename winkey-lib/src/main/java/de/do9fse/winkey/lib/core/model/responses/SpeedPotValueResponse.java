@@ -48,12 +48,14 @@ public record SpeedPotValueResponse(Quantity<Dimensionless> speedOffset) impleme
     }
 
     public static SpeedPotValueResponse fromData(final byte[] responseBytes) {
-        final int responseByte = Byte.toUnsignedInt(responseBytes[0]);
+        final int responseByte = Response.toUnsignedInt(responseBytes);
+
         if ((responseByte & RESPONSE_TAG_MASK) != RESPONSE_TAG) {
             throw new IllegalArgumentException(
                 MessageFormat.format("Invalid speed pot response byte: {0}", responseByte)
             );
         }
+        
         return new SpeedPotValueResponse(
             Quantities.getQuantity(responseByte & SPEED_OFFSET_MASK, CustomUnits.WPM)
         );

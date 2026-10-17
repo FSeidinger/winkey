@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 class AdminCommandTest {
     @Test
     void producesExpectedAdminCommandBytes() {
-        assertPayload(new CalibrateCommand(), new byte[] { 0x00, 0 });
+        assertPayload(new CalibrateCommand(), new byte[] { 0x00, 0, (byte) 0xFF });
         assertPayload(new ResetCommand(), new byte[] { 0x00, 1 });
         assertPayload(new HostOpenCommand(), new byte[] { 0x00, 2 });
         assertPayload(new HostCloseCommand(), new byte[] { 0x00, 3 });

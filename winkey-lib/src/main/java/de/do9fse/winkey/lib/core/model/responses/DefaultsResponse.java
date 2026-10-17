@@ -1,5 +1,8 @@
 package de.do9fse.winkey.lib.core.model.responses;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import de.do9fse.winkey.lib.core.model.commands.host.immediate.SideToneControlCommand.SideToneFrequency;
 import de.do9fse.winkey.lib.core.model.configuration.DitDahRatio;
 import de.do9fse.winkey.lib.core.model.configuration.FarnsworthSpeed;
@@ -35,22 +38,24 @@ public record DefaultsResponse(
     int reservedValue
 ) implements Response {
     public static DefaultsResponse fromData(final byte[] responseBytes) {
+        final int[] responses = Response.toUnsignedInts(responseBytes);
+
         return new DefaultsResponse(
-            ModeRegister.fromProtocol(responseBytes[0]),
-            WPMSpeed.fromProtocol(responseBytes[1]),
-            SideToneFrequency.parseResponseByte(responseBytes[2]),
-            Weighting.fromProtocol(responseBytes[3]),
-            LeadInDelay.fromProtocol(responseBytes[4]),
-            TailDelay.fromProtocol(responseBytes[5]),
-            WPMSpeed.fromProtocol(responseBytes[6]),
-            WPMSpeedRange.fromProtocol(responseBytes[7]),
-            FirstExtensionDelay.fromProtocol(responseBytes[8]),
-            KeyCompensation.fromProtocol(responseBytes[9]),
-            FarnsworthSpeed.fromProtocol(responseBytes[10]),
-            PaddleSetpoint.fromProtocol(responseBytes[11]),
-            DitDahRatio.fromProtocol(responseBytes[12]),
-            PinConfiguration.fromProtocol(responseBytes[13]),
-            responseBytes[14] & 0xff
+            ModeRegister.fromProtocol(responses[0]),
+            WPMSpeed.fromProtocol(responses[1]),
+            SideToneFrequency.parseResponseByte(responses[2]),
+            Weighting.fromProtocol(responses[3]),
+            LeadInDelay.fromProtocol(responses[4]),
+            TailDelay.fromProtocol(responses[5]),
+            WPMSpeed.fromProtocol(responses[6]),
+            WPMSpeedRange.fromProtocol(responses[7]),
+            FirstExtensionDelay.fromProtocol(responses[8]),
+            KeyCompensation.fromProtocol(responses[9]),
+            FarnsworthSpeed.fromProtocol(responses[10]),
+            PaddleSetpoint.fromProtocol(responses[11]),
+            DitDahRatio.fromProtocol(responses[12]),
+            PinConfiguration.fromProtocol(responses[13]),
+            responses[14]
         );
     }
 }

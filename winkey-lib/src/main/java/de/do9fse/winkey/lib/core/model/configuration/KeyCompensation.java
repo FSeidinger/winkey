@@ -36,8 +36,7 @@ public record KeyCompensation(Quantity<Time> value) {
     }
 
     public static KeyCompensation fromProtocol(final int value) {
-        final int durationInMilliseconds = value & 0xff;
-        return new KeyCompensation(Quantities.getQuantity(durationInMilliseconds, MILLI(Units.SECOND)));
+        return new KeyCompensation(Quantities.getQuantity(value, MILLI(Units.SECOND)));
     }
 
     public int toProtocolValue() {

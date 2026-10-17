@@ -1,14 +1,14 @@
 package de.do9fse.winkey.lib.core.model.responses;
 
 import java.text.MessageFormat;
-import java.util.Arrays;
+
 import de.do9fse.winkey.lib.core.model.Validations;
 
-@ResponseConfiguration(expectedResponseBytes = EEPROMDumpResponse.DATA_LENGTH)
-public record EEPROMDumpResponse(byte[] data) implements Response {
+@ResponseConfiguration(expectedResponseBytes = EEPROMResponse.DATA_LENGTH)
+public record EEPROMResponse(byte[] data) implements Response {
     public static final int DATA_LENGTH = 256;
 
-    public EEPROMDumpResponse {
+    public EEPROMResponse {
         Validations.validateNotNull("EEPROM dump data", data);
 
         if (data.length != DATA_LENGTH) {
@@ -20,16 +20,9 @@ public record EEPROMDumpResponse(byte[] data) implements Response {
         
             throw new IllegalArgumentException(message);
         }
-        
-        data = Arrays.copyOf(data, data.length);
     }
 
-    @Override
-    public byte[] data() {
-        return Arrays.copyOf(data, data.length);
-    }
-
-    public static EEPROMDumpResponse fromData(final byte[] responseBytes) {
-        return new EEPROMDumpResponse(responseBytes);
+    public static EEPROMResponse fromData(final byte[] responseBytes) {
+        return new EEPROMResponse(responseBytes);
     }
 }

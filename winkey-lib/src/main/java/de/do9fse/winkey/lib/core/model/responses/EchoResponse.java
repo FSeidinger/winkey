@@ -5,6 +5,6 @@ package de.do9fse.winkey.lib.core.model.responses;
 )
 public record EchoResponse(char echoChar) implements Response {
     public static EchoResponse fromData(final byte[] responseBytes) {
-        return new EchoResponse((char) responseBytes[0]);
+        return new EchoResponse(Response.toChar(responseBytes));
     }
 }

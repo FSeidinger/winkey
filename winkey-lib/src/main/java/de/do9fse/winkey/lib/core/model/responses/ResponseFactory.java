@@ -29,7 +29,7 @@ public class ResponseFactory {
     private void populateFactories(final ApplicationContext context) {
         factories.put(CalibrationValueResponse.class, CalibrationValueResponse::fromData);
         factories.put(DefaultsResponse.class, DefaultsResponse::fromData);
-        factories.put(EEPROMDumpResponse.class, EEPROMDumpResponse::fromData);
+        factories.put(EEPROMResponse.class, EEPROMResponse::fromData);
         factories.put(EmptyResponse.class, EmptyResponse::fromData);
         factories.put(EchoResponse.class, EchoResponse::fromData);
         factories.put(PaddleA2DResponse.class, PaddleA2DResponse::fromData);

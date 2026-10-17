@@ -24,7 +24,7 @@ public enum KeyMode {
     }
 
     public static KeyMode fromProtocol(final int value) {
-        final int responseCode = ((value & 0xff) & 0b00110000) >> 4;
+        final int responseCode = (value & 0b00110000) >> 4;
 
         return switch (responseCode) {
             case 0 -> IAMBIC_B;

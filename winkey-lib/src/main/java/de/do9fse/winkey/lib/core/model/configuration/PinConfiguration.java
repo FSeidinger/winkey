@@ -30,15 +30,14 @@ public record PinConfiguration(
     }
 
     public static PinConfiguration fromProtocol(final int value) {
-        final int pinConfiguration = value & 0xff;
-        final int priorityCode = (pinConfiguration >>> 6) & 0b11;
-        final int hangTimeCode = (pinConfiguration >>> 4) & 0b11;
+        final int priorityCode = (value >>> 6) & 0b11;
+        final int hangTimeCode = (value >>> 4) & 0b11;
 
         return new PinConfiguration(
-            (pinConfiguration & 0b00000001) != 0,
-            (pinConfiguration & 0b00000010) != 0,
-            (pinConfiguration & 0b00000100) != 0,
-            (pinConfiguration & 0b00001000) != 0,
+            (value & 0b00000001) != 0,
+            (value & 0b00000010) != 0,
+            (value & 0b00000100) != 0,
+            (value & 0b00001000) != 0,
             UltimaticPriority.values()[priorityCode],
             PaddleHangTime.values()[hangTimeCode]
         );

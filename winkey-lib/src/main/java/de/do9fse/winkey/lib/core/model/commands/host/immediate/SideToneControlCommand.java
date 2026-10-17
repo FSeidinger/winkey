@@ -38,7 +38,7 @@ public record SideToneControlCommand(boolean enablePaddleSideToneOnly, SideToneF
         }
 
         public static SideToneFrequency parseResponseByte(final int responseByte) {
-            final int frequencyCode = (responseByte & 0xff) & 0x0f;
+            final int frequencyCode = responseByte & 0x0F;
             return switch (frequencyCode) {
                 case 1 -> FREQUENCY_4000_HZ;
                 case 2 -> FREQUENCY_2000_HZ;

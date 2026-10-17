@@ -10,7 +10,7 @@ public record PaddleA2DResponse(PaddleA2DState state) implements Response {
     }
 
     public static PaddleA2DResponse fromData(final byte[] responseBytes) {
-        final Integer adcValue = Byte.toUnsignedInt(responseBytes[0]);
+        final Integer adcValue = Response.toUnsignedInt(responseBytes);
         
         final PaddleA2DState state = switch(adcValue) {
             case Integer i when i >= 0 && i <= 70 -> PaddleA2DState.BOTH_PADDLES_DOWN;

@@ -10,10 +10,11 @@ public record VersionResponse(DeviceVersion version) implements Response {
     }
 
     public static VersionResponse fromData(final byte[] responseBytes)  {
-        final int responseByte = responseBytes[0] & 0xff;
+        final int responseByte = Response.toUnsignedInt(responseBytes);
 
         final int majorVersion = responseByte / 10;
         final int minorVersion = responseByte % 10;
+        
         return new VersionResponse(
             new DeviceVersion(majorVersion, minorVersion)
         );

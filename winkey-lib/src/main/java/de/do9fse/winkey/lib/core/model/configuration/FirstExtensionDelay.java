@@ -36,8 +36,7 @@ public record FirstExtensionDelay(Quantity<Time> value) {
     }
 
     public static FirstExtensionDelay fromProtocol(final int value) {
-        final int delayInMilliseconds = value & 0xff;
-        return new FirstExtensionDelay(Quantities.getQuantity(delayInMilliseconds, MILLI(Units.SECOND)));
+        return new FirstExtensionDelay(Quantities.getQuantity(value, MILLI(Units.SECOND)));
     }
 
     public int toProtocolValue() {

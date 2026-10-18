@@ -12,7 +12,7 @@ import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
 @ImmediateCommandConfiguration(
-    allowedProtocols = { ProtocolVersion.V1, ProtocolVersion.V2 }
+    allowedProtocols = ProtocolVersion.V1
 )
 public record SideToneFrequencyCommand(SideToneFrequency sideToneFrequency) implements ImmediateCommand {
     public enum SideToneFrequency {

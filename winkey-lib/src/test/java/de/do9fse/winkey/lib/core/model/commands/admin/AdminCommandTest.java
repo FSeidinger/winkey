@@ -6,9 +6,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
+import de.do9fse.winkey.lib.core.model.configuration.EEPROMContent;
+
 class AdminCommandTest {
+    private final byte[] eepromContent = new byte[256];
+
     @Test
     void producesExpectedAdminCommandBytes() {
+        final byte[] eepromPayload = new byte[258];
+        eepromPayload[0] = 0;
+        eepromPayload[1] = 13;
+        System.arraycopy(eepromContent, 0, eepromPayload, 2, eepromContent.length);
+
         assertPayload(new CalibrateCommand(), new byte[] { 0x00, 0, (byte) 0xFF });
         assertPayload(new ResetCommand(), new byte[] { 0x00, 1 });
         assertPayload(new HostOpenCommand(), new byte[] { 0x00, 2 });
@@ -22,7 +31,7 @@ class AdminCommandTest {
         assertPayload(new SetWK1ModeCommand(), new byte[] { 0x00, 10 });
         assertPayload(new SetWK2ModeCommand(), new byte[] { 0x00, 11 });
         assertPayload(new DumpEEPROMCommand(), new byte[] { 0x00, 12 });
-        assertPayload(new LoadEEPROMCommand(), new byte[] { 0x00, 13 });
+        assertPayload(new LoadEEPROMCommand(new EEPROMContent(eepromContent)), eepromPayload);
         assertPayload(new SendStandaloneMessageCommand(6), new byte[] { 0x00, 14, 6 });
     }
 

@@ -29,7 +29,7 @@ public class ParserTest {
         "@P1,       PttCommand[enabled=true]",
         "@PYes,     PttCommand[enabled=true]",
         "@Penabled, PttCommand[enabled=true]",
-        "@S20,      ChangeSpeedBufferedCommand[wpm=20 WPM]",
+        "@S20,      ChangeSpeedBufferedCommand[wpmSpeed=20 WPM]",
         "@W10,      WaitCommand[duration=10 s]"
     })
     @ParameterizedTest(name = "CW line ''{0}'' should be parsed to {1}")

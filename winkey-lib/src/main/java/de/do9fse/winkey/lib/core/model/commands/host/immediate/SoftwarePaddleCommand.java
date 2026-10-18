@@ -6,7 +6,9 @@ import de.do9fse.winkey.lib.core.model.Validations;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 
-@ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
+@ImmediateCommandConfiguration(
+    allowedProtocols = ProtocolVersion.V2
+)
 public record SoftwarePaddleCommand(PaddleSelection selection) implements ImmediateCommand {
     public enum PaddleSelection {
         UP,

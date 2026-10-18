@@ -7,7 +7,9 @@ import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.configuration.FirstExtensionDelay;
 
-@ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
+@ImmediateCommandConfiguration(
+    allowedProtocols = ProtocolVersion.V2
+)
 public record SetFirstExtensionCommand(FirstExtensionDelay delay) implements ImmediateCommand {
     public SetFirstExtensionCommand {
         Validations.validateNotNull("First extension delay", delay);

@@ -1,8 +1,5 @@
 package de.do9fse.winkey.lib.core.model.responses;
 
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import de.do9fse.winkey.lib.core.model.commands.host.immediate.SideToneControlCommand.SideToneFrequency;
 import de.do9fse.winkey.lib.core.model.configuration.DitDahRatio;
 import de.do9fse.winkey.lib.core.model.configuration.FarnsworthSpeed;
@@ -14,7 +11,6 @@ import de.do9fse.winkey.lib.core.model.configuration.PaddleSetpoint;
 import de.do9fse.winkey.lib.core.model.configuration.PinConfiguration;
 import de.do9fse.winkey.lib.core.model.configuration.TailDelay;
 import de.do9fse.winkey.lib.core.model.configuration.WPMSpeed;
-import de.do9fse.winkey.lib.core.model.configuration.WPMSpeedRange;
 import de.do9fse.winkey.lib.core.model.configuration.Weighting;
 
 @ResponseConfiguration(
@@ -28,7 +24,7 @@ public record DefaultsResponse(
     LeadInDelay leadInDelay,
     TailDelay tailDelay,
     WPMSpeed wpmMinimum,
-    WPMSpeedRange wpmRange,
+    WPMSpeed wpmRange,
     FirstExtensionDelay firstExtensionDelay,
     KeyCompensation keyCompensation,
     FarnsworthSpeed farnsworthSpeed,
@@ -48,7 +44,7 @@ public record DefaultsResponse(
             LeadInDelay.fromProtocol(responses[4]),
             TailDelay.fromProtocol(responses[5]),
             WPMSpeed.fromProtocol(responses[6]),
-            WPMSpeedRange.fromProtocol(responses[7]),
+            WPMSpeed.fromProtocol(responses[7]),
             FirstExtensionDelay.fromProtocol(responses[8]),
             KeyCompensation.fromProtocol(responses[9]),
             FarnsworthSpeed.fromProtocol(responses[10]),

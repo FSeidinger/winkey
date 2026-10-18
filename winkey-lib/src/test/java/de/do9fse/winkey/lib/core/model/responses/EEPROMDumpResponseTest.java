@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import de.do9fse.winkey.lib.core.model.configuration.EEPROMContent;
+
 @DisplayName("EEPROM dump response tests")
 class EEPROMDumpResponseTest {
 
@@ -18,7 +20,7 @@ class EEPROMDumpResponseTest {
 
         final EEPROMResponse response = EEPROMResponse.fromData(responseBytes);
 
-        assertArrayEquals(responseBytes, response.data());
+        assertArrayEquals(responseBytes, response.eeprom().content());
     }
 
     @Test
@@ -31,7 +33,7 @@ class EEPROMDumpResponseTest {
         );
 
         assertEquals(
-            "EEPROM dump must contain exactly " + EEPROMResponse.DATA_LENGTH + " bytes but contained 255",
+            "EEPROM content must contain exactly " + EEPROMContent.EEPROM_SIZE + " bytes but contained 255",
             exception.getMessage()
         );
     }
@@ -43,6 +45,6 @@ class EEPROMDumpResponseTest {
             () -> new EEPROMResponse(null)
         );
 
-        assertEquals("EEPROM dump data must not be null", exception.getMessage());
+        assertEquals("EEPROM must not be null", exception.getMessage());
     }
 }

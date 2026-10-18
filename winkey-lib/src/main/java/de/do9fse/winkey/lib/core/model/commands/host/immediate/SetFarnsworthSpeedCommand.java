@@ -7,7 +7,9 @@ import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.configuration.FarnsworthSpeed;
 
-@ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
+@ImmediateCommandConfiguration(
+    allowedProtocols = ProtocolVersion.V2
+)
 public record SetFarnsworthSpeedCommand(FarnsworthSpeed speed) implements ImmediateCommand {
     public SetFarnsworthSpeedCommand {
         Validations.validateNotNull("Farnsworth speed", speed);

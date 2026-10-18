@@ -21,8 +21,6 @@ import de.do9fse.winkey.lib.core.model.configuration.ModeRegister;
 import de.do9fse.winkey.lib.core.model.configuration.PaddleSetpoint;
 import de.do9fse.winkey.lib.core.model.configuration.PinConfiguration;
 import de.do9fse.winkey.lib.core.model.configuration.WPMSpeed;
-import de.do9fse.winkey.lib.core.model.configuration.WPMSpeedRange;
-import de.do9fse.winkey.lib.core.model.configuration.WPMSpeedWithReset;
 import de.do9fse.winkey.lib.core.model.configuration.Weighting;
 import de.do9fse.winkey.lib.core.model.configuration.CustomUnits;
 import de.do9fse.winkey.lib.core.model.responses.SpeedPotValueResponse;
@@ -65,11 +63,6 @@ class ImmediateHostModeCommandTest {
 
     @Test
     void encodesImmediateHostCommands() {
-        assertPayload(SetSpeedCommand.useSpeedPot(), new byte[] { 0x02, 0x00 });
-        assertPayload(
-            new SetSpeedCommand(new WPMSpeedWithReset(WPMSpeed.fromProtocol(99))),
-            new byte[] { 0x02, 0x63 }
-        );
         assertPayload(
             new SetWeightingCommand(Weighting.fromProtocol(50)),
             new byte[] { 0x03, 0x32 }
@@ -80,10 +73,6 @@ class ImmediateHostModeCommandTest {
                 Quantities.getQuantity(2500, MILLI(Units.SECOND))
             ),
             new byte[] { 0x04, 0x01, (byte) 0xfa }
-        );
-        assertPayload(
-            new SetupSpeedPotCommand(WPMSpeed.fromProtocol(10), WPMSpeedRange.fromProtocol(15), 42),
-            new byte[] { 0x05, 0x0a, 0x0f, 0x2a }
         );
         assertPayload(new PauseCommand(true), new byte[] { 0x06, 0x01 });
         assertPayload(new GetSpeedPotCommand(), new byte[] { 0x07 });
@@ -140,19 +129,6 @@ class ImmediateHostModeCommandTest {
             new byte[] { 0x14, 0x03 }
         );
         assertPayload(new RequestStatusCommand(), new byte[] { 0x15 });
-        assertPayload(SetBufferPointerCommand.reset(), new byte[] { 0x16, 0x00 });
-        assertPayload(
-            new SetBufferPointerCommand(SetBufferPointerCommand.Operation.OVERWRITE, 8),
-            new byte[] { 0x16, 0x01, 0x08 }
-        );
-        assertPayload(
-            new SetBufferPointerCommand(SetBufferPointerCommand.Operation.INSERT, 9),
-            new byte[] { 0x16, 0x02, 0x09 }
-        );
-        assertPayload(
-            new SetBufferPointerCommand(SetBufferPointerCommand.Operation.ADD_NULLS, 10),
-            new byte[] { 0x16, 0x03, 0x0a }
-        );
         assertPayload(
             new SetDitDahRatioCommand(DitDahRatio.fromProtocol(50)),
             new byte[] { 0x17, 0x32 }
@@ -168,8 +144,7 @@ class ImmediateHostModeCommandTest {
     void hostCommandsDeclareProtocolAndResponseMetadata() {
         final ImmediateCommand setupSpeedPotCommand = new SetupSpeedPotCommand(
             WPMSpeed.fromProtocol(10),
-            WPMSpeedRange.fromProtocol(15),
-            42
+            WPMSpeed.fromProtocol(15)
         );
         assertTrue(setupSpeedPotCommand.getCommandInfo().supportsProtocol(ProtocolVersion.V1));
         assertTrue(setupSpeedPotCommand.getCommandInfo().supportsProtocol(ProtocolVersion.V2));
@@ -186,26 +161,6 @@ class ImmediateHostModeCommandTest {
 
     @Test
     void validatesProtocolRangesAndCopiesLoadDefaults() {
-        final IllegalArgumentException belowMinimumSpeed = assertThrows(
-            IllegalArgumentException.class,
-            () -> new WPMSpeedWithReset(Quantities.getQuantity(4, CustomUnits.WPM))
-        );
-        assertEquals(
-            "CW speed must be between "
-                + WPMSpeed.WPM_MIN
-                + " and "
-                + WPMSpeed.WPM_MAX
-                + " or 0 but was 4 WPM",
-            belowMinimumSpeed.getMessage()
-        );
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> new WPMSpeedWithReset(Quantities.getQuantity(100, CustomUnits.WPM))
-        );
-        assertEquals(
-            46,
-            new WPMSpeedWithReset(Quantities.getQuantity(45.5, CustomUnits.WPM)).toProtocolValue()
-        );
         assertThrows(
             IllegalArgumentException.class,
             () -> new SetPttLeadTailCommand(
@@ -217,8 +172,7 @@ class ImmediateHostModeCommandTest {
             IllegalArgumentException.class,
             () -> new SetupSpeedPotCommand(
                 WPMSpeed.fromProtocol(90),
-                WPMSpeedRange.fromProtocol(10),
-                0
+                WPMSpeed.fromProtocol(10)
             )
         );
         assertThrows(

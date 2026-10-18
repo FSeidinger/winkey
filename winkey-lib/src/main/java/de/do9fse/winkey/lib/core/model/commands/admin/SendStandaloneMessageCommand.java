@@ -7,7 +7,7 @@ import de.do9fse.winkey.lib.core.model.commands.AdminCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 
 @ImmediateCommandConfiguration(
-    allowedProtocols = { ProtocolVersion.V2 }
+    allowedProtocols = ProtocolVersion.V2
 )
 public record SendStandaloneMessageCommand(int messageId) implements AdminCommand {
     private static final int MESSAGE_ID_MIN = 0;

@@ -6,7 +6,9 @@ import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 
-@ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
+@ImmediateCommandConfiguration(
+    allowedProtocols = ProtocolVersion.V2
+)
 public record MergeLettersCommand(char first, char second) implements ImmediateCommand {
     private static final char MAX_ASCII_CHARACTER = 0x7f;
 

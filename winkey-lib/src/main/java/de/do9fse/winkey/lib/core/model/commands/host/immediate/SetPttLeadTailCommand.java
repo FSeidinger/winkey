@@ -12,7 +12,9 @@ import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import tech.units.indriya.quantity.Quantities;
 import tech.units.indriya.unit.Units;
 
-@ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
+@ImmediateCommandConfiguration(
+    allowedProtocols = ProtocolVersion.V2
+)
 public record SetPttLeadTailCommand(Quantity<Time> leadIn, Quantity<Time> tail) implements ImmediateCommand {
     public SetPttLeadTailCommand {
         Validations.validateNotNull("PTT lead-in", leadIn);

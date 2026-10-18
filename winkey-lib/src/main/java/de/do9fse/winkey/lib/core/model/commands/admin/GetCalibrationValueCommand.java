@@ -6,7 +6,7 @@ import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.responses.CalibrationValueResponse;
 
 @ImmediateCommandConfiguration(
-    allowedProtocols = { ProtocolVersion.V1 },
+    allowedProtocols = ProtocolVersion.V1,
     responseType = CalibrationValueResponse.class
 )
 public record GetCalibrationValueCommand() implements AdminCommand {

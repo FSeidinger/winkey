@@ -1,5 +1,7 @@
 package de.do9fse.winkey.lib.core.model.responses;
 
+import de.do9fse.winkey.lib.core.model.Validations;
+
 @ResponseConfiguration(expectedResponseBytes = 1)
 public record PaddleA2DResponse(PaddleA2DState state) implements Response {
     public enum PaddleA2DState {
@@ -9,6 +11,10 @@ public record PaddleA2DResponse(PaddleA2DState state) implements Response {
         BOTH_PADDLES_DOWN
     }
 
+    public PaddleA2DResponse {
+        Validations.validateNotNull("State", state);
+    }
+    
     public static PaddleA2DResponse fromData(final byte[] responseBytes) {
         final Integer adcValue = Response.toUnsignedInt(responseBytes);
         

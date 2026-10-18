@@ -5,7 +5,7 @@ import de.do9fse.winkey.lib.core.model.commands.AdminCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 
 @ImmediateCommandConfiguration(
-    allowedProtocols =  { ProtocolVersion.V2 }
+    allowedProtocols =  ProtocolVersion.V2
 )
 public record SetLowBaudCommand() implements AdminCommand {
     @Override

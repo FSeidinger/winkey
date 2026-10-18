@@ -15,6 +15,7 @@ import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.StatusPushButton;
 import de.do9fse.winkey.lib.core.model.StatusV1;
 import de.do9fse.winkey.lib.core.model.StatusV2;
+import de.do9fse.winkey.lib.core.model.configuration.EEPROMContent;
 
 @DisplayName("Response factory tests")
 class ResponseFactoryTest {
@@ -42,7 +43,7 @@ class ResponseFactoryTest {
         final Map<Class<? extends Response>, byte[]> responses = Map.of(
             CalibrationValueResponse.class, new byte[] { (byte) 0xff },
             DefaultsResponse.class, new byte[] { 0x31, 25, 4, 50, 12, 25, 10, 20, 50, 7, 18, 55, 50, (byte) 0b10011011, (byte) 0xff },
-            EEPROMResponse.class, new byte[EEPROMResponse.DATA_LENGTH],
+            EEPROMResponse.class, new byte[EEPROMContent.EEPROM_SIZE],
             EmptyResponse.class, new byte[0],
             EchoResponse.class, new byte[] { 'K' },
             PaddleA2DResponse.class, new byte[] { 0 },

@@ -7,7 +7,9 @@ import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
 import de.do9fse.winkey.lib.core.model.configuration.PinConfiguration;
 
-@ImmediateCommandConfiguration(allowedProtocols = ProtocolVersion.V2)
+@ImmediateCommandConfiguration(
+    allowedProtocols = ProtocolVersion.V2
+)
 public record SetPinConfigurationCommand(PinConfiguration configuration) implements ImmediateCommand {
     public SetPinConfigurationCommand {
         Validations.validateNotNull("Pin configuration", configuration);

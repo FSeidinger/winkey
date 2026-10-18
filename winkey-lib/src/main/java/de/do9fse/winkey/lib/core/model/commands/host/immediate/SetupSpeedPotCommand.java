@@ -1,53 +1,46 @@
 package de.do9fse.winkey.lib.core.model.commands.host.immediate;
 
-import java.text.MessageFormat;
-
 import javax.measure.quantity.Dimensionless;
 
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.Validations;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommandConfiguration;
+import de.do9fse.winkey.lib.core.model.configuration.CustomUnits;
 import de.do9fse.winkey.lib.core.model.configuration.WPMSpeed;
-import de.do9fse.winkey.lib.core.model.configuration.WPMSpeedRange;
 import tech.units.indriya.ComparableQuantity;
 
-@ImmediateCommandConfiguration(allowedProtocols = { ProtocolVersion.V1, ProtocolVersion.V2 })
-public record SetupSpeedPotCommand(WPMSpeed minWpm, WPMSpeedRange wpmRange, int potRange) implements ImmediateCommand {
+@ImmediateCommandConfiguration(
+    allowedProtocols = { ProtocolVersion.V1, ProtocolVersion.V2 }
+)
+public record SetupSpeedPotCommand(WPMSpeed min, WPMSpeed range) implements ImmediateCommand {
     public SetupSpeedPotCommand {
-        Validations.validateNotNull("Minimum WPM", minWpm);
-        Validations.validateNotNull("WPM range", wpmRange);
         Validations.validateRange(
-            "Speed pot range",
-            potRange,
-            Validations.PROTOCOL_BYTE_MIN,
-            Validations.PROTOCOL_BYTE_MAX
+            "WPM min",
+            CustomUnits.WPM,
+            CustomUnits.asWpm(min.value()),
+            Validations.WPM_MIN,
+            Validations.WPM_MAX
         );
 
-        checkRangeConstraint(minWpm, wpmRange);
+        final ComparableQuantity<Dimensionless> sum = CustomUnits.asWpm(min.value()).add(range.value());
+
+        Validations.validateRange(
+            "Min plus range",
+            CustomUnits.WPM,
+            sum,
+            Validations.WPM_MIN,
+            Validations.WPM_MAX
+        );
     }
 
     @Override
     public byte[] toData() {
         return new byte[] {
             0x05,
-            (byte) minWpm.toProtocolValue(),
-            (byte) wpmRange.toProtocolValue(),
-            (byte) potRange
+            (byte) min.toProtocolValue(),
+            (byte) range.toProtocolValue(),
+            0
         };
-    }
-
-    private void checkRangeConstraint(final WPMSpeed minWpm, final WPMSpeedRange wpmRange) {
-        final ComparableQuantity<Dimensionless> maxSpeed = (ComparableQuantity<Dimensionless>) minWpm.value().add(wpmRange.value());
-
-        if (maxSpeed.isGreaterThan(WPMSpeed.WPM_MAX)) {
-            final String message = MessageFormat.format(
-                "Maximum speed pot WPM must not exceed {0} but was {1}",
-                WPMSpeed.WPM_MAX,
-                maxSpeed
-            );
-
-            throw new IllegalArgumentException(message);
-        }
     }
 }

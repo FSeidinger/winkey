@@ -72,6 +72,14 @@
             </dependency>            
 
             <dependency>
+                <groupId>dev.tamboui</groupId>
+                <artifactId>tamboui-bom</artifactId>
+                <version>0.7.0-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
                 <version>5.12.2</version>
@@ -167,5 +175,6 @@
     <modules>
         <module>winkey-lib</module>
         <module>winkey-terminal</module>
+        <module>winkey-tui</module>
     </modules>
 </project>

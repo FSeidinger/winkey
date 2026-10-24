@@ -1,9 +1,9 @@
 {
     "cSpell.ignoreWords": [
+        "AssertJ",
         "EEPROM",
         "HSCW",
         "MILLI",
-        "AssertJ",
         "classgraph",
         "fazecast",
         "indriya",
@@ -16,6 +16,7 @@
         "mvnw",
         "picocli",
         "rawtypes",
+        "TamboUI",
         "testtools"
     ],
     
@@ -42,14 +43,16 @@
     "java.project.explorer.showNonJavaResources": true,
     "java.dependency.packagePresentation": "flat",
     "java.completion.favoriteStaticMembers": [
+        "dev.tamboui.toolkit.elements.*",
+        "dev.tamboui.toolkit.Toolkit.*",
         "javax.measure.MetricPrefix.*",
+        "org.assertj.core.api.Assertions.*",
         "org.junit.Assert.*",
         "org.junit.Assume.*",
         "org.junit.jupiter.api.Assertions.*",
         "org.junit.jupiter.api.Assumptions.*",
         "org.junit.jupiter.api.DynamicContainer.*",
         "org.junit.jupiter.api.DynamicTest.*",
-        "org.assertj.core.api.Assertions.*",
         "org.mockito.Answers.*",
         "org.mockito.ArgumentMatchers.*",
         "org.mockito.Mockito.*"

@@ -1,7 +1,10 @@
-package de.do9fse.winkey.tui.application;
+package de.do9fse.winkey.tui.application.view;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
+import de.do9fse.winkey.tui.application.state.MenuBarState;
 import dev.tamboui.buffer.Buffer;
 import dev.tamboui.layout.Rect;
 import dev.tamboui.style.Style;
@@ -26,11 +29,13 @@ public class MenuBarView implements StatefulWidget<MenuBarState> {
         int posX = area.x();
         int posY = area.y();
 
+        final List<Span> menuSpans = new ArrayList<>();
+        for (final Menu menu: menus) {
+            menuSpans.addAll(Menu.formatTitle(menu.title(), menu.shortcut()));
+        }
+
         final Line menuLine = Line.from(
-            menus
-                .stream()
-                .map((menu) -> Span.raw(" " + menu.title() + " "))
-                .toList()
+            menuSpans.toArray(new Span[0])
         );
         
         buffer.setLine(posX, posY, menuLine);
@@ -39,13 +44,19 @@ public class MenuBarView implements StatefulWidget<MenuBarState> {
 
     private void renderDropDown(final Rect area, final Buffer buffer, final MenuBarState state) {
         final Menu selectedMenu = state.getSelectedMenu();
+
         if (selectedMenu == null) {
             return;
         }
 
         final ListWidget dropDown = ListWidget
             .builder()
-            .items(selectedMenu.items())
+            .items(
+                Stream
+                    .of(selectedMenu.items())
+                    .map((item) -> item.title())
+                    .toArray(String[]::new)
+            )
             .block(
                 Block
                     .builder()
@@ -67,7 +78,7 @@ public class MenuBarView implements StatefulWidget<MenuBarState> {
         final int offsetY = 1;
 
         int width = calculateMaxItemWidth(selectedMenu);
-        int height = menus.size() + 3;
+        int height = selectedMenu.items().length + 2;
 
         return new Rect(parentArea.x() + offsetX, parentArea.y() + offsetY, width, height);
     }
@@ -75,8 +86,8 @@ public class MenuBarView implements StatefulWidget<MenuBarState> {
     public int calculateMaxItemWidth(final Menu selectedMenu) {
         int maxSize = 0;
 
-        for (final String menuItem: selectedMenu.items()) {
-            final int itemSize = menuItem.length();
+        for (final MenuItem menuItem: selectedMenu.items()) {
+            final int itemSize = menuItem.title().length();
             maxSize = Math.max(maxSize, itemSize);
         }
 

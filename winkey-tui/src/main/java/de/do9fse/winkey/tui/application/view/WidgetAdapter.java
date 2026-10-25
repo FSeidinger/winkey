@@ -1,4 +1,4 @@
-package de.do9fse.winkey.tui.application;
+package de.do9fse.winkey.tui.application.view;
 
 import java.util.Objects;
 

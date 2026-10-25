@@ -1,5 +1,6 @@
-package de.do9fse.winkey.tui.application;
+package de.do9fse.winkey.tui.application.view;
 
+import de.do9fse.winkey.tui.application.state.StatusBarState;
 import dev.tamboui.buffer.Buffer;
 import dev.tamboui.layout.Rect;
 import dev.tamboui.style.Color;

@@ -26,12 +26,12 @@ public class MenuBarView implements StatefulWidget<MenuBarState> {
             return;
         }
 
-        int posX = area.x();
-        int posY = area.y();
+        final int posX = area.x();
+        final int posY = area.y();
 
         final List<Span> menuSpans = new ArrayList<>();
         for (final Menu menu: menus) {
-            menuSpans.addAll(Menu.formatTitle(menu.title(), menu.shortcut()));
+            menuSpans.addAll(Menu.convertTitle(menu.title(), menu.shortcut()));
         }
 
         final Line menuLine = Line.from(
@@ -77,8 +77,8 @@ public class MenuBarView implements StatefulWidget<MenuBarState> {
         final int offsetX = calculateOffsetX(menus, selectedMenu);
         final int offsetY = 1;
 
-        int width = calculateMaxItemWidth(selectedMenu);
-        int height = selectedMenu.items().length + 2;
+        final int width = calculateMaxItemWidth(selectedMenu);
+        final int height = selectedMenu.items().length + 2;
 
         return new Rect(parentArea.x() + offsetX, parentArea.y() + offsetY, width, height);
     }

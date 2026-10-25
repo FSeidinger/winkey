@@ -3,6 +3,7 @@ package de.do9fse.winkey.tui.application.state;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.do9fse.winkey.tui.application.action.Action;
 import de.do9fse.winkey.tui.application.view.Menu;
 import de.do9fse.winkey.tui.application.view.MenuItem;
 import dev.tamboui.widgets.list.ListState;
@@ -22,7 +23,7 @@ public class MenuBarState {
                 new Menu(
                     "File", 'f',
                     List.of(
-                        new MenuItem("Exit")
+                        new MenuItem("Exit", Action.FILE_EXIT)
                     ).toArray(itemType)
                 ),
                 new Menu(

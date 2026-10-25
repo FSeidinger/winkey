@@ -2,8 +2,10 @@
     "cSpell.ignoreWords": [
         "AssertJ",
         "EEPROM",
+        "Gson",
         "HSCW",
         "MILLI",
+        "TamboUI",
         "classgraph",
         "fazecast",
         "indriya",
@@ -16,7 +18,6 @@
         "mvnw",
         "picocli",
         "rawtypes",
-        "TamboUI",
         "testtools"
     ],
     

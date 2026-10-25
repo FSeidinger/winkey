@@ -3,19 +3,35 @@ package de.do9fse.winkey.tui.application.view;
 import java.util.List;
 import java.util.Objects;
 
+import de.do9fse.winkey.tui.application.action.Action;
 import dev.tamboui.style.Style;
 import dev.tamboui.text.Span;
 
-public record Menu(String title, char shortcut, MenuItem[] items) {
-    public Menu(final String title, final char shortcut, final MenuItem[] items) {
+public record Menu(String title, Character shortcut, Action action, MenuItem[] items) {
+    public static final Character NO_SHORTCUT = Character.valueOf(Character.MIN_VALUE);
+
+    public Menu(final String title, final MenuItem[] items) {
+        this(title, null, null, items);
+    }
+
+    public Menu(final String title, final Character shortcut, final MenuItem[] items) {
+        this(title, shortcut, null, items);
+    }
+
+    public Menu(final String title, final Character shortcut, final Action action, final MenuItem[] items) {
         this.title = Objects.requireNonNull(title, "Title must not be null");
-        this.shortcut = shortcut;
+        this.shortcut = Objects.requireNonNullElse(shortcut, NO_SHORTCUT);
+        this.action = Objects.requireNonNullElse(action, Action.NO_ACTION);
         this.items = Objects.requireNonNull(items, "Items must not be null");
     }
 
-    public static List<Span> formatTitle(final String title, final char shortcut) {
-        if (title.isBlank()) {
+    public static List<Span> convertTitle(final String title, final Character shortcut) {
+        if (title == null || title.isBlank()) {
             return List.of();
+        }
+
+        if (shortcut == null || shortcut.equals(NO_SHORTCUT)) {
+            return List.of(Span.raw(title));
         }
 
         final int shortcutPos = title.toLowerCase().indexOf(shortcut);

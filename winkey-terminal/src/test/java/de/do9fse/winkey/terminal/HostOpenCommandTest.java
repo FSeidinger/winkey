@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.do9fse.winkey.lib.core.model.ApplicationState;
+import de.do9fse.winkey.lib.core.model.WinKeyState;
 import de.do9fse.winkey.lib.core.model.DeviceVersion;
 import de.do9fse.winkey.lib.core.model.commands.admin.HostOpenCommand;
 import de.do9fse.winkey.lib.core.model.responses.VersionResponse;
@@ -36,9 +36,9 @@ public class HostOpenCommandTest extends AbstractCommandTest {
 
     @Test
     void rejectsWhenDeviceIsAlreadyInHostMode() {
-        context.transitionToState(ApplicationState.INITIALIZING);
-        context.transitionToState(ApplicationState.STANDALONE_MODE);
-        context.transitionToState(ApplicationState.HOST_MODE);
+        context.transitionToState(WinKeyState.INITIALIZING);
+        context.transitionToState(WinKeyState.STANDALONE_MODE);
+        context.transitionToState(WinKeyState.HOST_MODE);
 
         assertThatThrownBy(() -> command.execute(session, ArgumentsBuilder.EMPTY))
             .isInstanceOf(IllegalStateException.class)
@@ -52,18 +52,18 @@ public class HostOpenCommandTest extends AbstractCommandTest {
             final CompletableFuture<VersionResponse> future = invocation.getArgument(1);
             final VersionResponse versionResponse = new VersionResponse(new DeviceVersion(2, 3));
             context.setDeviceVersion(versionResponse.version());
-            context.transitionToState(ApplicationState.HOST_MODE);
+            context.transitionToState(WinKeyState.HOST_MODE);
             future.complete(versionResponse);
             return null;
         });
 
         context.setTransport(transport);
-        context.transitionToState(ApplicationState.INITIALIZING);
-        context.transitionToState(ApplicationState.STANDALONE_MODE);
+        context.transitionToState(WinKeyState.INITIALIZING);
+        context.transitionToState(WinKeyState.STANDALONE_MODE);
 
         command.execute(session, ArgumentsBuilder.EMPTY);
 
-        assertEquals(ApplicationState.HOST_MODE, context.getState());
+        assertEquals(WinKeyState.HOST_MODE, context.getState());
         assertEquals(de.do9fse.winkey.lib.core.model.ProtocolVersion.V2, context.getProtocolVersion());
         assertEquals(new DeviceVersion(2, 3), context.getDeviceVersion());
     }

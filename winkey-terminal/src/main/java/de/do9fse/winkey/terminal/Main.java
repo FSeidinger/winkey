@@ -12,7 +12,7 @@ import org.jline.terminal.TerminalBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.do9fse.winkey.lib.core.model.ApplicationContext;
+import de.do9fse.winkey.lib.core.model.WinKeyContext;
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 
 public class Main {
@@ -23,7 +23,7 @@ public class Main {
         setRootLogLevel("OFF");
 
         final MessageGenerator generator = new MessageGenerator();
-        final ApplicationContext context = new ApplicationContext(ProtocolVersion.V1);
+        final WinKeyContext context = new WinKeyContext(ProtocolVersion.V1);
 
         final Terminal terminal = TerminalBuilder.builder().system(true).build();
         final ErrorHandlingCommandDispatcher dispatcher = new ErrorHandlingCommandDispatcher(terminal);

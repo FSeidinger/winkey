@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Test;
 
 import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
 
-class ApplicationContextTest {
+class WinKeyContextTest {
     // Subject under test
-    private ApplicationContext context;
+    private WinKeyContext context;
 
     @BeforeEach
     void setUp() {
-        this.context = new ApplicationContext(ProtocolVersion.V2);
+        this.context = new WinKeyContext(ProtocolVersion.V2);
         this.context.setDeviceConfiguration(SerialConfiguration.DEFAULT);
     }
 
@@ -22,22 +22,22 @@ class ApplicationContextTest {
     void retainsConfiguredProtocolVersionAndStartsClosed() {
         assertEquals(ProtocolVersion.V2, context.getProtocolVersion());
         assertEquals(new DeviceVersion(2, 0), context.getDeviceVersion());
-        assertEquals(ApplicationState.CLOSED, context.getState());
+        assertEquals(WinKeyState.CLOSED, context.getState());
     }
 
     @Test
     void delegatesStateTransitionsToItsStateMachine() {
-        context.transitionToState(ApplicationState.INITIALIZING);
-        context.transitionToState(ApplicationState.STANDALONE_MODE);
-        assertEquals(ApplicationState.STANDALONE_MODE, context.getState());
+        context.transitionToState(WinKeyState.INITIALIZING);
+        context.transitionToState(WinKeyState.STANDALONE_MODE);
+        assertEquals(WinKeyState.STANDALONE_MODE, context.getState());
 
-        context.transitionToState(ApplicationState.HOST_MODE);
-        assertEquals(ApplicationState.HOST_MODE, context.getState());
+        context.transitionToState(WinKeyState.HOST_MODE);
+        assertEquals(WinKeyState.HOST_MODE, context.getState());
     }
 
     @Test
     void rejectsANullProtocolVersion() {
-        assertThrows(NullPointerException.class, () -> new ApplicationContext(null));
+        assertThrows(NullPointerException.class, () -> new WinKeyContext(null));
     }
 
     @Test

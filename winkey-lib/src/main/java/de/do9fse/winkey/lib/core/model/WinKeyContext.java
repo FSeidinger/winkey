@@ -7,11 +7,11 @@ import de.do9fse.winkey.lib.core.port.out.JobQueue;
 import de.do9fse.winkey.lib.core.port.out.Transport;
 import de.do9fse.winkey.lib.infrastructure.winkey.DefaultJobQueue;
 
-public class ApplicationContext {
+public class WinKeyContext {
     private final JobQueue jobQueue;
-    private final ApplicationStateMachine stateMachine;
+    private final WinKeyStateMachine stateMachine;
 
-    private ApplicationConfiguration appConfiguration;
+    private WinKeyConfiguration appConfiguration;
     private DeviceVersion deviceVersion;
     private ProtocolVersion protocolVersion;
 
@@ -20,10 +20,10 @@ public class ApplicationContext {
     
     private Transport transport;
 
-    public ApplicationContext(final ProtocolVersion version) {
+    public WinKeyContext(final ProtocolVersion version) {
         this.jobQueue = new DefaultJobQueue();
-        this.stateMachine = new ApplicationStateMachine();
-        this.appConfiguration = ApplicationConfiguration.DEFAULT;
+        this.stateMachine = new WinKeyStateMachine();
+        this.appConfiguration = WinKeyConfiguration.DEFAULT;
 
         this.setDeviceVersion(Validations.validateNotNull("Version", version).toDeviceVersion());
 
@@ -31,11 +31,11 @@ public class ApplicationContext {
         this.deviceConfiguration = SerialConfiguration.DEFAULT;
     }
 
-    public void transitionToState(final ApplicationState newState) {
+    public void transitionToState(final WinKeyState newState) {
         this.stateMachine.transitionToState(this, newState);
     }
 
-    public ApplicationState getState() {
+    public WinKeyState getState() {
         return stateMachine.getState();
     }
    
@@ -43,11 +43,11 @@ public class ApplicationContext {
         return jobQueue;
     }
 
-    public void setAppConfiguration(ApplicationConfiguration appConfiguration) {
+    public void setAppConfiguration(WinKeyConfiguration appConfiguration) {
         this.appConfiguration = appConfiguration;
     }
 
-    public ApplicationConfiguration getAppConfiguration() {
+    public WinKeyConfiguration getAppConfiguration() {
         return appConfiguration;
     }
 
@@ -77,7 +77,7 @@ public class ApplicationContext {
     }
 
     public void setDeviceConfiguration(final SerialConfiguration deviceConfiguration) {
-        if (stateMachine.getState() != ApplicationState.CLOSED) {
+        if (stateMachine.getState() != WinKeyState.CLOSED) {
             throw new IllegalStateException("Device configuration can only be set if device is closed");
         }
 
@@ -89,7 +89,7 @@ public class ApplicationContext {
     }
 
     public void setTransport(final Transport transport) {
-        if (this.stateMachine.getState() != ApplicationState.CLOSED) {
+        if (this.stateMachine.getState() != WinKeyState.CLOSED) {
             throw new IllegalStateException("Transport is already running");
         }
 

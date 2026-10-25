@@ -11,7 +11,7 @@ import org.mockito.MockedStatic;
 
 import com.fazecast.jSerialComm.SerialPort;
 
-import de.do9fse.winkey.lib.core.model.ApplicationContext;
+import de.do9fse.winkey.lib.core.model.WinKeyContext;
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.configuration.serial.BaudRate;
 import de.do9fse.winkey.lib.core.model.configuration.serial.DataBits;
@@ -23,7 +23,7 @@ import de.do9fse.winkey.lib.core.model.configuration.serial.Timeout;
 class SerialConfigurationAdapterTest {
     @Test
     void appliesConfiguredReadTimeoutToSerialPortInMilliseconds() {
-        final ApplicationContext context = new ApplicationContext(ProtocolVersion.V2);
+        final WinKeyContext context = new WinKeyContext(ProtocolVersion.V2);
         context.setPortName("/dev/ttyUSB0");
         final SerialConfiguration configuration = new SerialConfiguration(
             BaudRate.DEFAULT,
@@ -46,7 +46,7 @@ class SerialConfigurationAdapterTest {
 
     @Test
     void roundsSubMillisecondRemainderUpWhenApplyingReadTimeout() {
-        final ApplicationContext context = new ApplicationContext(ProtocolVersion.V2);
+        final WinKeyContext context = new WinKeyContext(ProtocolVersion.V2);
         context.setPortName("/dev/ttyUSB0");
         final SerialConfiguration configuration = new SerialConfiguration(
             BaudRate.DEFAULT,

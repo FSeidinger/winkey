@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortTimeoutException;
 
-import de.do9fse.winkey.lib.core.model.ApplicationContext;
-import de.do9fse.winkey.lib.core.model.ApplicationState;
+import de.do9fse.winkey.lib.core.model.WinKeyContext;
+import de.do9fse.winkey.lib.core.model.WinKeyState;
 import de.do9fse.winkey.lib.core.model.Job;
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.Validations;
@@ -53,7 +53,7 @@ public class SerialTransport implements Transport {
     private Thread serialPortReaderThread;
     private CompletableFuture<Void> serialPortReaderThreadResult;
 
-    private final ApplicationContext context;
+    private final WinKeyContext context;
     private final JobQueue jobQueue;
     private final ResponseFactory responseFactory;
     private final SerialPort serialPort;
@@ -64,7 +64,7 @@ public class SerialTransport implements Transport {
 
     private final HexFormat formatter = HexFormat.of().withPrefix("0x").withSuffix(" ");
 
-    public SerialTransport(final ApplicationContext context, final SerialPort serialPort) {
+    public SerialTransport(final WinKeyContext context, final SerialPort serialPort) {
         this.context = Validations.validateNotNull("Application context", context);
         this.jobQueue = Validations.validateNotNull("Job queue", context.getJobQueue());
         this.responseFactory = new ResponseFactory(context);
@@ -73,7 +73,7 @@ public class SerialTransport implements Transport {
 
     @Override
     public void open() throws WinKeyApplicationException {
-        if (context.getState() != ApplicationState.CLOSED) {
+        if (context.getState() != WinKeyState.CLOSED) {
             throw new IllegalStateException("Transport is already initializing or in standalone mode");
         }
         
@@ -83,26 +83,26 @@ public class SerialTransport implements Transport {
         this.inputStream = new PushbackInputStream(serialPort.getInputStream());
         this.outputStream = serialPort.getOutputStream();
 
-        context.transitionToState(ApplicationState.INITIALIZING);
+        context.transitionToState(WinKeyState.INITIALIZING);
     }
 
     @Override
     public void close() throws WinKeyApplicationException {
-        if (context.getState() == ApplicationState.CLOSED) {
+        if (context.getState() == WinKeyState.CLOSED) {
             throw new IllegalStateException("Transport is already closed");
         }
 
-        if (context.getState() == ApplicationState.STANDALONE_MODE || context.getState() == ApplicationState.HOST_MODE) {
+        if (context.getState() == WinKeyState.STANDALONE_MODE || context.getState() == WinKeyState.HOST_MODE) {
             stopSerialReaderThread();
         }
 
         serialPort.closePort();
-        context.transitionToState(ApplicationState.CLOSED);
+        context.transitionToState(WinKeyState.CLOSED);
     }
 
     @Override
     public void initialize(final long timeout, final TimeUnit unit) throws TimeoutException, WKRuntimeException {
-        if (context.getState() != ApplicationState.INITIALIZING) {
+        if (context.getState() != WinKeyState.INITIALIZING) {
             throw new IllegalStateException("Transport is in standalone mode or closed");
         }
 
@@ -128,7 +128,7 @@ public class SerialTransport implements Transport {
 
                     if (response == echoChar) {
                         startSerialPortReaderThread();
-                        context.transitionToState(ApplicationState.STANDALONE_MODE);
+                        context.transitionToState(WinKeyState.STANDALONE_MODE);
                         return;
                     }
                 } catch(final SerialPortTimeoutException e) {
@@ -184,7 +184,7 @@ public class SerialTransport implements Transport {
     }
 
     public Job submitJob(final ImmediateCommand command, final CompletableFuture<Response> jobResult, final boolean doSend) throws WinKeyApplicationException {
-        if (context.getState() != ApplicationState.STANDALONE_MODE && context.getState() != ApplicationState.HOST_MODE) {
+        if (context.getState() != WinKeyState.STANDALONE_MODE && context.getState() != WinKeyState.HOST_MODE) {
             throw new IllegalStateException("Transport is not ready");
         }
 
@@ -228,7 +228,7 @@ public class SerialTransport implements Transport {
     public void sendDataItems(final DataItem... dataItems) {
         Validations.validateNotNull("Data items", dataItems);
 
-        if (context.getState() != ApplicationState.STANDALONE_MODE && context.getState() != ApplicationState.HOST_MODE) {
+        if (context.getState() != WinKeyState.STANDALONE_MODE && context.getState() != WinKeyState.HOST_MODE) {
             throw new IllegalStateException("Transport is not ready");
         }
 
@@ -392,9 +392,9 @@ public class SerialTransport implements Transport {
     private void updateApplicationState(final Command command, final Response response) {
         if (command instanceof HostOpenCommand && response instanceof VersionResponse versionResponse) {
             context.setDeviceVersion(versionResponse.version());
-            context.transitionToState(ApplicationState.HOST_MODE);
+            context.transitionToState(WinKeyState.HOST_MODE);
         } else if (command instanceof HostCloseCommand) {
-            context.transitionToState(ApplicationState.STANDALONE_MODE);
+            context.transitionToState(WinKeyState.STANDALONE_MODE);
         }
     }
 

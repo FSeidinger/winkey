@@ -14,8 +14,8 @@ import org.jline.utils.AttributedStyle;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortInvalidPortException;
 
-import de.do9fse.winkey.lib.core.model.ApplicationContext;
-import de.do9fse.winkey.lib.core.model.ApplicationState;
+import de.do9fse.winkey.lib.core.model.WinKeyContext;
+import de.do9fse.winkey.lib.core.model.WinKeyState;
 import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
 import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
 import de.do9fse.winkey.lib.core.port.out.Transport;
@@ -40,7 +40,7 @@ public class ConnectCommand extends TerminalCommand {
             throw new IllegalArgumentException("Error: the connect command does not support parameters");
         }
 
-        if (context.getState() != ApplicationState.CLOSED) {
+        if (context.getState() != WinKeyState.CLOSED) {
             throw new IllegalStateException(Errors.DEVICE_ALREADY_OPEN.createErrorMessage(context));
         } 
 
@@ -61,12 +61,12 @@ public class ConnectCommand extends TerminalCommand {
         return null;
     }
 
-    private SerialPort createSerialPort(final PrintStream stderr, final ApplicationContext context, final SerialConfiguration deviceConfiguration) throws SerialPortInvalidPortException {
+    private SerialPort createSerialPort(final PrintStream stderr, final WinKeyContext context, final SerialConfiguration deviceConfiguration) throws SerialPortInvalidPortException {
         final SerialConfigurationAdapter adapter = new SerialConfigurationAdapter(context, deviceConfiguration);
         return adapter.createSerialPort();
     }
 
-    private void openAndInitializeTransport(final PrintStream stderr, final ApplicationContext context, final SerialPort serialPort) throws WinKeyApplicationException, TimeoutException {
+    private void openAndInitializeTransport(final PrintStream stderr, final WinKeyContext context, final SerialPort serialPort) throws WinKeyApplicationException, TimeoutException {
         Transport transport = null;
 
         try {
@@ -77,7 +77,7 @@ public class ConnectCommand extends TerminalCommand {
             final var timeout = context.getDeviceConfiguration().initializationTimeout();
             transport.initialize(timeout.timeout(), timeout.timeUnit());
         } finally {
-            if (context.getState() != ApplicationState.STANDALONE_MODE) {
+            if (context.getState() != WinKeyState.STANDALONE_MODE) {
                 closeTransport(transport);
             }
         }

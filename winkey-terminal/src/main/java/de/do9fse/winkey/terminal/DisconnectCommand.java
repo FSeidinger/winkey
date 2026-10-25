@@ -8,7 +8,7 @@ import org.jline.shell.CommandSession;
 import org.jline.utils.AttributedString;
 import org.jline.utils.AttributedStyle;
 
-import de.do9fse.winkey.lib.core.model.ApplicationState;
+import de.do9fse.winkey.lib.core.model.WinKeyState;
 import de.do9fse.winkey.lib.core.port.out.Transport;
 
 public class DisconnectCommand extends TerminalCommand {
@@ -29,7 +29,7 @@ public class DisconnectCommand extends TerminalCommand {
              throw new IllegalArgumentException("Error: the disconnect command does not support parameters");
         }
 
-        if (context.getState() == ApplicationState.CLOSED) {
+        if (context.getState() == WinKeyState.CLOSED) {
             throw new IllegalStateException(Errors.DEVICE_ALREADY_CLOSED.createErrorMessage(context));
         }
 

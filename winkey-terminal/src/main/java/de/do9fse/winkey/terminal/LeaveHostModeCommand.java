@@ -2,7 +2,7 @@ package de.do9fse.winkey.terminal;
 
 import org.jline.shell.CommandSession;
 
-import de.do9fse.winkey.lib.core.model.ApplicationState;
+import de.do9fse.winkey.lib.core.model.WinKeyState;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.HostCloseCommand;
 import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
@@ -22,11 +22,11 @@ public class LeaveHostModeCommand extends TerminalCommand {
     public Object execute(CommandSession session, String[] args) throws Exception {
         super.execute(session, args);
 
-        if (context.getState() == ApplicationState.CLOSED) {
+        if (context.getState() == WinKeyState.CLOSED) {
             throw new IllegalStateException("Device is closed. Please call 'connect' first.");
         }
 
-        if (context.getState() != ApplicationState.HOST_MODE) {
+        if (context.getState() != WinKeyState.HOST_MODE) {
             throw new IllegalStateException("Device is not in host mode.");
         }
 

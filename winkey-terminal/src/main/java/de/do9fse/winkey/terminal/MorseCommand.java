@@ -7,7 +7,7 @@ import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.shell.CommandSession;
 
-import de.do9fse.winkey.lib.core.model.ApplicationState;
+import de.do9fse.winkey.lib.core.model.WinKeyState;
 import de.do9fse.winkey.lib.core.model.data.DataItem;
 import de.do9fse.winkey.lib.core.port.out.Transport;
 import de.do9fse.winkey.terminal.data.Parser;
@@ -35,11 +35,11 @@ public class MorseCommand extends TerminalCommand {
             throw new IllegalArgumentException("Error: the morse command does not support parameters");
         }
 
-        if (context.getState() != ApplicationState.STANDALONE_MODE && context.getState() != ApplicationState.HOST_MODE) {
+        if (context.getState() != WinKeyState.STANDALONE_MODE && context.getState() != WinKeyState.HOST_MODE) {
             throw new IllegalStateException(Errors.APPLICATION_MUST_BE_READY.createErrorMessage(context));
         }
 
-        if (context.getState() == ApplicationState.STANDALONE_MODE) {
+        if (context.getState() == WinKeyState.STANDALONE_MODE) {
             stdout.println("Warning: device is in standalone mode. Buffered commands will not work.\n");
         }
 

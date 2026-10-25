@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import de.do9fse.winkey.lib.core.model.ApplicationContext;
+import de.do9fse.winkey.lib.core.model.WinKeyContext;
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.StatusPushButton;
 import de.do9fse.winkey.lib.core.model.StatusV1;
@@ -19,12 +19,12 @@ import de.do9fse.winkey.lib.core.model.configuration.EEPROMContent;
 
 @DisplayName("Response factory tests")
 class ResponseFactoryTest {
-    private ApplicationContext context;
+    private WinKeyContext context;
     private ResponseFactory responseFactory;
 
     @BeforeEach
     void setUp() {
-        context = new ApplicationContext(ProtocolVersion.V2);
+        context = new WinKeyContext(ProtocolVersion.V2);
         responseFactory = new ResponseFactory(context);
     }
 

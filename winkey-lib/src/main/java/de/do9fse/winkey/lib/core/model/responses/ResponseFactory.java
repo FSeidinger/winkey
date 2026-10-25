@@ -3,13 +3,13 @@ package de.do9fse.winkey.lib.core.model.responses;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.do9fse.winkey.lib.core.model.ApplicationContext;
+import de.do9fse.winkey.lib.core.model.WinKeyContext;
 import de.do9fse.winkey.lib.core.model.Validations;
 
 public class ResponseFactory {
     private Map<Class<? extends Response>, DataInputDeserializer> factories;
 
-    public ResponseFactory(final ApplicationContext context) {
+    public ResponseFactory(final WinKeyContext context) {
         this.factories = new HashMap<>();
 
         Validations.validateNotNull("Context", context);
@@ -26,7 +26,7 @@ public class ResponseFactory {
         return factory.fromData(responseBytes);
     }
 
-    private void populateFactories(final ApplicationContext context) {
+    private void populateFactories(final WinKeyContext context) {
         factories.put(CalibrationValueResponse.class, CalibrationValueResponse::fromData);
         factories.put(DefaultsResponse.class, DefaultsResponse::fromData);
         factories.put(EEPROMResponse.class, EEPROMResponse::fromData);

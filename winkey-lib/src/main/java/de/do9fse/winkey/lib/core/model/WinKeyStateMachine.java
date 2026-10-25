@@ -5,21 +5,21 @@ import java.text.MessageFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ApplicationStateMachine {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationStateMachine.class);
+public class WinKeyStateMachine {
+    private static final Logger LOGGER = LoggerFactory.getLogger(WinKeyStateMachine.class);
 
-    private ApplicationState state;
+    private WinKeyState state;
 
-    public ApplicationStateMachine() {
-        this.state = ApplicationState.CLOSED;
+    public WinKeyStateMachine() {
+        this.state = WinKeyState.CLOSED;
         LOGGER.info("Application is {}", this.state);
     }
 
-    public ApplicationState getState() {
+    public WinKeyState getState() {
         return state;
     }
 
-    public void transitionToState(final ApplicationContext context, final ApplicationState newState) {
+    public void transitionToState(final WinKeyContext context, final WinKeyState newState) {
         switch (state) {
             case CLOSED:
                 switch (newState) {
@@ -67,12 +67,12 @@ public class ApplicationStateMachine {
         }
     }
 
-    private void doTransition(final ApplicationState newState) {
+    private void doTransition(final WinKeyState newState) {
         this.state = newState;
         LOGGER.info("Application is now {}", newState);
     }
 
-    private void raiseStateTransitionError(final ApplicationState oldState, final ApplicationState newState) {
+    private void raiseStateTransitionError(final WinKeyState oldState, final WinKeyState newState) {
         final String message = formatError(
             "Transitioning from state {0} to state {1} is not allowed",
             oldState,

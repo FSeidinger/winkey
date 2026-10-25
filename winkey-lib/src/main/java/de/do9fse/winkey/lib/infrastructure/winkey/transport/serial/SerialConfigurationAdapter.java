@@ -4,16 +4,16 @@ import java.util.concurrent.TimeUnit;
 
 import com.fazecast.jSerialComm.SerialPort;
 
-import de.do9fse.winkey.lib.core.model.ApplicationContext;
+import de.do9fse.winkey.lib.core.model.WinKeyContext;
 import de.do9fse.winkey.lib.core.model.Validations;
 import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
 import de.do9fse.winkey.lib.core.model.configuration.serial.Timeout;
 
 public class SerialConfigurationAdapter {
-    private final ApplicationContext context;
+    private final WinKeyContext context;
     private final SerialConfiguration deviceConfiguration;
 
-    public SerialConfigurationAdapter(final ApplicationContext context, final SerialConfiguration deviceConfiguration) {
+    public SerialConfigurationAdapter(final WinKeyContext context, final SerialConfiguration deviceConfiguration) {
         this.context = Validations.validateNotNull("Application context", context);
         this.deviceConfiguration = Validations.validateNotNull("Device configuration", deviceConfiguration);
     }

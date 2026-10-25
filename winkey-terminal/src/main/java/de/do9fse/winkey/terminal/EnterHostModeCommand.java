@@ -2,7 +2,7 @@ package de.do9fse.winkey.terminal;
 
 import org.jline.shell.CommandSession;
 
-import de.do9fse.winkey.lib.core.model.ApplicationState;
+import de.do9fse.winkey.lib.core.model.WinKeyState;
 import de.do9fse.winkey.lib.core.model.commands.ImmediateCommand;
 import de.do9fse.winkey.lib.core.model.commands.admin.HostOpenCommand;
 import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
@@ -22,11 +22,11 @@ public class EnterHostModeCommand extends TerminalCommand {
     public Object execute(CommandSession session, String[] args) throws Exception {
         super.execute(session, args);
 
-        if (context.getState() == ApplicationState.HOST_MODE) {
+        if (context.getState() == WinKeyState.HOST_MODE) {
             throw new IllegalStateException("Device is already in host mode.");
         }
 
-        if (context.getState() != ApplicationState.STANDALONE_MODE) {
+        if (context.getState() != WinKeyState.STANDALONE_MODE) {
             throw new IllegalStateException(Errors.APPLICATION_MUST_BE_READY.createErrorMessage(context));
         }
 

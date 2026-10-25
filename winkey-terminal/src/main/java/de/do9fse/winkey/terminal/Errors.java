@@ -2,7 +2,7 @@ package de.do9fse.winkey.terminal;
 
 import java.util.NoSuchElementException;
 
-import de.do9fse.winkey.lib.core.model.ApplicationContext;
+import de.do9fse.winkey.lib.core.model.WinKeyContext;
 
 public enum Errors {
     NO_PORT_SET,
@@ -15,7 +15,7 @@ public enum Errors {
     DEVICE_DID_NOT_ANSWER,
     DEVICE_INITIALIZING_FAILED;
 
-    public String createErrorMessage(final ApplicationContext context) {
+    public String createErrorMessage(final WinKeyContext context) {
         switch (this) {
             case NO_PORT_SET: return "You have to set a valid port name first";
             case INVALID_PORT: return "Invalid port " + resolvePortName(context);
@@ -31,7 +31,7 @@ public enum Errors {
         }
     }
 
-    private String resolvePortName(final ApplicationContext context) {
+    private String resolvePortName(final WinKeyContext context) {
         try {
             return context.getPortName();
         } catch (final NoSuchElementException e) {

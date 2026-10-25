@@ -35,8 +35,8 @@ import org.junit.jupiter.api.Test;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortTimeoutException;
 
-import de.do9fse.winkey.lib.core.model.ApplicationContext;
-import de.do9fse.winkey.lib.core.model.ApplicationState;
+import de.do9fse.winkey.lib.core.model.WinKeyContext;
+import de.do9fse.winkey.lib.core.model.WinKeyState;
 import de.do9fse.winkey.lib.core.model.Job;
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.StatusPushButton;
@@ -64,11 +64,11 @@ import de.do9fse.winkey.lib.infrastructure.winkey.DefaultJobQueue;
 
 @DisplayName("Given the serial Transport")
 class SerialTransportTest {
-    private ApplicationContext context;
+    private WinKeyContext context;
 
     @BeforeEach
     void setUp() {
-        this.context = new ApplicationContext(ProtocolVersion.V2);
+        this.context = new WinKeyContext(ProtocolVersion.V2);
         this.context.setDeviceConfiguration(SerialConfiguration.DEFAULT);
     }
 
@@ -82,7 +82,7 @@ class SerialTransportTest {
 
             transport.open();
 
-            assertEquals(ApplicationState.INITIALIZING, context.getState());
+            assertEquals(WinKeyState.INITIALIZING, context.getState());
             assertNull(getField(transport, "serialPortReaderThread"));
             verify(serialPort).openPort();
         }
@@ -104,7 +104,7 @@ class SerialTransportTest {
             assertEquals(0, outputStream.size());
 
             transport.close();
-            assertEquals(ApplicationState.CLOSED, context.getState());
+            assertEquals(WinKeyState.CLOSED, context.getState());
         }
 
         @Test
@@ -138,7 +138,7 @@ class SerialTransportTest {
             System.arraycopy(echoBytes, 0, expectedWrites, 0, echoBytes.length);
             System.arraycopy(echoBytes, 0, expectedWrites, echoBytes.length, echoBytes.length);
             assertArrayEquals(expectedWrites, outputStream.toByteArray());
-            assertEquals(ApplicationState.STANDALONE_MODE, context.getState());
+            assertEquals(WinKeyState.STANDALONE_MODE, context.getState());
             assertTrue((Thread) getField(transport, "serialPortReaderThread") != null);
         }
 
@@ -165,7 +165,7 @@ class SerialTransportTest {
 
             assertThrows(TimeoutException.class, () -> transport.initialize(10, TimeUnit.MILLISECONDS));
 
-            assertEquals(ApplicationState.INITIALIZING, context.getState());
+            assertEquals(WinKeyState.INITIALIZING, context.getState());
             assertTrue(outputStream.size() > 0);
             assertNull(getField(transport, "serialPortReaderThread"));
         }
@@ -178,7 +178,7 @@ class SerialTransportTest {
 
             transport.close();
 
-            assertEquals(ApplicationState.CLOSED, context.getState());
+            assertEquals(WinKeyState.CLOSED, context.getState());
             verify(serialPort).closePort();
         }
 
@@ -187,12 +187,12 @@ class SerialTransportTest {
             final SerialPort serialPort = mockSerialPort(new ByteArrayInputStream(new byte[0]), new ByteArrayOutputStream());
             final SerialTransport transport = new SerialTransport(context, serialPort);
             transport.open();
-            context.transitionToState(ApplicationState.STANDALONE_MODE);
-            context.transitionToState(ApplicationState.HOST_MODE);
+            context.transitionToState(WinKeyState.STANDALONE_MODE);
+            context.transitionToState(WinKeyState.HOST_MODE);
 
             transport.close();
 
-            assertEquals(ApplicationState.CLOSED, context.getState());
+            assertEquals(WinKeyState.CLOSED, context.getState());
             verify(serialPort).closePort();
         }
     }
@@ -255,16 +255,16 @@ class SerialTransportTest {
 
     @Test
     void updatesStateToHostModeAndSetsVersionWhenHostOpenCommandCompletes() throws Exception {
-        final ApplicationContext localContext = new ApplicationContext(ProtocolVersion.V1);
+        final WinKeyContext localContext = new WinKeyContext(ProtocolVersion.V1);
         final SerialTransport transport = createReadyTransport(localContext, new DefaultJobQueue(), new ByteArrayOutputStream(), 23);
         assertEquals(ProtocolVersion.V1, localContext.getProtocolVersion());
-        assertEquals(ApplicationState.STANDALONE_MODE, localContext.getState());
+        assertEquals(WinKeyState.STANDALONE_MODE, localContext.getState());
 
         final CompletableFuture<Response> hostOpenResult = submit(transport, new HostOpenCommand());
         processActiveJob(transport);
 
         assertInstanceOf(VersionResponse.class, hostOpenResult.join());
-        assertEquals(ApplicationState.HOST_MODE, localContext.getState());
+        assertEquals(WinKeyState.HOST_MODE, localContext.getState());
         assertEquals(ProtocolVersion.V2, localContext.getProtocolVersion());
     }
 
@@ -274,12 +274,12 @@ class SerialTransportTest {
         final CompletableFuture<Response> hostOpenResult = submit(transport, new HostOpenCommand());
         processActiveJob(transport);
         assertInstanceOf(VersionResponse.class, hostOpenResult.join());
-        assertEquals(ApplicationState.HOST_MODE, context.getState());
+        assertEquals(WinKeyState.HOST_MODE, context.getState());
 
         final CompletableFuture<Response> hostCloseResult = submit(transport, new HostCloseCommand());
         processActiveJob(transport);
         assertInstanceOf(EmptyResponse.class, hostCloseResult.join());
-        assertEquals(ApplicationState.STANDALONE_MODE, context.getState());
+        assertEquals(WinKeyState.STANDALONE_MODE, context.getState());
     }
 
     @Test
@@ -288,7 +288,7 @@ class SerialTransportTest {
         final SerialTransport transport = createReadyTransport(context, new DefaultJobQueue(), outputStream, 0x23);
         submit(transport, new HostOpenCommand());
         processActiveJob(transport);
-        assertEquals(ApplicationState.HOST_MODE, context.getState());
+        assertEquals(WinKeyState.HOST_MODE, context.getState());
 
         transport.sendDataItems(new TextDataItem("CQ"));
         final CompletableFuture<Response> result = new CompletableFuture<>();
@@ -429,12 +429,12 @@ class SerialTransportTest {
         final OutputStream outputStream,
         final int... receivedBytes
     ) throws Exception {
-        final ApplicationContext context = new ApplicationContext(ProtocolVersion.V2);
+        final WinKeyContext context = new WinKeyContext(ProtocolVersion.V2);
         return createReadyTransport(context, queue, outputStream, receivedBytes);
     }
 
     private static SerialTransport createReadyTransport(
-        final ApplicationContext context,
+        final WinKeyContext context,
         final DefaultJobQueue queue,
         final OutputStream outputStream,
         final int... receivedBytes
@@ -445,9 +445,9 @@ class SerialTransportTest {
         }
 
         context.setDeviceConfiguration(SerialConfiguration.DEFAULT);
-        if (context.getState() == ApplicationState.CLOSED) {
-            context.transitionToState(ApplicationState.INITIALIZING);
-            context.transitionToState(ApplicationState.STANDALONE_MODE);
+        if (context.getState() == WinKeyState.CLOSED) {
+            context.transitionToState(WinKeyState.INITIALIZING);
+            context.transitionToState(WinKeyState.STANDALONE_MODE);
         }
 
         final SerialTransport transport = new SerialTransport(context, mock(SerialPort.class));

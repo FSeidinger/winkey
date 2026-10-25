@@ -5,7 +5,7 @@ import java.io.PrintStream;
 import org.jline.shell.CommandSession;
 import org.jline.shell.impl.AbstractCommand;
 
-import de.do9fse.winkey.lib.core.model.ApplicationContext;
+import de.do9fse.winkey.lib.core.model.WinKeyContext;
 
 public abstract class TerminalCommand extends AbstractCommand {
     protected PrintStream stdout;
@@ -13,7 +13,7 @@ public abstract class TerminalCommand extends AbstractCommand {
 
     protected ErrorHandlingCommandDispatcher dispatcher;
     protected MessageGenerator generator;
-    protected ApplicationContext context;
+    protected WinKeyContext context;
 
     protected ArgumentScanner scanner;
 
@@ -32,7 +32,7 @@ public abstract class TerminalCommand extends AbstractCommand {
 
         this.dispatcher = (ErrorHandlingCommandDispatcher) session.get(Constants.DISPATCHER_KEY);
         this.generator = (MessageGenerator) session.get(Constants.MESSAGE_GENERATOR_KEY);
-        this.context = (ApplicationContext) session.get(Constants.APPLICATION_CONTEXT_KEY);
+        this.context = (WinKeyContext) session.get(Constants.APPLICATION_CONTEXT_KEY);
 
         this.scanner = new ArgumentScanner(args);
 

@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fazecast.jSerialComm.SerialPort;
 
-import de.do9fse.winkey.lib.core.model.ApplicationContext;
+import de.do9fse.winkey.lib.core.model.WinKeyContext;
 import de.do9fse.winkey.lib.core.model.ProtocolVersion;
 import de.do9fse.winkey.lib.core.model.configuration.serial.SerialConfiguration;
 import de.do9fse.winkey.lib.core.model.error.WinKeyApplicationException;
@@ -23,7 +23,7 @@ public final class Main {
 
     public static final int ERROR_OPEN = -1;
 
-    private ApplicationContext context;
+    private WinKeyContext context;
     private String portName;
 
     private Transport transport;
@@ -77,11 +77,11 @@ public final class Main {
         }
     }
 
-    private ApplicationContext crateApplicationContext() {
-        return new ApplicationContext(ProtocolVersion.V2);
+    private WinKeyContext crateApplicationContext() {
+        return new WinKeyContext(ProtocolVersion.V2);
     }
 
-    private Transport createSerialTransport(final ApplicationContext context, final String portName) {
+    private Transport createSerialTransport(final WinKeyContext context, final String portName) {
         context.setPortName(portName);
         final SerialConfiguration configuration = context.getDeviceConfiguration();
         final SerialPort port = new SerialConfigurationAdapter(context, configuration).createSerialPort();

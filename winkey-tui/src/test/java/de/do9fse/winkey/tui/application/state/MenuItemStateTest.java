@@ -11,16 +11,19 @@ import de.do9fse.winkey.tui.model.Menu;
 import de.do9fse.winkey.tui.model.MenuItem;
 
 public class MenuItemStateTest {
-    private List<MenuItem> defaultItems;
+    private List<MenuItem> defaultMenuItems;
     private Menu defaultMenu;
+    private List<Menu> menus;
 
     private MenuItemState state;
 
     @BeforeEach
     void setUp() {
-        this.defaultItems = List.of(new MenuItem("Default"));
-        this.defaultMenu = new Menu("Default", defaultItems);
-        this.state = new MenuItemState();
+        this.defaultMenuItems = List.of(new MenuItem("Default"));
+        this.defaultMenu = new Menu("Default", defaultMenuItems);
+        this.menus = List.of(defaultMenu);
+
+        this.state = new MenuItemState(menus);
         this.state.open(defaultMenu);
     }
 
@@ -32,7 +35,7 @@ public class MenuItemStateTest {
 
     @Test
     void testGetItems() {
-        assertThat(state.getItems()).isEqualTo(defaultItems);
+        assertThat(state.getItems()).isEqualTo(defaultMenuItems);
 
         state.close();
         assertThat(state.getItems()).isEmpty();

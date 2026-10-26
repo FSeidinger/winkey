@@ -5,17 +5,22 @@ import java.util.Objects;
 import dev.tamboui.toolkit.elements.DialogElement;
 
 public class DialogState {
-    private DialogElement activeDialog = null;
+    private DialogElement dialog = null;
+
+
+    public DialogElement getDialogElement() {
+        return dialog;
+    }
 
     public boolean isOpen() {
-        return activeDialog != null;
+        return dialog != null;
     }
 
     public void open(final DialogElement dialog) {
-        this.activeDialog = Objects.requireNonNull(dialog, "Dialog must not be null");
+        this.dialog = Objects.requireNonNull(dialog, "Dialog must not be null");
     }
 
     public void close() {
-        this.activeDialog = null;
+        this.dialog = null;
     }
 }

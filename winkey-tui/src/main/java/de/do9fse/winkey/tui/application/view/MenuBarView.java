@@ -2,26 +2,28 @@ package de.do9fse.winkey.tui.application.view;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import de.do9fse.winkey.tui.application.state.MenuBarState;
 import de.do9fse.winkey.tui.application.state.MenuItemState;
 import de.do9fse.winkey.tui.model.Menu;
-import de.do9fse.winkey.tui.model.MenuItem;
 import dev.tamboui.buffer.Buffer;
 import dev.tamboui.layout.Rect;
-import dev.tamboui.style.Style;
 import dev.tamboui.text.Line;
 import dev.tamboui.text.Span;
-import dev.tamboui.widget.StatefulWidget;
-import dev.tamboui.widgets.block.Block;
-import dev.tamboui.widgets.block.BorderType;
-import dev.tamboui.widgets.block.Borders;
-import dev.tamboui.widgets.list.ListState;
-import dev.tamboui.widgets.list.ListWidget;
+import dev.tamboui.toolkit.event.EventResult;
+import dev.tamboui.tui.event.KeyEvent;
+import dev.tamboui.widget.Widget;
 
-public class MenuBarView implements StatefulWidget<MenuBarState> {
+public class MenuBarView implements Widget {
+    private final MenuBarState state;
+
+    public MenuBarView(final MenuBarState state) {
+        this.state = Objects.requireNonNull(state, "State must not be null");
+    }
+
     @Override
-    public void render(final Rect area, final Buffer buffer, final MenuBarState state) {
+    public void render(final Rect area, final Buffer buffer) {
         final List<Menu> menus = state.getMenus();
 
         if (area.isEmpty() || menus.isEmpty()) {
@@ -41,67 +43,19 @@ public class MenuBarView implements StatefulWidget<MenuBarState> {
         );
         
         buffer.setLine(posX, posY, menuLine);
-        renderDropDown(area, buffer, state);
     }
 
-    private void renderDropDown(final Rect area, final Buffer buffer, final MenuBarState state) {
-        if (!state.isOpen()) {
-            return;
-        }
-
+    public EventResult handleEvent(final KeyEvent event) {
         final MenuItemState menuItemState = state.getMenuItemState();
-        final String[] items = menuItemState.getItems().toArray(new String[0]);
-        final ListWidget dropDown = ListWidget
-            .builder()
-            .items(items)
-            .block(
-                Block
-                    .builder()
-                    .borders(Borders.ALL)
-                    .borderType(BorderType.DOUBLE)
-                    .build()
-            )
-            .highlightStyle(Style.EMPTY.bold())
-            .build();
-
-
-        final Rect dropDownArea = getDropDownArea(area, state.getMenus(), menuItemState.getMenu());
-        final ListState listState = state.getMenuItemState().getListState();
-        dropDown.render(dropDownArea, buffer, listState);
-    }
-
-    public Rect getDropDownArea(final Rect parentArea, final List<Menu> menus, final Menu selectedMenu) {
-        final int offsetX = calculateOffsetX(menus, selectedMenu);
-        final int offsetY = 1;
-
-        final int width = calculateMaxItemWidth(selectedMenu);
-        final int height = selectedMenu.items().size() + 2;
-
-        return new Rect(parentArea.x() + offsetX, parentArea.y() + offsetY, width, height);
-    }
-
-    public int calculateMaxItemWidth(final Menu selectedMenu) {
-        int maxSize = 0;
-
-        for (final MenuItem menuItem: selectedMenu.items()) {
-            final int itemSize = menuItem.title().length();
-            maxSize = Math.max(maxSize, itemSize);
-        }
-
-        return maxSize + 6;
-    }
-
-    public int calculateOffsetX(final List<Menu> menus, final Menu selectedMenu) {
-        int offsetX = 1;
-
-        for (final Menu menu: menus) {
-            if (menu.equals(selectedMenu)) {
-                break;
+        if (menuItemState.isClosed()) {
+            for (final Menu menu: state.getMenus()) {
+                if (event.hasAlt() && event.isChar(menu.shortcut())) {
+                    menuItemState.open(menu);
+                    return EventResult.HANDLED;
+                }
             }
-
-            offsetX += menu.title().length() + 2;
         }
 
-        return offsetX;
+        return EventResult.UNHANDLED;
     }
 }

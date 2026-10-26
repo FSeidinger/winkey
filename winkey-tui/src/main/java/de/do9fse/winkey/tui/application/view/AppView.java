@@ -33,5 +33,5 @@ public class AppView implements StatefulWidget<AppState> {
             .build();
 
         page.render(area, buffer);
-    }
+   }
 }

@@ -10,7 +10,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import com.google.gson.Gson;
 
-import de.do9fse.winkey.tui.application.view.Menu;
+import de.do9fse.winkey.tui.model.Menu;
 import dev.tamboui.style.Style;
 import dev.tamboui.text.Span;
 

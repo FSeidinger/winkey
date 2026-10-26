@@ -2,9 +2,11 @@ package de.do9fse.winkey.tui.application.view;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import de.do9fse.winkey.tui.application.state.MenuBarState;
+import de.do9fse.winkey.tui.application.state.MenuItemState;
+import de.do9fse.winkey.tui.model.Menu;
+import de.do9fse.winkey.tui.model.MenuItem;
 import dev.tamboui.buffer.Buffer;
 import dev.tamboui.layout.Rect;
 import dev.tamboui.style.Style;
@@ -43,20 +45,15 @@ public class MenuBarView implements StatefulWidget<MenuBarState> {
     }
 
     private void renderDropDown(final Rect area, final Buffer buffer, final MenuBarState state) {
-        final Menu selectedMenu = state.getSelectedMenu();
-
-        if (selectedMenu == null) {
+        if (!state.isOpen()) {
             return;
         }
 
+        final MenuItemState menuItemState = state.getMenuItemState();
+        final String[] items = menuItemState.getItems().toArray(new String[0]);
         final ListWidget dropDown = ListWidget
             .builder()
-            .items(
-                Stream
-                    .of(selectedMenu.items())
-                    .map((item) -> item.title())
-                    .toArray(String[]::new)
-            )
+            .items(items)
             .block(
                 Block
                     .builder()
@@ -68,8 +65,8 @@ public class MenuBarView implements StatefulWidget<MenuBarState> {
             .build();
 
 
-        final Rect dropDownArea = getDropDownArea(area, state.getMenus(), selectedMenu);
-        final ListState listState = state.getListState();
+        final Rect dropDownArea = getDropDownArea(area, state.getMenus(), menuItemState.getMenu());
+        final ListState listState = state.getMenuItemState().getListState();
         dropDown.render(dropDownArea, buffer, listState);
     }
 
@@ -78,7 +75,7 @@ public class MenuBarView implements StatefulWidget<MenuBarState> {
         final int offsetY = 1;
 
         final int width = calculateMaxItemWidth(selectedMenu);
-        final int height = selectedMenu.items().length + 2;
+        final int height = selectedMenu.items().size() + 2;
 
         return new Rect(parentArea.x() + offsetX, parentArea.y() + offsetY, width, height);
     }

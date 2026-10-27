@@ -5,11 +5,11 @@ import org.slf4j.LoggerFactory;
 
 import de.do9fse.winkey.tui.application.action.Action;
 import de.do9fse.winkey.tui.application.state.AppState;
+import de.do9fse.winkey.tui.application.state.DialogState;
 import de.do9fse.winkey.tui.application.view.AppView;
+import de.do9fse.winkey.tui.application.widget.Dialog;
 import de.do9fse.winkey.tui.model.UseCaseService;
 import dev.tamboui.terminal.Frame;
-import dev.tamboui.toolkit.element.DefaultRenderContext;
-import dev.tamboui.toolkit.element.RenderContext;
 import dev.tamboui.toolkit.event.EventResult;
 import dev.tamboui.tui.TuiRunner;
 import dev.tamboui.tui.bindings.ActionHandler;
@@ -31,28 +31,35 @@ public class Main {
 
     private final ActionHandler actionHandler = new ActionHandler(BindingSets.standard())
         .on(Action.FILE_EXIT.id(), (event, action) -> {
-            LOGGER.info("Handling action '{}'", action);
+            this.useCases.onFileExit();
+        })
+        .on(Action.EXIT.id(), (event, action) -> {
             this.useCases.onQuit();
         });
 
-
-    public final AppState state = new AppState();
-    private final AppView view = new AppView(state, actionHandler);
-
-    private final RenderContext context = DefaultRenderContext.createEmpty();
+    public final AppState state = new AppState(actionHandler);
+    private final AppView view = new AppView(state);
 
     private void run() throws Exception {
-        try (var appRunner = TuiRunner.create()) {
-            this.useCases = new UseCaseService(appRunner);
-            appRunner.run(this::eventHandler, this::renderer);
+        try (var runner = TuiRunner.create()) {
+            this.useCases = new UseCaseService(runner, state);
+            runner.run(this::eventHandler, this::renderer);
         }
     }
 
     private void renderer(final Frame frame) {
         frame.renderWidget(view, frame.area());
 
+        final DialogState dialogState = state.getDialogState();
+        if (dialogState.isOpen()) {
+            final Dialog dialog = dialogState.getDialog();
+            frame.renderWidget(dialog, frame.area());
+            return;
+        }
+
         if (state.getMenuItemState().isOpen()) {
             frame.renderWidget(view.getMenuItemView(), frame.area());
+            return;
         }
     }
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import de.do9fse.winkey.tui.application.state.MenuBarState;
+import de.do9fse.winkey.tui.application.state.AppState;
 import de.do9fse.winkey.tui.application.state.MenuItemState;
 import de.do9fse.winkey.tui.model.Menu;
 import dev.tamboui.buffer.Buffer;
@@ -16,15 +16,15 @@ import dev.tamboui.tui.event.KeyEvent;
 import dev.tamboui.widget.Widget;
 
 public class MenuBarView implements Widget {
-    private final MenuBarState state;
+    private final AppState state;
 
-    public MenuBarView(final MenuBarState state) {
+    public MenuBarView(final AppState state) {
         this.state = Objects.requireNonNull(state, "State must not be null");
     }
 
     @Override
     public void render(final Rect area, final Buffer buffer) {
-        final List<Menu> menus = state.getMenus();
+        final List<Menu> menus = state.getMenuBarState().getMenus();
 
         if (area.isEmpty() || menus.isEmpty()) {
             return;
@@ -48,7 +48,7 @@ public class MenuBarView implements Widget {
     public EventResult handleEvent(final KeyEvent event) {
         final MenuItemState menuItemState = state.getMenuItemState();
         if (menuItemState.isClosed()) {
-            for (final Menu menu: state.getMenus()) {
+            for (final Menu menu: state.getMenuBarState().getMenus()) {
                 if (event.hasAlt() && event.isChar(menu.shortcut())) {
                     menuItemState.open(menu);
                     return EventResult.HANDLED;

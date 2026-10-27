@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 import de.do9fse.winkey.tui.application.action.Action;
+import de.do9fse.winkey.tui.application.state.AppState;
 import de.do9fse.winkey.tui.application.state.MenuItemState;
 import de.do9fse.winkey.tui.model.Menu;
 import de.do9fse.winkey.tui.model.MenuItem;
@@ -13,7 +14,6 @@ import dev.tamboui.layout.Rect;
 import dev.tamboui.layout.Size;
 import dev.tamboui.style.Style;
 import dev.tamboui.toolkit.event.EventResult;
-import dev.tamboui.tui.bindings.ActionHandler;
 import dev.tamboui.tui.event.KeyEvent;
 import dev.tamboui.widget.Widget;
 import dev.tamboui.widgets.block.Block;
@@ -22,16 +22,15 @@ import dev.tamboui.widgets.block.Borders;
 import dev.tamboui.widgets.list.ListWidget;
 
 public class MenuItemView implements Widget {
-    private final MenuItemState state;
-    private final ActionHandler actionHandler;
+    private final AppState state;
 
-    public MenuItemView(final MenuItemState state, final ActionHandler actionHandler) {
+    public MenuItemView(final AppState state) {
         this.state = Objects.requireNonNull(state, "State must not be null");
-        this.actionHandler = Objects.requireNonNull(actionHandler, "Action handler must not be null");
     }
 
     @Override
     public void render(final Rect area, final Buffer buffer) {
+        final MenuItemState state = this.state.getMenuItemState();
         final String[] items = state
             .getItems()
             .stream()
@@ -64,6 +63,7 @@ public class MenuItemView implements Widget {
     }
 
     public EventResult handleEvent(final KeyEvent event) {
+        final MenuItemState state = this.state.getMenuItemState();
         if (state.isOpen()) {
             return switch (event) {
                 case final KeyEvent e when e.isUp() -> {
@@ -96,7 +96,7 @@ public class MenuItemView implements Widget {
                     state.close();
 
                     // notify application
-                    actionHandler.fire(action.id());
+                    this.state.getActionHandler().fire(action.id());
                     yield EventResult.HANDLED;
                 }
 

@@ -1,8 +1,5 @@
 package de.do9fse.winkey.tui.application.view;
 
-import java.util.Objects;
-
-import de.do9fse.winkey.tui.application.state.StatusBarState;
 import dev.tamboui.buffer.Buffer;
 import dev.tamboui.layout.Rect;
 import dev.tamboui.style.Color;
@@ -13,12 +10,6 @@ import dev.tamboui.tui.event.KeyEvent;
 import dev.tamboui.widget.Widget;
 
 public class StatusBarView implements Widget {
-    private final StatusBarState state;
-
-    public StatusBarView(StatusBarState state) {
-        this.state = Objects.requireNonNull(state, "State must not be null");
-    }
-
     @Override
     public void render(final Rect area, final Buffer buffer) {
         buffer.setStyle(area, Style.EMPTY.bg(Color.BLUE).fg(Color.WHITE));

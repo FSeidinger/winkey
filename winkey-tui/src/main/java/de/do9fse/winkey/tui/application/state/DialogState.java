@@ -2,13 +2,12 @@ package de.do9fse.winkey.tui.application.state;
 
 import java.util.Objects;
 
-import dev.tamboui.toolkit.elements.DialogElement;
+import de.do9fse.winkey.tui.application.widget.Dialog;
 
 public class DialogState {
-    private DialogElement dialog = null;
+    private Dialog dialog = null;
 
-
-    public DialogElement getDialogElement() {
+    public Dialog getDialog() {
         return dialog;
     }
 
@@ -16,7 +15,7 @@ public class DialogState {
         return dialog != null;
     }
 
-    public void open(final DialogElement dialog) {
+    public void open(final Dialog dialog) {
         this.dialog = Objects.requireNonNull(dialog, "Dialog must not be null");
     }
 
